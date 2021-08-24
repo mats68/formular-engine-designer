@@ -1,0 +1,18 @@
+<mat-form-field [style]='style' [appearance]='sm.getAppearance(comp)' [class]='getClass()' (click)='onClick()'>
+    <mat-label *ngIf='label' [ngClass]='{"error-color" : getError()}'>{{label}}</mat-label>
+    <div class="flex items-center">
+        <mat-spinner *ngIf='loading' [diameter]='20' class="mr-2"></mat-spinner>
+        <input [matAutocomplete]="auto" matInput #name [ngModel]='Value' (ngModelChange)='suchTextModelChanged.next($event)' (blur)='onBlur()' [minlength]='comp.min' [maxlength]='comp.max' [autofocus]='comp.autofocus'
+            [disabled]='disabled' />
+    </div>
+    <span matSuffix *ngIf='comp.suffix' class="suffix">{{comp.suffix}}</span>
+    <mat-hint *ngIf='comp.hint || getError()'>
+        <div *ngIf='getError()' class="error-color">{{getError()}}</div>
+        <div *ngIf='comp.hint && !getError()'>{{hint}}</div>
+    </mat-hint>
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="itemSelected($event)">
+        <mat-option *ngFor="let option of items$ | async" [value]="option" class="text-xs">
+            {{itemText(option)}}
+        </mat-option>
+    </mat-autocomplete>
+</mat-form-field>

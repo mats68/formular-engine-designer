@@ -1,0 +1,89 @@
+.form-field {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.input-padding {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.width-100 {
+    width: 100%;
+}
+
+.width-input {
+    width: calc(100% -10px);
+}
+
+.border-none,
+.border-none:hover,
+.border-none:active,
+.border-none:focus {
+  border-style: none;
+}
+
+.outline-none,
+.outline-none:hover,
+.outline-none:active,
+.outline-none:focus {
+    outline: none;
+}
+.gap-10 {
+    gap: 10px;
+}
+
+
+
+
+.align-center {
+    align-items: center;
+}
+
+.border-bottom {
+    border-bottom: 2px solid #E0E3E7;
+}
+
+.border-bottom:hover,
+.border-bottom:focus {
+    border-bottom: 2px solid #419B86;
+}
+
+.bg-white,
+.bg-white:active {
+    background-color: white;
+}
+
+.bg-white:focus,
+.bg-white:focus-within {
+    background-color: #96F2D7;
+}
+
+.font-bolder:hover,
+.font-bolder:focus {
+    font-weight: bolder;
+}
+
+.font-bolder:focus {
+    font-weight: bolder;
+}
+
+.bg-white:-webkit-autofill {
+    box-shadow: 0 0 0 30px white inset !important;
+}
+
+.bg-white:-webkit-autofill:hover, 
+.bg-white:-webkit-autofill:focus, 
+.bg-white:-webkit-autofill:active  {
+    box-shadow: 0 0 0 30px #96F2D7 inset !important;
+}
+
+select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right .5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+}

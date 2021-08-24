@@ -1,0 +1,5 @@
+<ng-container *ngIf='comp.loading'>
+    <p *ngIf='comp.label' class="text-sm">{{comp.label}}</p>
+    <mat-spinner [diameter]='comp.diameter || 40'></mat-spinner>
+    <!-- <mat-spinner></mat-spinner> -->
+</ng-container>

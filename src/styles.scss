@@ -1,1 +1,1323 @@
-/* You can add global styles to this file, and also import other style files */
+// Importiere das `map` sowie das `selector` SASS Kompilermodul.
+@use "sass:map";
+@use "sass:selector";
+
+// Importdiere das Next-Gen Theme Farbenmodul.
+@import './_colors.scss';
+
+//@import '~@angular/material/prebuilt-themes/purple-green.css';
+//@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+//@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+
+// Importiere alle SASS Mixins und definitionen um ein benutzerdefiniertes Angular Material Design zu erstellen.
+@import '~@angular/material/theming';
+
+// Inkludiere alle SASS Kernroutinen aus der Angular Material Theming Bibliothek.
+@include mat-core();
+
+// Importiere alle Design-Variablen der Brunner Informatik AG Next-Gen Anwendung.
+@import './variables.scss';
+
+// Wende die Farbpalettenkonfiguration der Brunner Informatik AG Next-Gen Anwendung an.
+@include next-gen-material-theme();
+
+// Verwende aktuell das Elektro-Form Solar Theme.
+@import './themes/ef-solar.scss';
+// @import './themes/ef-online.scss';
+
+// Importiere und wende die Typographiekonfiguration der Brunner Informatik AG Next-Gen Anwendung an.
+@import './typography.scss';
+
+// Importiere die Angular Material Icons "Schriftart".
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+//======================================================================================================================
+// Globale Stile können im nachfolgenden Abschnitt definiert werden.
+//======================================================================================================================
+
+html, body {
+	height: 100%;
+
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: 'Inter', sans-serif;
+	background-color: next-gen-layout-color(2);
+}
+
+app-root {
+	height: inherit;
+}
+
+a {
+	text-decoration: none;
+
+	&:link {
+		//color: mat-color($bi-theme-primary);
+		color: next-gen-link-color('normal');
+	}
+
+	&:visited {
+		color: next-gen-link-color('normal');
+	}
+
+	// &:visited {
+	// 	//color: mat-color($bi-theme-primary, 900);
+	// 	color: next-gen-link-color('normal');
+	// }
+
+	&:hover {
+		color: next-gen-link-color('hover');
+	}
+
+	&:active {
+		//color: mat-color($bi-theme-secondary);
+		color: next-gen-link-color('active');
+	}
+}
+
+//======================================================================================================================
+// Helfer-Mixins.
+//======================================================================================================================
+
+// Dieses Mixin setzt die Schriftfarbe eines Platzhalter-Textes in einem Eingabefeld.
+@mixin placeholderColor($color) {
+	/* CSS Pseudostandard */
+	&::placeholder {
+		color: $color
+	}
+
+	/* Chrome/Opera/Safari */
+	&::-webkit-input-placeholder {
+		color: $color;
+	}
+
+	/* Firefox 19+ */
+	&::-moz-placeholder {
+		color: $color;
+	}
+
+	/* IE 10+ */
+	&:-ms-input-placeholder {
+		color: $color;
+	}
+
+	/* Firefox 18- */
+	&:-moz-placeholder {
+		color: $color;
+	}
+}
+
+body.bi-theme .mat-dialog-container {
+	border-radius: 0px;
+	background-color: #F1F3F5;
+}
+
+//======================================================================================================================
+// Browser Scroll-Bars.
+//======================================================================================================================
+
+// Diese Stile werden auf die vom Browser gezeichneten Scrollbalken angewendet.
+*.bi-theme {
+	// Farbe des Scrollbalkens (Handle) und der Führung (Track), innerhalb welcher sich der Scrollbalken (Handle)
+	// bewegen lässt.
+	// Scrollbalken: primär_farbe_08.
+	scrollbar-color: #aeb4bb transparent;
+
+	// Verwende dünne Scrollbalken.
+	scrollbar-width: thin;
+
+	//#region Scrollbar-Stile für Blink & WebKit basierte Browser (Chrome, Edge, etc...).
+
+	// Stile für den gesamten Scrollbalken.
+	::-webkit-scrollbar
+	{
+		// Mache vertikale Scrollbalken 8 Pixel breit.
+		width: 8px;
+
+		// Mache horizontale Scrollbalken 8 Pixel hoch.
+		height: 8px;
+	}
+
+	// Stile für die Leiste der Scroll-Leiste.
+	::-webkit-scrollbar-track {
+		// Mache den Hintergrund der Leiste, in welcher sich der Scrollbalken bewegen kann, transparent.
+		background-color: transparent;
+	}
+
+	// Stile für den Scrollbalken (Handle).
+	::-webkit-scrollbar-thumb {
+		// Farbe: primär_farbe_08.
+		background-color: #aeb4bb;
+
+		// Stile für den Scrollbalken (Handle), wenn sich der Mauszeiger direkt daüber befindet.
+		&:hover {
+			// Farbe: primär_farbe_09.
+			background-color: #4c5157;  // primär_farbe_09
+		}
+	}
+
+	//#endregion
+}
+
+//======================================================================================================================
+// Angular Material - Card Styles.
+//======================================================================================================================
+
+body.bi-theme mat-card.mat-card {
+	// Keine abgerundeten Ecken.
+	border-radius: 0px;
+
+	padding-top: 24px;
+	padding-left: 24px;
+	padding-right: 24px;
+	padding-bottom: 24px;
+
+	mat-card-header.mat-card-header {
+		margin-bottom: 20px;
+
+		.mat-card-header-text {
+			margin: 0px;
+			width: 100%;
+		}
+	}
+
+	&.mat-full-height {
+		// 100% Höhe ohne padding-top & padding-bottom.
+		height: calc(100% - 48px);
+	}
+}
+
+//======================================================================================================================
+// Angular Material - Menu Styles.
+//======================================================================================================================
+
+body.bi-theme .mat-menu-panel {
+	// Keine abgerundeten Ecken.
+	border-radius: 0px;
+}
+
+//======================================================================================================================
+// Angular Material - Form Field Styles.
+//======================================================================================================================
+
+// Allgemeine Angular Material Form Field Stile.
+// <mat-form-field>
+// HINT: Form-Feld auf weissem Hintergrund.
+body.bi-theme .mat-form-field {
+	// Wrapper-Element, welches das gesamte Eingabe-Control repräsentiert.
+	.mat-form-field-wrapper {
+		// Kein innerer Abstand unten.
+		padding-bottom: 0;
+
+		// FlexBox für das Haupteingabefeld, bestehend aus [Prefix] [Infix] und [Suffix].
+		.mat-form-field-flex {
+			// Fixe Höhe von 56 Pixel.
+			height: 56px;
+
+			// Keinen Abstand oben.
+			padding-top: 0px;
+
+			// Elemente vertikal zentrieren.
+			align-items: center;
+
+			// Setze die Hintergrundfarbe.
+			background-color: #F1F3F5;
+
+			// Kanten eckig.
+			border-radius: 0px;
+
+			// --> [Prefix] <-- [Infix] [Suffix]
+			> .mat-form-field-prefix {
+				> mat-icon {
+					// Abstand links von 16 Pixel.
+					margin-left: 16px;
+				}
+			}
+
+			// [Prefix] -> [Infix] <- [Suffix]
+			.mat-form-field-infix {
+				// Ordne alle Elemente in einer Zeile an und zentriere diese Vertikal.
+				display: flex;
+				flex-flow: column nowrap;
+				justify-items: center;
+
+				// Keinen unsichtbaren Rahmen oben.
+				border-top: 0px;
+
+				// Keinen unnötiger Abstand unten und oben damit die Unterelemente vertikal zentriert sind.
+				padding-top: 0px;
+				padding-bottom: 0px;
+
+				// Abstand links und rechts von 16 Pixel.
+				margin-left: 16px;
+				margin-right: 16px;
+
+				// Eingabeelement.
+				.mat-input-element {
+					// Kein äusserer Abstand oben und unten.
+					margin-top: 0;
+					margin-bottom: 0;
+
+					// Definiere die Schriftfarbe als Variable.
+					$fontColor: #212529;
+
+					// Setzte die Schriftfarbe des Platzhalters.
+					//@include placeholderColor($fontColor);
+
+					// Setze die eigentliche Schriftfarbe.
+					color: $fontColor;
+				}
+
+				// 'Floating' Label
+				.mat-form-field-label-wrapper {
+					// Abstand von oben von 4 Pixel.
+					padding-top: 4px;
+
+					.mat-form-field-label {
+						// Kein Abstand links und rechts.
+						margin-left: 0;
+						margin-right: 0;
+
+						// Kein innerer Abstand oben.
+						padding-top: 0px;
+
+						// Absolute Position von oben.
+						top: 1.25em;
+					}
+				}
+			}
+
+			// [Prefix] [Infix] --> [Suffix] <--
+			.mat-form-field-suffix {
+				// Abstand rechts von 16 Pixel.
+				margin-right: 16px;
+			}
+		}
+
+		// Element für den Strich unter dem Eingabefeld und dessen Ripple-Effekt.
+		.mat-form-field-underline {
+			// Position nicht absolut sonder relativ zum vorherigen Element.
+			position: relative;
+
+			// Diesen Stich immer 2 Pixel hoch machen.
+			height: 2px;
+
+			// Kein unsichtbarer Rahmen unterhalb, welcher die Positionierung beeinflusst.
+			bottom: 0px;
+
+			// Setze die korrekte Farbe für den Strich.
+			background-color: #F1F3F5;
+
+			// Ripple-Effekt
+			.mat-form-field-ripple {
+				// Komplett unsichtbar machen.
+				background-color: transparent;
+			}
+		}
+
+		// Bereich für Informationen/Fehler/Tipps unterhalb des Eingabefeldes.
+		.mat-form-field-subscript-wrapper {
+			// Dieses Element relativ positionieren.
+			position: relative;
+
+			// Abstand zum nächsten Element: 8 Pixel.
+			margin-bottom: 8px;
+		}
+	}
+
+	// Stile für Eingabefelder, welche nicht deaktiviert sind.
+	&:not(.mat-form-field-disabled) {
+		// Stile für benötigte Eingabefelder.
+		&.required {
+			// Wrapper-Element, welches das gesamte Eingabe-Control repräsentiert.
+			.mat-form-field-wrapper {
+				// FlexBox für das Haupteingabefeld, bestehend aus [Prefix] [Infix] und [Suffix].
+				.mat-form-field-flex {
+					// Setze die entsprechende Hintergrundfarbe.
+					// TODO: Für Präsentation deaktiviert.
+					// background-color: rgb(150, 242, 215);
+				}
+			}
+
+			// Element für den Strich unter dem Eingabefeld und dessen Ripple-Effekt.
+			.mat-form-field-underline {
+				// Setze die korrekte Farbe für den Strich.
+				background-color: next-gen-control-color('accent');
+			}
+
+			// Stile für das Eingabeelement, wenn sich der Mauszeiger direkt über dem
+			// Element befindet.
+			&:hover {
+				// Wrapper-Element, welches das gesamte Eingabe-Control repräsentiert.
+				.mat-form-field-wrapper {
+					// FlexBox für das Haupteingabefeld, bestehend aus [Prefix] [Infix] und [Suffix].
+					.mat-form-field-flex {
+						// Setze die entsprechende Hintergrundfarbe.
+						background-color: next-gen-control-color('hover');
+					}
+				}
+			}
+
+			// Stile für das Eingabeelement, wenn dieses aktuell ausgewählt/fokussiert/aktiv ist.
+			&:active,
+			&:focus-within {
+				// Wrapper-Element, welches das gesamte Eingabe-Control repräsentiert.
+				.mat-form-field-wrapper {
+					// FlexBox für das Haupteingabefeld, bestehend aus [Prefix] [Infix] und [Suffix].
+					.mat-form-field-flex {
+						// Setze die entsprechende Hintergrundfarbe.
+						background-color: next-gen-control-color('focus');
+					}
+				}
+			}
+
+			&:disabled {
+				// Hautpeingabelement.
+				.mat-input-element {
+					// Definiere die Schriftfarbe als Variable.
+					$fontColor: #9CA1A7;
+
+					// Setzte die Schriftfarbe des Platzhalters.
+					@include placeholderColor($fontColor);
+
+					// Setze die eigentliche Schriftfarbe.
+					color: $fontColor;
+				}
+
+				.mat-form-field-underline {
+					background-color: #9CA1A7;
+				}
+			}
+		}
+
+		// Stile für das Eingabeelement, wenn sich der Mauszeiger direkt über dem
+		// Element befindet.
+		&:hover {
+			// Wrapper-Element, welches das gesamte Eingabe-Control repräsentiert.
+			.mat-form-field-wrapper {
+				// FlexBox für das Haupteingabefeld, bestehend aus [Prefix] [Infix] und [Suffix].
+				.mat-form-field-flex {
+					// Setze die entsprechende Hintergrundfarbe.
+					background-color: next-gen-control-color('hover');
+				}
+			}
+
+			// Element für den Strich unter dem Eingabefeld und dessen Ripple-Effekt.
+			.mat-form-field-underline {
+				// Setze die entsprechende Farbe für den Strich.
+				background-color: next-gen-control-color('accent');
+			}
+		}
+
+		// Stile für das Eingabeelement, wenn dieses aktuell ausgewählt/fokussiert/aktiv ist.
+		&:active,
+		&:focus-within {
+			// Wrapper-Element, welches das gesamte Eingabe-Control repräsentiert.
+			.mat-form-field-wrapper {
+				// FlexBox für das Haupteingabefeld, bestehend aus [Prefix] [Infix] und [Suffix].
+				.mat-form-field-flex {
+					// Setze die entsprechende Hintergrundfarbe.
+					background-color: next-gen-control-color('focus');
+				}
+			}
+		}
+	}
+
+	&:disabled,
+	&.mat-form-field-disabled {
+		// Hautpeingabelement.
+		.mat-input-element {
+			// Definiere die Schriftfarbe als Variable.
+			$fontColor: #9CA1A7;
+
+			// Setzte die Schriftfarbe des Platzhalters.
+			@include placeholderColor($fontColor);
+
+			// Setze die eigentliche Schriftfarbe.
+			color: $fontColor;
+		}
+
+		// Wrapper-Element, welches das gesamte Eingabe-Control repräsentiert.
+		.mat-form-field-wrapper {
+			// FlexBox für das Haupteingabefeld, bestehend aus [Prefix] [Infix] und [Suffix].
+			.mat-form-field-flex {
+				background-color: transparent;
+			}
+		}
+
+		.mat-form-field-underline {
+			//background: none;
+			background-image: linear-gradient(0deg, next-gen-layout-color(4), next-gen-layout-color(4));
+		}
+	}
+}
+
+// Angular Material Textarea
+// <mat-form-field class="is-textarea">
+body.bi-theme .mat-form-field.is-textarea {
+	.mat-form-field-flex {
+		height: 100%;
+		padding-top: 12px;
+		padding-bottom: 12px;
+	}
+}
+
+// Nachschlage-Listen (Select und Input)
+body.bi-theme .mat-select-panel {
+	// Keine abgerundeten Ecken.
+	border-radius: 0px;
+}
+
+body.bi-theme .mat-autocomplete-panel {
+	// Keine abgerundeten Ecken.
+	border-radius: 0px;
+}
+
+body.bi-theme .mat-select-arrow {
+	// Dropdown Icon weiter unten
+	margin-top: 12px;
+}
+
+//======================================================================================================================
+// Angular Material - Button Styles.
+//======================================================================================================================
+
+// Allgemeine Angular Material Button Stile.
+// <a mat-button>, <a mat-raised-button>, <a mat-flat-button>, <a mat-stroked-button>
+// <button mat-button>, <button mat-raised-button>, <button mat-flat-button>, <button mat-stroked-button>
+body.bi-theme a[mat-button],
+body.bi-theme a[mat-raised-button],
+body.bi-theme a[mat-flat-button],
+body.bi-theme a[mat-stroked-button],
+body.bi-theme button[mat-button],
+body.bi-theme button[mat-raised-button],
+body.bi-theme button[mat-flat-button],
+body.bi-theme button[mat-stroked-button] {
+	// Keine abgerundeten Ecken.
+	border-radius: 0px;
+
+	// Setze die Höhe einer Schaltfläche auf 36 Pixel.
+	height: 36px;
+
+	// Abstand oberhalb und unterhalb von je 6 Pixel.
+	margin-top: 6px;
+	margin-bottom: 6px;
+
+	//color: map.get($bi-primary-control-colors, "link");
+	color: next-gen-control-color('link');
+
+	// Primärer Button-Style.
+	&.mat-primary {
+		// Setze die korrekte Hintergrundfarbe.
+		background-color: next-gen-control-color('normal');
+
+		// Setze die korrekte Schriftfarbe.
+		color: white;
+
+		// Stile für die Schaltfläche, wenn sich der Mauszeiger direkt darüber befindet.
+		&:hover {
+			// Setze die korrekte Hintergrundfarbe.
+			background-color: next-gen-control-color('hover');
+
+			// Setze die korrekte Schriftfarbe.
+			color: black;
+		}
+
+		// Stile für die Schaltfläche, wenn diese aktuell fokussiert ist.
+		&:focus-within {
+			// Setze die korrekte Hintergrundfarbe.
+			background-color: next-gen-control-color('focus');
+
+			// Setze die korrekte Schriftfarbe.
+			color: black;
+		}
+
+		&:active {
+			// Setze die korrekte Hintergrundfarbe.
+			background-color: next-gen-control-color('pressed');
+
+			// Setze die korrekte Schriftfarbe.
+			color: white;
+		}
+
+		&:disabled {
+			// Setze die korrekte Hintergrundfarbe.
+			background-color: next-gen-control-color('disabled');
+
+			// Setze die korrekte Schriftfarbe.
+			color: white;
+		}
+	}
+
+	// Sekundärer Button-Style.
+	&.mat-secondary {
+
+	}
+}
+
+//======================================================================================================================
+// Angular Material - Checkbox Styles.
+//======================================================================================================================
+
+// Allgemeine Angular Material Checkbox Stile.
+// <mat-checkbox>
+body.bi-theme .mat-checkbox {
+	/* Angular Material Checkbox DOM
+
+	// Wrapper-Element, welches die gesamte Checkbox repräsentiert.
+	.mat-checkbox-layout {
+		// Container-Element für das Feld der Checkbox.
+		.mat-checkbox-inner-container {
+			// Das versteckte HTML <input> Checkbox Element.
+			.mat-checkbox-input { }
+
+			// Wrapper-Element für den Ripple-Effekt des Checkbox Feldes.
+			.mat-checkbox-ripple {
+				// Element, welches das Overlay des Ripple-Effektes darstellt.
+				.mat-ripple-element { }
+			}
+
+			// Element, welches den Rahmen des Checkbox Feldes repräsentiert.
+			.mat-checkbox-frame { }
+
+			// Element, welches den Hintergrund des Checkbox Feldes repräsentiert.
+			.mat-checkbox-background {
+				// SVG Element, welches den Hacken des Checkbox Feldes darstellt.
+				> .mat-checkbox-checkmark {
+					// Der Pfad des SVG Elementes, welches den Hacken des Checkbox Feldes darstellt.
+					.mat-checkbox-checkmark-path { }
+				}
+
+				// ???
+				.mat-checkbox-mixedmark { }
+			}
+		}
+
+		// Wrapper-Element für das Label der Checkbox.
+		.mat-checkbox-label {
+			// Das <label>-Element, welches den effektiven Labeltext erhält.
+			> label { }
+		}
+	}
+
+	// Spezialklasse die anzeigt, dass die Checkbox aktuell angekreuzt ist.
+	.mat-checkbox-checked { }
+
+	// Spezialklasse die anzeigt, dass die Checkbox deaktiviert ist.
+	.mat-checkbox-disabled { }
+
+	*/
+
+	// Wrapper-Element, welches die gesamte Checkbox repräsentiert.
+	.mat-checkbox-layout {
+		// Container-Element für das Feld der Checkbox.
+		.mat-checkbox-inner-container {
+			// Wrapper-Element für den Ripple-Effekt des Checkbox Feldes.
+			.mat-checkbox-ripple {
+				// Speichere die Grösse des Ripple-Effektes von 24 Pixel in einer SCSS Variable.
+				$size: 24px;
+
+				// Setze die Grösse des Ripple-Effektes anhand der entsprechenden SCSS Variable.
+				width: $size;
+				height: $size;
+
+				// Berechne das neue Offset des Ripple-Effektes anhand der entsprechenden SCSS Variable.
+				left: calc(50% - #{$size} / 2);
+				top: calc(50% - #{$size} / 2);
+
+				// Zeichne den Ripple-Effekt hinter der eigentlichen Checkbox.
+				z-index: 0;
+
+				// Erstes Element, welches das Overlay des Ripple-Effektes darstellt.
+				.mat-ripple-element:first-child {
+					// Setze die korrekte Farbe für den Ripple-Effekt.
+					//background-color: map.get($bi-primary-control-colors, "focus");
+					background-color: next-gen-control-color('focus');
+
+					// Da der Ripple-Effekt neu eine solide Farbe und somit komplett undurchsichtig ist, passe die Animation
+					// ein wenig an.
+					$duration: 100ms;
+					transition: opacity, transform #{$duration}, #{$duration} 0ms cubic-bezier(0, 0, 0.2, 1);
+				}
+
+				// Letztes Element, welches das Overlay des Ripple-Effektes darstellt, sofern es nicht das einzigste ist.
+				.mat-ripple-element:not(:only-child):last-child {
+					// Verstecke den rechteckigen Ripple-Effekt.
+					visibility: hidden;
+				}
+			}
+
+			// Element, welches den Rahmen des Checkbox Feldes repräsentiert.
+			.mat-checkbox-frame {
+				// Keine abgerundeten Ecken.
+				border-radius: 0px;
+			}
+
+			// Element, welches den Hintergrund des Checkbox Feldes repräsentiert.
+			.mat-checkbox-background {
+				// Keine abgerundeten Ecken.
+				border-radius: 0px;
+			}
+		}
+
+		// Wrapper-Element für das Label der Checkbox.
+		.mat-checkbox-label {
+			// Normales 'Leerraum'-Verhalten. Dadurch funktioniert auch der Wort-Umbruch.
+			white-space: normal;
+		}
+	}
+
+	// Stile für die Checkbox, wenn diese nicht deaktiviert ist.
+	&:not(.mat-checkbox-disabled) {
+		// Container-Element für das Feld der Checkbox.
+		.mat-checkbox-layout .mat-checkbox-inner-container {
+			// Element, welches den Rahmen des Checkbox Feldes repräsentiert.
+			.mat-checkbox-frame {
+				// Verwende standardmässig einen transparenten Hintergrund.
+				background-color: transparent;
+
+				// Primärfarbe für den Rahmen (dunkles Grün).
+				// HINT: `color` da SVG Grafik.
+				border-color: next-gen-control-color('normal');
+				color: next-gen-control-color('normal');
+			}
+
+			// Der Pfad des SVG Elementes, welches den Hacken des Checkbox Feldes darstellt.
+			.mat-checkbox-background > .mat-checkbox-checkmark .mat-checkbox-checkmark-path {
+				// Setzte die entsprechende Farbe (fast Weiss) für den Vektorpfad.
+				stroke: #fafafa !important;
+			}
+		}
+
+		// Spezielle Angular Material Klasse die hinzugefügt wird, wenn die Checkbox fokussiert ist.
+		&.cdk-focused {
+			// Element, welches das Overlay des Ripple-Effektes darstellt.
+			.mat-checkbox-layout .mat-checkbox-inner-container .mat-checkbox-ripple .mat-ripple-element {
+				// Mach den Ripple-Effekt komplett undurchsichtig.
+				opacity: 1;
+			}
+		}
+
+		// Stile für die Checkbox, wenn diese nicht deaktiviert und ein Muss-Feld ist.
+		&[required] {
+			// Element, welches den Rahmen des Checkbox Feldes repräsentiert.
+			.mat-checkbox-layout .mat-checkbox-inner-container .mat-checkbox-frame {
+				// Setze die entsprechende Hintergrundfarbe.
+				background-color: next-gen-control-color('required');
+			}
+		}
+
+		// Stile für die Checkbox, wenn diese nicht deaktiviert ist und nicht angekreuzt ist.
+		&:not(.mat-checkbox-checked) {
+			// Stile für die aktive und nicht angekreuzte Checkbox, während diese fokussiert ist oder aktiviert wird.
+			&:active,
+			&:focus-within {
+				// Element, welches den Rahmen des Checkbox Feldes repräsentiert.
+				.mat-checkbox-layout .mat-checkbox-inner-container .mat-checkbox-frame {
+					// Setze die Farbe des Rahmen (extra dunkles Grün).
+					// HINT: `color` da SVG Grafik.
+					border-color: next-gen-control-color('pressed');
+					color: next-gen-control-color('pressed');
+				}
+			}
+		}
+
+		// Stile für die Checkbox, wenn diese nicht deaktiviert ist und angekreuzt ist.
+		&.mat-checkbox-checked {
+			// Container-Element für das Feld der Checkbox.
+			.mat-checkbox-layout .mat-checkbox-inner-container {
+				// Element, welches den Rahmen des Checkbox Feldes repräsentiert.
+				.mat-checkbox-frame {
+					// Setzte die entsprechende Hintergrundfarbe (extra dunkles Grün).
+					background-color: next-gen-control-color('normal');
+
+					// Setze die Farbe des Rahmen (extra dunkles Grün).
+					// HINT: `color` da SVG Grafik.
+					border-color: next-gen-control-color('normal');
+					color: next-gen-control-color('normal');
+				}
+
+				// Element, welches den Hintergrund des Checkbox Feldes repräsentiert.
+				.mat-checkbox-background {
+					// Setzte die entsprechende Hintergrundfarbe (extra dunkles Grün).
+					background-color: next-gen-control-color('normal');
+				}
+			}
+
+			// Stile für die aktive und nicht angekreuzte Checkbox, während diese fokussiert ist oder aktiviert wird.
+			&:active,
+			&:focus-within
+			{
+				// Container-Element für das Feld der Checkbox.
+				.mat-checkbox-layout .mat-checkbox-inner-container {
+					// Element, welches den Rahmen des Checkbox Feldes repräsentiert.
+					.mat-checkbox-frame {
+						// Setzte die entsprechende Hintergrundfarbe (extra dunkles Grün).
+						// background-color: map.get($bi-primary-control-colors, "pressed");
+						background-color: next-gen-control-color('pressed');
+
+						// Setze die Farbe des Rahmen (extra dunkles Grün).
+						// HINT: `color` da SVG Grafik.
+						border-color: next-gen-control-color('pressed');
+						color: next-gen-control-color('pressed');
+					}
+
+					// Element, welches den Hintergrund des Checkbox Feldes repräsentiert.
+					.mat-checkbox-background {
+						// Setzte die entsprechende Hintergrundfarbe (extra dunkles Grün).
+						background-color: next-gen-control-color('pressed');
+					}
+				}
+			}
+		}
+
+		// Stile für die Checkbox, wenn diese nicht deaktiviert ist uns sich der Mauszeiger direkt darüber befindet.
+		&:hover {
+			.mat-checkbox-layout .mat-checkbox-inner-container .mat-checkbox-ripple .mat-ripple-element {
+				// Setze die korrekte Farbe für den Ripple-Effekt.
+				background-color: next-gen-control-color('hover');
+
+				// Mach den Ripple-Effekt komplett undurchsichtig.
+				opacity: 1;
+			}
+		}
+
+		/* OBSOLETE: KARO, als Referenz beibehalten!
+		// // Stile für die Checkbox, wenn diese nicht deaktiviert ist, angekreuzt ist und sich der Mauszeiger direkt
+		// // darüber befindet.
+		// &:hover:not(.mat-checkbox-checked) {
+		// 	.mat-checkbox-layout .mat-checkbox-inner-container .mat-checkbox-background {
+		// 		// Keine Hintergrundfarbe während dem 'hovern'.
+		// 		background-color: transparent;
+
+		// 		> .mat-checkbox-checkmark {
+		// 			// Mach den Hacken des Checkbox Feldes sichtbar.
+		// 			opacity: 1;
+
+		// 			// Der Pfad des SVG Elementes, welches den Hacken des Checkbox Feldes darstellt.
+		// 			.mat-checkbox-checkmark-path {
+		// 				// Setzte die entsprechende Farbe (dunkles Grün) für den Vektorpfad.
+		// 				stroke: mat-color($bi-theme-primary) !important;
+
+		// 				// Stelle sicher, dass der Hacken an der korrekten Stelle gezeichnet wird auf dem SVG Canvas.
+		// 				stroke-dashoffset: 0px;
+		// 			}
+		// 		}
+		// 	}
+		// }
+		*/
+
+		// Stile für die Checkbox, wenn diese nicht deaktiviert ist und aktuell betätigt wird.
+		&:active {
+			// Element, welches das Overlay des Ripple-Effektes darstellt.
+			.mat-checkbox-layout .mat-checkbox-inner-container .mat-checkbox-ripple .mat-ripple-element {
+				// Mach den Ripple-Effekt komplett undurchsichtig.
+				opacity: 1;
+			}
+		}
+	}
+
+	// Stile für die Checkbox, wenn dieses deaktiviert ist.
+	&.mat-checkbox-disabled {
+		// Container-Element für das Feld der Checkbox.
+		.mat-checkbox-layout {
+			// Container-Element für das Feld der Checkbox.
+			.mat-checkbox-inner-container {
+				// Element, welches den Rahmen des Checkbox Feldes repräsentiert.
+				.mat-checkbox-frame {
+					// Setze die Farbe des Rahmen.
+					// HINT: color da `svg`.
+					border-color: next-gen-control-color('disabled');
+					color: next-gen-control-color('disabled');
+				}
+			}
+
+			// Wrapper-Element für das Label der Checkbox.
+			.mat-checkbox-label {
+				// Textfarbe auch bei deaktivierter Checkbox schwarz.
+				color: black;
+			}
+		}
+	}
+}
+
+//======================================================================================================================
+// Angular Material - Radio Button & Radio Group Styles.
+//======================================================================================================================
+
+/* Angular Material Radio Button DOM
+
+// Wrapper Element, welches den eigentlichen Radio-Button und das Label repräsentiert.
+.mat-radio-label {
+	// Container Element für das Feld des Radio Button.
+	.mat-radio-container {
+		// Dieses Element repräsentiert den äusseren Ring des Radio Button Feldes.
+		.mat-radio-outer-circle { }
+
+		// Dieses Element repräsentiert den inneren Punkt des Radio Button Feldes.
+		.mat-radio-inner-circle { }
+
+		// Das versteckte HTML <input> Radio Button Element.
+		.mat-radio-input { }
+
+		// Wrapper-Element für den Ripple-Effekt des Radio Button Feldes.
+		.mat-radio-ripple {
+			// Element, welches das Overlay des Ripple-Effektes darstellt.
+			.mat-ripple-element { }
+		}
+	}
+
+	// Wrapper Element, welches den Label-Inhalt des Radio Buttons repräsentiert.
+	.mat-radio-label-content { }
+}
+
+// Spezialklasse die anzeigt, dass der Radio Button aktuell ausgewählt ist.
+.mat-radio-checked { }
+
+// Spezialklasse die anzeigt, dass der Radio Button deaktiviert ist.
+.mat-radio-disabled { }
+
+*/
+
+/**
+	@summary
+		Mixin für die Basisstile des Radio-Buttons.
+
+	@param {Selector} $baseSelector
+		Der Selektor der CSS Klasse, in welcher dieses Mixin eingebettet wird.
+
+	@param {string} $childSelector
+		Der optionale Name der CSS Wrapper-Klasse, welche generiert werden soll oder `false` wenn keine Wrapper-Klasse
+		generiert werden soll.
+
+	@param {Selector} $requiredSelector
+		Der Selektor welcher anzeigt ob der Radio Button ein Muss-Feld ist oder nicht.
+
+		WICHTIG: Dieser Selektor muss den `enabled` Zustand berücksichtigen!
+**/
+@mixin bi-mat-radio-button-mixin($baseSelector, $childSelector, $requiredSelector)
+{
+	// Wurde eine CSS Wrapper-Klassennamen spezifiziert?
+	@if $childSelector {
+		// Ja, also passe die Selektoren dementsprechend an.
+		$baseSelector: selector.nest($baseSelector, $childSelector);
+		$requiredSelector: selector.nest($requiredSelector, $childSelector);
+	}
+
+	// Allgemeine Radio Button Stile.
+	// `@at-root` sorgt dafür dass der Klassenpfad stimmt!
+	@at-root #{$baseSelector} {
+		// Wrapper-Element für den Ripple-Effekt des Radio Button Feldes.
+		.mat-radio-label .mat-radio-container {
+			// Dieses Element repräsentiert den äusseren Ring des Radio Button Feldes.
+			.mat-radio-outer-circle {
+				// Verwende standardmässig einen transparenten Hintergrund.
+				background-color: transparent;
+
+				// Sorge dafür das der äussere Ring über dem Ripple-Effekt gezeichnet wird.
+				z-index: 1;
+			}
+
+			// Dieses Element repräsentiert den inneren Punkt des Radio Button Feldes.
+			.mat-radio-inner-circle {
+				// Sorge dafür das der innere Punkt über dem Ripple-Effekt gezeichnet wird.
+				z-index: 1;
+			}
+
+			// Wrapper-Element für den Ripple-Effekt des Radio Button Feldes.
+			.mat-radio-ripple {
+				// Speichere die Grösse des Ripple-Effektes von 24 Pixel in einer SCSS Variable.
+				$size: 28px;
+
+				// Setze die Grösse des Ripple-Effektes anhand der entsprechenden SCSS Variable.
+				width: $size;
+				height: $size;
+
+				// Berechne das neue Offset des Ripple-Effektes anhand der entsprechenden SCSS Variable.
+				left: calc(50% - #{$size} / 2);
+				top: calc(50% - #{$size} / 2);
+
+				// Zeichne den Ripple-Effekt hinter dem eigentlichem Radio Button.
+				z-index: 0;
+
+				// Element, welches das Overlay des Ripple-Effektes darstellt.
+				.mat-ripple-element:first-child {
+					// Setze die korrekte Farbe für den Ripple-Effekt.
+					background-color: next-gen-control-color('focus');
+
+					// Da der Ripple-Effekt neu eine solide Farbe und somit komplett undurchsichtig ist, passe die Animation
+					// ein wenig an.
+					$duration: 100ms;
+					transition: opacity, transform #{$duration}, #{$duration} 0ms cubic-bezier(0, 0, 0.2, 1);
+				}
+
+				// Letztes Element, welches das Overlay des Ripple-Effektes darstellt, sofern es nicht das einzigste ist.
+				.mat-ripple-element:not(:only-child):last-child {
+					// Verstecke den rechteckigen Ripple-Effekt.
+					visibility: hidden;
+				}
+			}
+		}
+
+		// Stile für den Radio Button, wenn dieser nicht deaktiviert ist.
+		&:not(.mat-radio-disabled) {
+			// Container Element für das Feld des Radio Button.
+			.mat-radio-label .mat-radio-container {
+				// Dieses Element repräsentiert den äusseren Ring des Radio Button Feldes.
+				.mat-radio-outer-circle {
+					// Setze die entsprechende Rahmenfarbe.
+					border-color: next-gen-control-color('normal');
+				}
+
+				// Dieses Element repräsentiert den inneren Punkt des Radio Button Feldes.
+				.mat-radio-inner-circle {
+					// Setze die entsprechende Hintergrundfarbe.
+					background-color: next-gen-control-color('normal');
+				}
+			}
+
+			// Spezielle Angular Material Klasse die hinzugefügt wird, wenn der Radio Button fokussiert ist.
+			&.cdk-focused {
+				// Wrapper-Element für den Ripple-Effekt des Radio Button Feldes.
+				.mat-radio-label .mat-radio-container .mat-radio-ripple .mat-ripple-element {
+					// Mach den Ripple-Effekt komplett undurchsichtig.
+					opacity: 1;
+				}
+			}
+
+			// Stile für den Radio Button, wenn dieser nicht deaktiviert ist und fokussiert ist oder gerade betätigt wird.
+			&:active,
+			&:focus-within {
+				// Container Element für das Feld des Radio Button.
+				.mat-radio-label .mat-radio-container {
+					// Dieses Element repräsentiert den äusseren Ring des Radio Button Feldes.
+					.mat-radio-outer-circle {
+						// Setze die entsprechende Rahmenfarbe.
+						border-color: next-gen-control-color('pressed');
+					}
+
+					// Dieses Element repräsentiert den inneren Punkt des Radio Button Feldes.
+					.mat-radio-inner-circle {
+						// Setze die entsprechende Hintergrundfarbe.
+						background-color: next-gen-control-color('pressed');
+					}
+				}
+			}
+
+			// Stile für den Radio Button, wenn dieser nicht deaktiviert ist uns sich der Mauszeiger direkt darüber befindet.
+			&:hover {
+				// Wrapper-Element für den Ripple-Effekt des Radio Button Feldes.
+				.mat-radio-label .mat-radio-container .mat-radio-ripple .mat-ripple-element {
+					// Setze die korrekte Farbe für den Ripple-Effekt.
+					background-color: next-gen-control-color('hover');
+
+					// Mach den Ripple-Effekt komplett undurchsichtig.
+					opacity: 1;
+				}
+			}
+		}
+
+		// Stile für den Radio Button, wenn dieser deaktiviert ist.
+		&.mat-radio-disabled {
+			// Container Element für das Feld des Radio Button.
+			.mat-radio-label .mat-radio-container {
+				// Dieses Element repräsentiert den äusseren Ring des Radio Button Feldes.
+				.mat-radio-outer-circle {
+					// Setze die entsprechende Rahmenfarbe.
+					border-color: next-gen-control-color('disabled');
+				}
+
+				// Dieses Element repräsentiert den inneren Punkt des Radio Button Feldes.
+				.mat-radio-inner-circle {
+					// Setze die entsprechende Hintergrundfarbe.
+					background-color: next-gen-control-color('disabled');
+				}
+			}
+		}
+	}
+
+	// Stile für den Radio-Button, wenn dieser nicht deaktiviert und ein Muss-Feld ist.
+	// `@at-root` sorgt dafür dass der Klassenpfad stimmt!
+	@at-root #{$requiredSelector} {
+		// Dieses Element repräsentiert den äusseren Ring des Radio Button Feldes.
+		.mat-radio-label .mat-radio-container .mat-radio-outer-circle {
+			// Setze die entsprechende Hintergrundfarbe.
+			background-color: next-gen-control-color('required');
+		}
+	}
+}
+
+// Allgemeine Angular Material Radio Button Stile.
+// <mat-radio-button>
+body.bi-theme .mat-radio-button {
+	// Inkludiere das Mixin mit den Stilen für den Radio Button ohne CSS Wrapper-Klasse innerhalb dieser CSS Klasse und
+	// spezifiziere den CSS Selektor, der prüft ob dieses Element aktiv ist und dann das `required` Attribut von diesem
+	// Element abruft.
+	@include bi-mat-radio-button-mixin(
+		&,
+		false,
+		selector.append(&, ":not([disabled])[required]")
+	);
+}
+
+// Allgemeine Angular Material Radio Group Stile.
+// <mat-radio-group>
+body.bi-theme .mat-radio-group {
+	// Inkludiere das Mixin mit den Stilen für den Radio Button in der `.mat-radio-button` CSS Wrapper-Klasse innerhalb
+	// dieser CSS Klasse und spezifiziere den CSS Selektor, der prüft ob dieses Element aktiv ist und dann das `required`
+	// Attribut von diesem Element abruft.
+	@include bi-mat-radio-button-mixin(
+		&,
+		".mat-radio-button",
+		selector.append(&, ":not([disabled])[required]")
+	);
+}
+
+//======================================================================================================================
+// Angular Material - Vertical Stepper Styles.
+//======================================================================================================================
+
+// Allgemeine Angular Material Vertical Stepper Stile.
+// <mat-vertical-stepper>
+body.bi-theme .mat-stepper-vertical {
+	.mat-step {
+		.mat-step-header {
+			.mat-step-label {
+				.mat-step-text-label {
+					h2 {
+						margin-bottom: 0;
+					}
+				}
+			}
+		}
+	}
+}
+
+//======================================================================================================================
+// Brunner Informatik AG Components - Body Styles.
+//======================================================================================================================
+
+// Hintergrundbild der Web-Seite, konfigurierbar über CSS Variable: '--app-layout-background-image'.
+:root {
+	--app-layout-background-image: none;
+}
+
+body.bi-theme {
+	background-image: var(--app-layout-background-image);
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-size: cover;
+}
+
+//======================================================================================================================
+// Utility Styles
+//======================================================================================================================
+
+.bg-gray-hover {
+	&:hover {
+		background-color: #DEE1E5;
+	}
+}
+
+.bg-accent-1 {
+	background-color: next-gen-secondary-color(1);
+}
+
+.bg-accent-2 {
+	background-color: next-gen-secondary-color(2);
+}
+
+.border-left-card {
+	border-left: 4px solid next-gen-secondary-color(2) !important;
+}
+
+.border-formstatus_leer {
+	border-left: 4px solid #DEE1E5 !important;
+}
+
+.border-formstatus_inarbeit {
+	border-left: 4px solid next-gen-secondary-color(2) !important;
+}
+
+.border-formstatus_erledigt {
+	border-left: 4px solid next-gen-primary-color(3) !important;
+}
+
+.border-formstatus_error {
+	border-left: 4px solid red !important;
+}
+
+.border-left-header {
+	border-left: 4px none !important;
+}
+
+.text-primary {
+	color: next-gen-primary-color(1);
+}
+
+.fill-primary {
+	fill: next-gen-primary-color(1);
+}
+
+
+.bg-gray {
+	//background-color: next-gen-layout-color(2);
+	background-color: next-gen-layout-color(7);
+}
+
+.bg-gray-left {
+	background-color: #F1F3F5;
+}
+
+.gray-right {
+	color: #DEE1E5;
+}
+
+.bg-gray-right {
+	background-color: #DEE1E5;
+}
+
+.primary-color1 {
+	color: next-gen-primary-color(1);
+}
+
+.primary-color2 {
+	color: next-gen-primary-color(2);
+}
+
+.primary-color3 {
+	color: next-gen-primary-color(3);
+}
+
+.primary-color4 {
+	background-color: next-gen-primary-color(4);
+}
+
+.bg-primary-color1 {
+	background-color: next-gen-primary-color(1);
+}
+
+.bg-primary-color2 {
+	background-color: next-gen-primary-color(2);
+}
+
+.bg-primary-color3 {
+	background-color: next-gen-primary-color(3);
+}
+
+.bg-primary-color4 {
+	background-color: next-gen-primary-color(4);
+}
+
+.secondary-color1 {
+	color: next-gen-secondary-color(1);
+}
+
+.secondary-color2 {
+	color: next-gen-secondary-color(2);
+}
+
+.secondary-color3 {
+	background-color: next-gen-secondary-color(3);
+}
+
+.secondary-color4 {
+	color: next-gen-secondary-color(4);
+}
+
+.bg-secondary-color1 {
+	color: next-gen-secondary-color(1);
+}
+
+.bg-secondary-color2 {
+	background-color: next-gen-secondary-color(2);
+}
+
+.bg-secondary-color3 {
+	background-color: next-gen-secondary-color(3);
+}
+
+.bg-secondary-color4 {
+	background-color: next-gen-secondary-color(4);
+}
+
+.tertiary-color1 {
+	color: next-gen-tertiary-color(1);
+}
+
+.tertiary-color2 {
+	color: next-gen-tertiary-color(2);
+}
+
+.tertiary-color3 {
+	color: next-gen-tertiary-color(3);
+}
+
+.tertiary-color4 {
+	color: next-gen-tertiary-color(4);
+}
+
+.bg-tertiary-color1 {
+	background-color: next-gen-tertiary-color(1);
+}
+
+.bg-tertiary-color2 {
+	background-color: next-gen-tertiary-color(2);
+}
+
+.bg-tertiary-color3 {
+	background-color: next-gen-tertiary-color(3);
+}
+
+.bg-tertiary-color4 {
+	background-color: next-gen-tertiary-color(4);
+}
+
+
+body.bi-theme .mt-checkbox-group {
+	&:hover{
+		background-color: next-gen-control-color('hover');
+	}
+	border-bottom: 1px solid next-gen-control-color('accent');
+}
+
+body.bi-theme .file-uploader {
+	// margin-left: 0.5rem;
+	width: 100%;
+	border: next-gen-layout-color(3);
+	border-style: dashed;
+	border-width: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 11px;
+	box-sizing: border-box;
+	min-width: 160px;
+	cursor: pointer;
+
+	 .file-icon{
+		fill: next-gen-primary-color(1);
+		margin-right: 11px;
+	 }
+
+	 .file-text{
+		color: next-gen-primary-color(1);
+		font-size: 16px;
+		font-family: Inter;
+		letter-spacing: 0.018em;
+		// text-align: center;
+	 }
+
+	// &:hover{
+	// }
+}
+
+.panel-from-superior{
+   border-left: 4px solid next-gen-secondary-color(1);
+   padding-left: 0.5rem;
+}
+

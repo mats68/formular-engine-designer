@@ -1,0 +1,32 @@
+<mat-form-field [style]='style' [appearance]='sm.getAppearance(comp)' [class]='getClass()' (click)='onClick()'>
+    <mat-label *ngIf='label' [ngClass]='{"error-color" : getError()}'>{{label}}</mat-label>
+    <span matPrefix *ngIf='comp.prefix'>{{comp.prefix}}</span>
+    <input *ngIf='Typ === inpTyp.normal' matInput #name [(ngModel)]='Value' (blur)='onBlur()' [id]='comp.id' [type]='comp.inputType' [minlength]='comp.min' [maxlength]='comp.max' [autofocus]='comp.autofocus' [disabled]='disabled' />
+    <input *ngIf='Typ === inpTyp.autocomplete' [matAutocomplete]="auto" matInput #name [(ngModel)]='Value' (ngModelChange)='Filter(Value)' (blur)='onBlur()' [minlength]='comp.min' [maxlength]='comp.max' [autofocus]='comp.autofocus'
+        [disabled]='disabled' />
+    <mat-chip-list *ngIf='Typ === inpTyp.chips' #chipList>
+        <mat-chip *ngFor="let item of Value" [selectable]='true' [removable]='true' (removed)="removeChip(item)">
+            {{item}}
+            <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+        <input [matAutocomplete]="auto" [matChipInputFor]="chipList" (matChipInputTokenEnd)="addChip($event)" matInput #name (blur)='onBlur()' [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [autofocus]='comp.autofocus'
+            [disabled]='disabled' />
+    </mat-chip-list>
+    <textarea *ngIf='Typ === inpTyp.textarea' matInput #name [(ngModel)]='Value' (blur)='onBlur()' [rows]='comp.rows' [autofocus]='comp.autofocus' [maxlength]='comp.max' [disabled]='disabled'>
+    </textarea>
+    <mat-select *ngIf='Typ === inpTyp.select' #name [multiple]='comp.multiselect' [(ngModel)]='Value' (selectionChange)='onBlur()' [disabled]='disabled'>
+        <mat-option *ngFor="let item of OptionsAsObjects" [value]="item.value">
+            {{item.text}}
+        </mat-option>
+    </mat-select>
+    <span matSuffix *ngIf='comp.suffix' class="suffix">{{comp.suffix}}</span>
+    <mat-hint *ngIf='comp.hint || getError()'>
+        <div *ngIf='getError()' class="error-color">{{getError()}}</div>
+        <div *ngIf='comp.hint && !getError()'>{{hint}}</div>
+    </mat-hint>
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="itemSelected($event)">
+        <mat-option *ngFor="let option of filteredOptions" [value]="option">
+            {{option}}
+        </mat-option>
+    </mat-autocomplete>
+</mat-form-field>

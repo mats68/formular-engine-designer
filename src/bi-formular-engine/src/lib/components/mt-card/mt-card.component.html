@@ -1,0 +1,14 @@
+<mat-card [style]='style' class='border-formstatus_leer' [id]='name'>
+    <mat-card-header>
+        <mat-card-title [style]='styles("header")'>
+            <div class="flex items-center mb-4">
+                <span class="text-xl font-bold" [style]='styles("label")'>{{label}}</span>
+                <span class="flex-auto"></span>
+                <span class="text-xs font-normal" [style]='styles("hint")'>{{hint}}</span>
+            </div>
+        </mat-card-title>
+    </mat-card-header>
+    <mat-card-content [style]='styles("content")'>
+        <mt-container [comp]='comp' [sm]='sm' [class]="comp.class"></mt-container>
+    </mat-card-content>
+</mat-card>

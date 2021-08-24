@@ -1,0 +1,23 @@
+<mat-toolbar [color]='color'>
+    <mat-toolbar-row>
+        <button *ngIf='comp.menuView' mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>menu</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+            <button mat-menu-item *ngFor='let item of comp.children'
+                (click)='item.onClick(sm, comp)'
+                [disabled]='sm.getPropValue(item, "disabled")'>
+                <mat-icon [color]='item.color'>{{item.icon}}</mat-icon>
+                <span>{{getMenuLabel(item)}}</span>
+            </button>
+        </mat-menu>
+        <div>
+            {{label}}
+        </div>
+        <span class="menu-spacer"></span>
+        <div *ngIf='!comp.menuView'>
+            <mt-container [comp]='comp' [sm]='sm'></mt-container>
+        </div>
+    </mat-toolbar-row>
+
+</mat-toolbar>

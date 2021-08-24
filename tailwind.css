@@ -1,0 +1,109 @@
+@tailwind utilities;
+
+.max-w-50 {
+    max-width: 50%;
+}
+
+.min-w-1024px {
+    min-width: 1024px;
+}
+
+
+.w-40px {
+    width: 40px;
+}
+
+.h-40px {
+    height: 40px;
+}
+
+.mb-20px {
+    margin-bottom: 20px;
+}
+
+.mt-20px {
+    margin-top: 20px;
+}
+
+.gap-10px {
+    gap: 10px;
+}
+
+.gap-x-10px {
+    column-gap: 10px;
+}
+
+.gap-x-20px {
+    column-gap: 20px;
+}
+
+.gap-y-10px {
+	row-gap: 10px;
+}
+
+.border-0-imp {
+	border-radius: 0 !important;
+}
+
+.grid-cols-form {
+    grid-template-columns: 336px auto;
+}
+
+
+
+.grid-cols-16 {
+    grid-template-columns: repeat(16, minmax(0, 1fr));
+}
+
+.col-span-13	{
+    grid-column: span 13 / span 13;
+}
+
+.col-span-14	{
+    grid-column: span 14 / span 14;
+}
+
+.col-start-13	{
+    grid-column-start: 13;
+}
+
+.col-end-13	{
+    grid-column-end: 13;
+}
+
+.col-start-14	{
+    grid-column-start: 14;
+}
+
+.col-end-14	{
+    grid-column-end: 14;
+}
+
+.col-start-15	{
+    grid-column-start: 15;
+}
+
+.col-end-15	{
+    grid-column-end: 15;
+}
+
+.col-start-16	{
+    grid-column-start: 16;
+}
+
+.col-end-16	{
+    grid-column-end: 16;
+}
+
+.col-label-class-layout {
+	/* Minimale Höhe des äusseren <div> Elementes */
+	min-height: 56px;
+
+	/* Ordne das äussere <div> Element am vertikalen Begin des Containers/der Grid-Spalte aus. */
+	align-self: start;
+
+	/* Das äussere <div> Element ist eine Flex-Box, welche den inhalt vertikal zentriert anordnet. */
+	display: flex;
+	flex-flow: row;
+	align-items: center;
+}

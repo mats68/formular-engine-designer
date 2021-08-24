@@ -1,0 +1,39 @@
+.sidenav-container-left {
+  display: grid;
+  grid-template-columns: max-content auto;
+  grid-template-rows: max-content auto;
+  grid-gap: 1rem;
+  padding: 10px
+}
+
+.sidenav-container-right {
+  display: grid;
+  grid-template-columns: auto max-content;
+  grid-template-rows: max-content auto;
+  grid-gap: 1rem;
+  padding: 10px
+}
+
+.toolbar {
+  grid-column: 1 / span 2;
+  grid-row: 2;
+}
+
+.full-width {
+  grid-column: 1 / span 2;
+}
+
+.left {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.right {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+
+.menu-spacer {
+  flex: 1 1 auto;
+}

@@ -1,0 +1,4 @@
+<mt-item *ngIf='isComp()' [comp]='value' [sm]='sm'></mt-item>
+<ng-container *ngIf='!isComp()'>
+  {{value}}
+</ng-container>

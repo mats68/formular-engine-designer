@@ -1,0 +1,64 @@
+// Referenziere die SASS Mixins und Funktionen bezüglich Farben eines Next-Gen Themes.
+@use 'src/_colors.scss';
+
+$_layoutColors: (
+	1: #F8F9FA,
+	2: #F1F3F5,
+	3: #DEE2E6,
+	4: #ADB5BD,
+	5: #4C5157,
+	6: #272A2D,
+	7: #F7F7F7,
+
+	text: (
+		1: #272A2D,
+		2: #272A2D,
+		3: #272A2D,
+		4: #272A2D,
+		5: #272A2D,
+		6: #272A2D,
+		7: #272A2D,
+	)
+);
+
+$_primaryColors: (
+	1: #0779B2,
+	2: #096898,
+	3: #FF9900,
+	4: #FAD47D,
+	5: #92E6FA,
+	6: #FDED99,
+
+	text: (
+		1: #272A2D,
+		2: #272A2D,
+		3: #272A2D,
+		4: #272A2D,
+		5: #272A2D,
+		6: #272A2D,
+	)
+);
+
+$_secondaryColors: (
+	1: #FCC42F,
+	2: #FFE995,
+
+	text: (
+		1: #272A2D,
+		2: #272A2D
+	)
+);
+
+$_tertiaryColors: (
+	1: #EC383A,
+	2: #6AAF2C,
+	3: #F39526,
+
+	text: (
+		1: #272A2D,
+		2: #272A2D,
+		3: #272A2D,
+	)
+);
+
+@include next-gen-theme-colors($_layoutColors, $_primaryColors, $_secondaryColors, $_tertiaryColors);

@@ -1,0 +1,12 @@
+<div [style]='style' class="form-field">
+    <div class="labeldiv">
+        <mat-label class="label">{{label}}</mat-label>
+    </div>
+    <div>
+        <mat-slider #name [(ngModel)]='Value' [min]='comp.min' [max]='comp.max' [step]='comp.step'
+            class="form-field"
+            [thumbLabel]='comp.thumbLabel' [disabled]='disabled'>
+            {{label}}
+        </mat-slider>
+    </div>
+</div>

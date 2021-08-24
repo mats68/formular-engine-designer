@@ -1,0 +1,5 @@
+<mat-tab-group [selectedIndex]='comp.selectedTabIndex' (selectedIndexChange)='selectedIndexChange($event)'>
+    <mat-tab *ngFor='let tab of comp.children' [label]='sm.getLabel(tab)'>
+        <mt-container [comp]='tab' [sm]='sm'></mt-container>        
+    </mat-tab>
+</mat-tab-group>

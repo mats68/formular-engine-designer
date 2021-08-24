@@ -1,0 +1,23 @@
+.switch-panel {
+    margin-top: 3px;
+    margin-left: 3px;
+}
+.content {
+    margin-top: 10px;
+}
+
+.header {
+    display: flex;
+    // font-size: 15px;
+    font-weight: 400;
+    // padding-left: 10px;
+}
+
+.label {
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+mat-card-header.mat-card-header {
+    margin-bottom: 0px !important;
+}

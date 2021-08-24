@@ -1,0 +1,4 @@
+<div #name class="clb" (click)='onClick()'>
+    <!-- <mt-lbl *ngIf='comp.label' [sm]='sm' [comp]='comp'></mt-lbl> -->
+    <mat-checkbox *ngFor='let item of OptionsAsObjects' [checked]="getChecked(item)" (change)="updateValue($event, item)" [disabled]='disabled' [class]='getClass("checkbox")'>{{item.text}}</mat-checkbox>
+</div>

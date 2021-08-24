@@ -1,0 +1,76 @@
+<button mat-button *ngIf='k("standard")'
+  [type]='type'
+  [disabled]='disabled'
+  [style]='style'
+  [color]='color'
+  (click)='onClick()'
+  [matTooltip]='tooltip'>
+  <mat-icon *ngIf='comp.icon' class="text-with-icon">{{comp.icon}}</mat-icon>
+  <span [style]='styles("label")'>{{label}}</span>
+</button>
+
+<button mat-flat-button *ngIf='k("flat")'
+  [type]='type'
+  [disabled]='disabled'
+  [style]='style'
+  [color]='color'
+  (click)='onClick()'
+  [matTooltip]='tooltip'>
+  <mat-icon *ngIf='comp.icon' [class]="getClass('text-with-icon','icon')">{{comp.icon}}</mat-icon>
+  <span [style]='styles("label")'>{{label}}</span>
+</button>
+
+<button mat-raised-button *ngIf='k("raised")'
+  [type]='type'
+  [disabled]='disabled'
+  [style]='style'
+  [color]='color'
+  (click)='onClick()'
+  [matTooltip]='tooltip'>
+  <mat-icon *ngIf='comp.icon' [class]="getClass('text-with-icon','icon')">{{comp.icon}}</mat-icon>
+  <span [style]='styles("label")'>{{label}}</span>
+</button>
+
+<button mat-stroked-button *ngIf='k("stroked")'
+  [type]='type'
+  [disabled]='disabled'
+  [style]='style'
+  [color]='color'
+  (click)='onClick()'
+  [matTooltip]='tooltip'>
+  <mat-icon *ngIf='comp.icon' [class]="getClass('text-with-icon','icon')">{{comp.icon}}</mat-icon>
+  <span [style]='styles("label")'>{{label}}</span>
+</button>
+
+<button *ngIf='k("icon")'
+  mat-icon-button
+  [type]='type'
+  [disabled]='disabled'
+  [style]='style'
+  [color]='color'
+  (click)='onClick()'
+  [matTooltip]='tooltip'>
+  <mat-icon [class]="getClass('','icon')">{{comp.icon}}</mat-icon>
+</button>
+
+<button *ngIf='k("minifab")'
+  mat-mini-fab
+  [type]='type'
+  [disabled]='disabled'
+  [style]='style'
+  [color]='color'
+  (click)='onClick()'
+  [matTooltip]='tooltip'>
+  <mat-icon [class]="getClass('','icon')">{{comp.icon}}</mat-icon>
+</button>
+
+<button *ngIf='k("fab")'
+  mat-fab
+  [type]='type'
+  [disabled]='disabled'
+  [style]='style'
+  [color]='color'
+  (click)='onClick()'
+  [matTooltip]='tooltip'>
+  <mat-icon [class]="getClass('','icon')">{{comp.icon}}</mat-icon>
+</button>

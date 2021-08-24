@@ -1,0 +1,36 @@
+<mt-form *ngIf='isComp("form")' [comp]='comp' [sm]='sm'></mt-form>
+<mt-tabs *ngIf='isComp("tabs")' [comp]='comp' [sm]='sm'></mt-tabs>
+<mt-stepper *ngIf='isComp("stepper")' [comp]='comp' [sm]='sm'></mt-stepper>
+<mt-exp *ngIf='isComp("expansionspanel")' [comp]='comp' [sm]='sm' [class]='comp.class'></mt-exp>
+<mt-datatable *ngIf='isComp("datatable")' [comp]='comp' [sm]='sm' [curRowInd]='comp.curRowInd' [data]='dataTableData()'></mt-datatable>
+<mt-panel *ngIf='isComp("panel")' [comp]='comp' [sm]='sm' [class]='comp.class'></mt-panel>
+<mt-switchpanel *ngIf='isComp("switchpanel")' [comp]='comp' [sm]='sm'></mt-switchpanel>
+<mt-card *ngIf='isComp("card")' [comp]='comp' [sm]='sm'></mt-card>
+<mt-sidenav *ngIf='isComp("sidenav")' [comp]='comp' [sm]='sm'></mt-sidenav>
+
+
+<mt-input-raw *ngIf='isComp("inputraw")' [comp]='comp' [sm]='sm' [isSelect]='false'></mt-input-raw>
+<mt-input-raw *ngIf='isComp("selectraw")' [comp]='comp' [sm]='sm' [isSelect]='true'></mt-input-raw>
+<mt-input *ngIf='isComp("input")' [comp]='comp' [sm]='sm' [isSelect]='false'></mt-input>
+<mt-lookup *ngIf='isComp("lookup")' [comp]='comp' [sm]='sm' ></mt-lookup>
+<mt-input *ngIf='isComp("select")' [comp]='comp' [sm]='sm' [isSelect]='true'></mt-input>
+<mt-radio *ngIf='isComp("radiogroup")' [comp]='comp' [sm]='sm'></mt-radio>
+<mt-checkbox *ngIf='isComp("checkbox")' [comp]='comp' [sm]='sm' [class]='comp.class'></mt-checkbox>
+<mt-checklistbox *ngIf='isComp("checklistbox")' [comp]='comp' [sm]='sm' [class]='comp.class'></mt-checklistbox>
+<mt-switch *ngIf='isComp("switch")' [comp]='comp' [sm]='sm'></mt-switch>
+<mt-date *ngIf='isComp("date")' [comp]='comp' [sm]='sm'></mt-date>
+<mt-slider *ngIf='isComp("slider")' [comp]='comp' [sm]='sm'></mt-slider>
+
+
+<mt-toolbar *ngIf='isComp("toolbar")' [comp]='comp' [sm]='sm'></mt-toolbar>
+<mt-btn *ngIf='isComp("button")' [comp]='comp' [sm]='sm'></mt-btn>
+<mt-link *ngIf='isComp("link")' [comp]='comp' [sm]='sm'></mt-link>
+<mt-lbl *ngIf='isComp("label")' [comp]='comp' [sm]='sm' [class]='comp.class'></mt-lbl>
+<mt-icon *ngIf='isComp("icon")' [comp]='comp' [sm]='sm'></mt-icon>
+<mt-html *ngIf='isComp("html")' [comp]='comp' [sm]='sm'></mt-html>
+<mt-divider *ngIf='isComp("divider")' [comp]='comp' [sm]='sm'></mt-divider>
+<mt-errorpanel *ngIf='isComp("errorpanel")' [comp]='comp' [sm]='sm' [Errors]='sm.Errors' [ErrorCount]='sm.Errors.length'></mt-errorpanel>
+<mt-listpanel *ngIf='isComp("listpanel")' [comp]='comp' [sm]='sm' [listitems]='comp.listitems'></mt-listpanel>
+<mt-spinner *ngIf='isComp("spinner")' [comp]='comp' [sm]='sm'></mt-spinner>
+<!-- <mt-file-uploader *ngIf='isComp("fileuploader")' [comp]='comp' [sm]='sm'></mt-file-uploader> -->
+<!-- <mt-file-viewer *ngIf='isComp("fileviewer")' [comp]='comp' [sm]='sm'></mt-file-viewer> -->

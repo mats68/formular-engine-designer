@@ -1,0 +1,13 @@
+<mat-form-field [style]='style' [appearance]='sm.getAppearance(comp)' [class]='getClass()' (click)='onClick()'>
+  <mat-label [ngClass]='{"error-color" : getError()}'>{{label}}</mat-label>
+  <input matInput #name [(ngModel)]='DateValue' (blur)='onBlur()'
+  [attr.disabled]='disabled'
+  [matDatepicker]="dp" 
+  [formControl]="date"  />
+  <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+  <mat-datepicker #dp></mat-datepicker>
+  <mat-hint>
+    <div *ngIf='getError()' class="error-color">{{getError()}}</div>
+    <div *ngIf='comp.hint && !getError()'>{{hint}}</div>
+  </mat-hint>
+</mat-form-field>

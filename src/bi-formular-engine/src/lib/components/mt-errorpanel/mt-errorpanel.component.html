@@ -1,0 +1,18 @@
+<mat-card *ngIf='panelVisible()'>
+    <div class="menu">
+        <div class="mat-h2 error-title">
+            {{sm.getLabel(comp)}}
+        </div>
+        <span class="menu-spacer"></span>
+        <button mat-icon-button 
+            (click)='hidePanel()'>
+            <mat-icon >close</mat-icon>
+        </button>
+    </div>
+
+
+    <div *ngFor='let error of Errors' (click)='clickError(error)'>
+        <span *ngIf='error.comp && error.comp.label' class="error-label">{{getErrorLabel(error)}}</span>
+        <span class="error-msg">{{error.error}}</span>
+    </div>
+</mat-card>

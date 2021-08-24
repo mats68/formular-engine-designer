@@ -1,0 +1,58 @@
+
+<div [style]='style' [class]='getClass()' *ngIf="data">
+	<div class="flex items-center ml-3 mr-5 mb-4">
+		<div class="font-bold">{{this.sm.getPropValue(comp, 'label')}}</div>
+		<div class="ml-auto" *ngIf='!comp.hideAddBtn'>
+			<button mat-icon-button (click)="Insert()" [matTooltip]="">
+				<mat-icon color="primary">add_circle_outline</mat-icon>
+			</button>
+		</div>
+	</div>
+
+	<div class="grid grid-cols-16 gap-x-2 mx-3 h-auto">
+		<ng-container *ngFor="let coldef of comp.colDefs">
+			<div [class]="coldef.class">
+				<span class="text-xs">{{this.sm.resolveValue(coldef.title)}}</span>
+			</div>
+		</ng-container>
+	</div>
+
+	<div cdkDropList (cdkDropListDropped)="drop($event)">
+		<div *ngFor="let row of data; let ind = index" [class]="getRowClass(ind)" cdkDrag [cdkDragDisabled]="!comp.dragdrop">
+			<div class="grid grid-cols-16 items-center gap-2 mx-2 py-3 px-2">
+				<div *ngFor="let coldef of comp.colDefs" [class]="coldef.class">
+					<ng-container *ngIf="isCheckBox(row, coldef)">
+						<mat-icon>{{row[coldef.field] ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
+					</ng-container>
+					<ng-container *ngIf='!isCheckBox(row, coldef)'>
+						{{getCellText(row, coldef)}}
+					</ng-container>
+				</div>
+
+				<div class="col-start-16 flex">
+					<div class="ml-auto">
+						<button mat-icon-button (click)="toggleExpand(ind); $event.stopPropagation()">
+							<mat-icon color="primary">{{getExpandIcon(ind)}}</mat-icon>
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<div *ngIf="currow === row" class="px-2 py-4 border-1 border-gray-100 border-solid">
+				<div class="ml-2">
+					<mt-item [comp]="comp.detailComponent" [sm]="sm"></mt-item>
+					<div class="flex items-center">
+						<div class="ml-auto mb-4 mr-4 shadow-sm">
+							<button mat-icon-button (click)="CopyRow()" [matTooltip]="">
+								<mat-icon color="primary">content_copy</mat-icon>
+							</button>
+							<button mat-icon-button (click)="DeleteRow()" [matTooltip]="">
+								<mat-icon color="accent">delete</mat-icon>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

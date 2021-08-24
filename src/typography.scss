@@ -1,0 +1,56 @@
+// Importiere die Inter Schriftart.
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap');
+
+// Definiere nun einige SASS Variablen um diese anstelle von 'magic numbers' verwenden zu können.
+// Die unterschiedlichen 'Dickegrade'  einer Schriftart.
+$font-weight-thin: 100;
+$font-weight-extra-light: 200;
+$font-weight-light: 300;
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semi-bold: 600;
+$font-weight-bold: 700;
+$font-weight-extra-bold: 800;
+$font-weight-black: 900;
+
+// Erstelle nun die Angular Material Typographiekonfiguration.
+$bi-typography: mat-typography-config(
+	$font-family: 'Inter',
+
+	/* <h1> Tags */
+	$headline: mat-typography-level(24px, 32px, $font-weight-semi-bold, ),
+	$display-4: mat-typography-level(24px, 32px, $font-weight-semi-bold),
+
+	/* <h2> Tags */
+	$title: mat-typography-level(20px, 28px, $font-weight-bold),
+	$display-3: mat-typography-level(20px, 28px, $font-weight-bold),
+
+	/* <h3> Tags */
+	$subheading-2: mat-typography-level(20px, 28px, $font-weight-medium),
+	$display-2: mat-typography-level(20px, 28px, $font-weight-medium),
+
+	/* <h4> Tags */
+	$subheading-1: mat-typography-level(16px, 24px, $font-weight-bold),
+	$display-1: mat-typography-level(16px, 24px, $font-weight-bold),
+
+	/* Base body text */
+	$body-1: mat-typography-level(16px, 24px, $font-weight-medium),
+
+	/* Bolder body text */
+	$body-2: mat-typography-level(16px, 24px, $font-weight-semi-bold),
+
+	/* Smaller body and hint text */
+	$caption: mat-typography-level(12px 16px, $font-weight-medium)
+);
+
+// Wende nun die Angular Material Typographiekonfiguration an.
+@include mat-core($bi-typography);
+
+// Weite typographische anpassungen.
+.mat-typography {
+	.mat-h1, h1 {
+		// Die erste Überschrift immer 40 Pixel versetzt anzeigen. Die Fehlenden acht Pixel kommen vom Padding des
+		// Hauptinhaltes.
+		margin-top: 32px;
+	}
+}

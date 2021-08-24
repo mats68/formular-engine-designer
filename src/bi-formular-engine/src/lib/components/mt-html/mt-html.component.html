@@ -1,0 +1,6 @@
+<div
+ [style]="style"
+ [class]="comp.classLayout" 
+ (click)='onClick()'
+ [innerHTML]='this.sanitizer.bypassSecurityTrustHtml(sm.getPropValue(comp, "html"))'>
+</div>

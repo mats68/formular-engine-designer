@@ -1,0 +1,8 @@
+<mat-vertical-stepper #stepper [selectedIndex]='selectedIndex' (selectionChange)='selectionChange($event)'>
+    <ng-container *ngFor="let panel of comp.children; let ind = index">
+        <mat-step [completed]="getCompleted(panel)" [editable]="editable(ind)">
+            <ng-template matStepLabel>{{panel.label}}</ng-template>
+            <mt-container [comp]='panel' [sm]='sm'></mt-container>            
+        </mat-step>
+    </ng-container>
+</mat-vertical-stepper>

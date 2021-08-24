@@ -1,0 +1,17 @@
+<ng-container *ngIf='listitems'>
+    <ng-container *ngIf='listitems.length > 0'>
+        <div *ngFor='let item of getItems()' (click)='clickListItem(item)' [class]='getClass()'>
+            {{comp.listitems_expression(item)}}
+        </div>
+        <button mat-icon-button [disabled]='!curpage' (click)='previousPage()'>
+            <mat-icon class="cursor-pointer">navigate_before</mat-icon>
+        </button>
+        <button mat-icon-button [disabled]='totalpages <= curpage' (click)='nextPage()'>
+            <mat-icon class="cursor-pointer">navigate_next</mat-icon>
+        </button>
+        <span>{{curpage+1}}/{{totalpages+1}}</span>
+    </ng-container>
+    <ng-container *ngIf='listitems.length === 0'>
+        <div [class]='getClass()'>{{comp.listitems_emptytext}}</div>
+    </ng-container>
+</ng-container>

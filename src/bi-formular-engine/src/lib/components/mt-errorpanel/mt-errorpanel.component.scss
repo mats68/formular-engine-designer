@@ -1,0 +1,38 @@
+.menu{
+    display: flex;
+    align-items: center;
+}
+
+.menu-spacer {
+    flex: 1 1 auto;
+}
+
+.menuicon {
+    margin: 0;
+}
+.error-title {
+    color: red;
+}
+
+.error-label {
+    display:inline-block;
+    color:#444;
+    border:1px solid #CCC;
+    background:#DDD;
+    box-shadow: 0 0 5px -1px rgba(0,0,0,0.2);
+    cursor:pointer;
+    vertical-align:middle;
+    padding: 2px;
+    text-align: center;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+.error-label:active {
+    color:red;
+    box-shadow: 0 0 5px -1px rgba(0,0,0,0.6);
+}
+
+.error-msg {
+    cursor:pointer;
+    color: red;
+}

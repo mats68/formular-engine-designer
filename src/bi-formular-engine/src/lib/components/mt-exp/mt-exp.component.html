@@ -1,0 +1,17 @@
+<mat-expansion-panel [class]="getClass('exp-panel','panel')" [style]='style' [expanded]='comp.expanded' [disabled]='disabled'
+	(afterExpand)='afterExpand()' (afterCollapse)='afterCollapse()' [id]='comp.name'>
+	<div #name tabindex="1"></div>
+	<mat-expansion-panel-header class='exp-header'>
+		<mat-panel-title [style]='styles("header")'>
+			<div class="flex items-center mb-4 mt-4">
+				<mat-icon *ngIf="comp.icon" [class]="getClass('mr-2','icon')" [style]='styles("icon")' [color]='comp.color'>{{comp.icon}}</mat-icon>
+				<span  [class]="getClass('text-xl font-bold','label')" [style]='styles("label")'>{{label}}</span>
+				<span class="flex-auto"></span>
+				<span  [class]="getClass('text-xs font-normal mr-2','hint')" [style]='styles("hint")'>{{hint}}</span>
+			</div>
+		</mat-panel-title>
+	</mat-expansion-panel-header>
+
+	<mt-container [comp]='comp' [sm]='sm'></mt-container>
+
+</mat-expansion-panel>

@@ -31,7 +31,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "src/utils.css"
             ],
             "scripts": []
           },
@@ -127,5 +128,8 @@
       }
     }
   },
-  "defaultProject": "formular-engine-designer"
+  "defaultProject": "formular-engine-designer",
+  "cli": {
+    "analytics": false
+  }
 }
