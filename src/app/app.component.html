@@ -7,4 +7,9 @@
   <div *ngIf='schema'>
     <bi-form [schemaManager]="schemaManager" [schema]="schema"></bi-form>
   </div>
+
+  <div *ngIf='werte_anzeigen()' class="mt-10">
+    {{werte()}}
+  </div>
+
 </div>

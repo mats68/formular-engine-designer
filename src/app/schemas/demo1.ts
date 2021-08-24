@@ -6,7 +6,7 @@ export const DEMO_1: ISchema = {
     label: 'Demo Formular 1',
     classLayout: 'w-full',
     children: [
-        card_panel('Test-Panel', '',
+        card_panel('Test-Panel 1', '',
             [
                 ...label_Input('Test-1', 'test-1', 20),
                 ...label_Input('Test-2', 'test-2', 50, undefined, false, true)

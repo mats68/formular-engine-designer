@@ -18,26 +18,41 @@ export class AppComponent {
 
   schemaManagerSelect: SchemaManager = this._schemaManagerProvider.createSchemaManager();
   schemaSelect: ISchema = {
-    type: 'select',
-    options() {
-      return Object.values(schemas).map(s => s.label as string)
-    },
-    field: 'cs',
-    label: '',
-    hint: 'Schema wählen',
-    onChange (_, __, value) {
-      console.log(value)
-      const s = Object.values(schemas).find(s => s.label === value)
-      if (s) {
-        _schema = s
-        _SchemaManager.InitSchema(s)
-        _SchemaManager.Schema.whiteBackground = true
-        initLabels(_SchemaManager)
-        initInputWidths(_SchemaManager)
+    type: 'panel',
+    children: [
+      {
+        type: 'select',
+        options() {
+          return Object.values(schemas).map(s => s.label as string)
+        },
+        field: 'cs',
+        label: '',
+        hint: 'Schema wählen',
+        onChange (_, __, value) {
+          console.log(value)
+          const s = Object.values(schemas).find(s => s.label === value)
+          if (s) {
+            _schema = s
+            _SchemaManager.InitSchema(s)
+            _SchemaManager.Schema.whiteBackground = true
+            initLabels(_SchemaManager)
+            initInputWidths(_SchemaManager)
+          }
+    
+        },
+      },
+      {
+        type: 'checkbox',
+        field: 'v',
+        label: 'Werte anzeigen',
+        style: 'margin-bottom: 10px'
+      },
+      {
+        type: 'divider',
+        style: 'margin-bottom: 10px'
       }
-
-    }
-
+    
+    ]
   }
 
   constructor(
@@ -46,5 +61,13 @@ export class AppComponent {
     _SchemaManager = this._schemaManagerProvider.createSchemaManager();
 
 
+  }
+
+  werte_anzeigen(): boolean {
+    return this.schema && this.schemaManagerSelect?.Values?.v
+  }
+
+  werte(): string {
+    return JSON.stringify(this.schemaManager?.Values, null, 2)
   }
 }
