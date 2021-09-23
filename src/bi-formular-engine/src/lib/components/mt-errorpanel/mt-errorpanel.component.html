@@ -1,18 +1,18 @@
-<mat-card *ngIf='panelVisible()'>
-    <div class="menu">
-        <div class="mat-h2 error-title">
-            {{sm.getLabel(comp)}}
+<div class="mt-2 mb-2">
+    <div [class]="'flex items-center p-4 ' + getBgClass()">
+        <mat-icon>info_outline</mat-icon>
+        <div class="ml-4" [innerHTML]='getText()'>
         </div>
-        <span class="menu-spacer"></span>
-        <button mat-icon-button 
-            (click)='hidePanel()'>
-            <mat-icon >close</mat-icon>
+        <span class="flex-auto"></span>
+        <button mat-icon-button (click)='hidePanel()'>
+            <mat-icon>close</mat-icon>
         </button>
     </div>
 
 
-    <div *ngFor='let error of Errors' (click)='clickError(error)'>
-        <span *ngIf='error.comp && error.comp.label' class="error-label">{{getErrorLabel(error)}}</span>
-        <span class="error-msg">{{error.error}}</span>
+    <div *ngIf='hasError()' class="p-4 bg-gray-left">
+        <div *ngFor='let ab of ErrorAbschnitte' (click)='clickError(ab)'>
+            <span class="ml-8 mb-4 text-primary cursor-pointer">- {{getErrorLabel(ab)}}</span>
+        </div>
     </div>
-</mat-card>
+</div>

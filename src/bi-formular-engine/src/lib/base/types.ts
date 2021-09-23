@@ -1,8 +1,9 @@
 import { Router } from '@angular/router';
-// import { EAktionDTO, EFormularDTO, EProjektDTO } from 'src/app/api';
-// import { FormularTyp, LayoutService } from 'src/app/services';
+import { EAktionDTO, EFormularDTO, EProjektDTO } from 'src/app/api';
+import { FormularStatusSteps, FormularTyp, ProjektService } from 'src/app/services';
 import { SchemaManager } from './schemaManager';
 import { DomSanitizer } from '@angular/platform-browser';
+import { MtFileVierwerComponent } from '../components/mt-file-viewer/mt-file-viewer.component';
 
 export interface IComponentString {
    function?: IComponentStringFunction;
@@ -16,9 +17,24 @@ export interface ITranslatableString {
    values?: { [key: string]: any };
 }
 
-export type IFileUploaderType = 'Formular' | 'Beilage'
+export type IFileUploaderType = 'Formular' | 'Beilage' | 'Antwort'
 export type IFileUploaderDocumentType = 'pdf' | 'png' | 'jpg' | 'jpeg' | 'svg' | 'doc' | 'docx'
 
+export interface IFileUploaderProps {
+   formularTypGuid: string
+   uploadType: IFileUploaderType
+   hideLink?: boolean
+   router?: Router
+   documentTypes: IFileUploaderDocumentType[]
+}
+
+export interface IFileViewerProps {
+   formularTypGuid: string
+   uploadType: IFileUploaderType
+   styleFrame?: string
+   sanitizer?: DomSanitizer
+   fileViewer?: MtFileVierwerComponent
+}
 
 export interface IStepperProps {
    selectedIndex?: number
@@ -32,11 +48,11 @@ export type IComponentBoolFunction = (sm: SchemaManager, comp: IComponent, value
 export type IComponentComponentFunction = (sm: SchemaManager, comp: IComponent, value?: any) => IComponent;
 export type IComponentAnyFunction = (sm: SchemaManager, comp: IComponent, value?: any) => any;
 export type IComponentLookUpCbFunction = (sm: SchemaManager, comp: IComponent, suchtext: string, old_suchtext: string, items: any[]) => any;
-export type IComponentVoidFunction = (sm: SchemaManager, comp: IComponent, value?: any) => void;
+export type IComponentVoidFunction = (sm?: SchemaManager, comp?: IComponent, value?: any) => void;
 export type IComponentUploadFunction = (sm: SchemaManager, comp: IComponent, file: File) => void;
 export type IValidateFunction = (sm: SchemaManager, comp: IComponent, value?: any) => string | string[] | undefined;
 export type ISchemaVoidFunction = (sm: SchemaManager) => void;
-// export type ISchemaAfterSavefFunction = (sm: SchemaManager, formular: EFormularDTO) => void;
+export type ISchemaAfterSavefFunction = (sm: SchemaManager, formular: EFormularDTO) => void;
 export type ISchemaStatusFunction = (sm: SchemaManager, status: any) => void;
 export type ISchemaFormularStatusFunction = (status: number, text: string, translate: boolean) => void;
 export type ISelectOptionItemsFunction = (sm: SchemaManager, comp: IComponent, value?: any) => ISelectOptionItems | string[];
@@ -70,13 +86,13 @@ export interface ISchemaProps {
    title?: string,
    pdfTemplate?: string,
    pdfFileName?: any,
-   steps?: any[]
+   steps?: FormularStatusSteps[]
    empfaengerKategorien?: string[]
-   // beilagen?: FormularTyp[];
+   beilagen?: FormularTyp[];
    initFormular?: ISchemaVoidFunction;
-   UninitFormular?: ISchemaVoidFunction;
-   // onAfterSave?: ISchemaAfterSavefFunction;
-   // onAfterReload?: ISchemaAfterSavefFunction;
+   uninitFormular?: ISchemaVoidFunction;
+   onAfterSave?: ISchemaAfterSavefFunction;
+   onAfterReload?: ISchemaAfterSavefFunction;
    setStatus?: ISchemaStatusFunction;
    SetFormularStatus?: ISchemaFormularStatusFunction
    onSubmit?: ISchemaVoidFunction;
@@ -102,11 +118,11 @@ export const SchemaKeys: KeysEnum<ISchemaProps> = {
    pdfFileName: true,
    steps: true,
    empfaengerKategorien: true,
-   // beilagen: true,
+   beilagen: true,
    initFormular: true,
-   UninitFormular: true,
-   // onAfterSave: true,
-   // onAfterReload: true,
+   uninitFormular: true,
+   onAfterSave: true,
+   onAfterReload: true,
    setStatus: true,
    SetFormularStatus: true,
    onSubmit: true,
@@ -213,8 +229,13 @@ export interface IComponentProps {
    lookup_waittime?: number,
    lookup_minlength?: number,
    singleselect?: boolean,
+   fileUploaderProps?: IFileUploaderProps,
+   fileViewerProps?: IFileViewerProps,
    stepperProps?: IStepperProps,
    onGetClass?: IComponentOnGetClassFunction,
+   modelValues?: any,
+   src?: string,
+   istAbschnitt?: boolean,   
 }
 
 type KeysEnum<T> = { [P in keyof Required<T>]: true };
@@ -299,10 +320,13 @@ export const ComponentKeys: KeysEnum<IComponent> = {
    lookup_waittime: true,
    lookup_minlength: true,
    singleselect: true,
-   // fileUploaderProps: true,
-   // fileViewerProps: true,
+   fileUploaderProps: true,
+   fileViewerProps: true,
    stepperProps: true,
    onGetClass: true,
+   modelValues: true,
+   src: true,
+   istAbschnitt: true,
 };
 
 
@@ -358,7 +382,9 @@ export enum ComponentType {
    checklistbox = 'checklistbox',
    fileuploader = 'fileuploader',
    fileviewer = 'fileviewer',
-   stepper = 'stepper'
+   stepper = 'stepper',
+   image = 'image',
+   div = 'div'
 }
 
 export enum DataType {
@@ -397,9 +423,13 @@ export interface ColDef {
    isStatus?: boolean,
    isPhasen?: boolean,
    statusExpression?: (data: any) => number[]
+   htmlTitle?: boolean,
+   htmlContent?: boolean,
 }
 
 export interface IMussfelder {
    anzahl: number
    filled: number
 }
+
+

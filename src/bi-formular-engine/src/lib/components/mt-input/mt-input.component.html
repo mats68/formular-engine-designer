@@ -19,10 +19,11 @@
             {{item.text}}
         </mat-option>
     </mat-select>
+    <mat-icon matSuffix *ngIf='options_icon()' class="options-icon">arrow_drop_down</mat-icon>
     <span matSuffix *ngIf='comp.suffix' class="suffix">{{comp.suffix}}</span>
-    <mat-hint *ngIf='comp.hint || getError()'>
+    <mat-hint *ngIf='hint || getError()'>
         <div *ngIf='getError()' class="error-color">{{getError()}}</div>
-        <div *ngIf='comp.hint && !getError()'>{{hint}}</div>
+        <div *ngIf='hint && !getError()'>{{hint}}</div>
     </mat-hint>
     <mat-autocomplete #auto="matAutocomplete" (optionSelected)="itemSelected($event)">
         <mat-option *ngFor="let option of filteredOptions" [value]="option">

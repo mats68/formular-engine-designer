@@ -42,6 +42,7 @@ import { MtFormComponent } from './components/mt-form/mt-form.component';
 import { MtExpComponent } from './components/mt-exp/mt-exp.component';
 import { MtBtnComponent } from './components/mt-btn/mt-btn.component';
 import { MtDividerComponent } from './components/mt-divider/mt-divider.component';
+import { MtDivComponent } from './components/mt-div/mt-div.component';
 import { MtSpinnerComponent } from './components/mt-spinner/mt-spinner.component';
 import { MtContainerComponent } from './base/mt-container/mt-container.component';
 import { MtToolbarComponent } from './components/mt-toolbar/mt-toolbar.component';
@@ -64,6 +65,8 @@ import { MtDateComponent } from './components/mt-date/mt-date.component';
 import { MtIconComponent } from './components/mt-icon/mt-icon.component';
 import { MtSliderComponent } from './components/mt-slider/mt-slider.component';
 import { MtSidenavComponent } from './components/mt-sidenav/mt-sidenav.component';
+import { MtFileUploaderComponent } from './components/mt-file-uploader/mt-file-uploader.component';
+import { MtFileVierwerComponent } from './components/mt-file-viewer/mt-file-viewer.component';
 import { MtItemOrTextComponent } from './base/mt-item-or-text/mt-item-or-text.component';
 import { BiDiffComponent } from './base/bi-diff/bi-diff.component';
 import { BiFormComponent } from './base/bi-form/bi-form.component';
@@ -80,6 +83,7 @@ import { MatFormFieldDefaultOptions, MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@ang
     MtExpComponent,
     MtBtnComponent,
     MtDividerComponent,
+    MtDivComponent,
     MtSpinnerComponent,
     MtContainerComponent,
     MtToolbarComponent,
@@ -103,6 +107,8 @@ import { MatFormFieldDefaultOptions, MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@ang
     MtIconComponent,
     MtSliderComponent,
     MtSidenavComponent,
+    MtFileUploaderComponent,
+    MtFileVierwerComponent,
     MtItemOrTextComponent,
     BiFormComponent,
   ],

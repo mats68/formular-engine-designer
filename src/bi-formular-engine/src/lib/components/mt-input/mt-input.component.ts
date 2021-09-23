@@ -6,7 +6,6 @@ import { MatAutocompleteSelectedEvent, MatAutocomplete } from '@angular/material
 import { MtBaseComponent } from '../../base/mt-base/mt-base.component';
 import { IValueType, SchemaManager } from '../../base/schemaManager';
 import { IMaskOptions } from '../../base/types';
-import { Observable } from 'rxjs';
 
 enum InpTyp {
   normal,
@@ -110,6 +109,11 @@ export class MtInputComponent extends MtBaseComponent implements OnInit, OnDestr
 
   ngOnDestroy() {
     this.unregisterFocus();
+  }
+
+  options_icon(): boolean {
+    return this.comp.type === 'input' && typeof this.comp.options !== 'undefined'
+
   }
 
 

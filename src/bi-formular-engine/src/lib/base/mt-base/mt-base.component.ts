@@ -81,15 +81,15 @@ export class MtBaseComponent {
   }
 
   get hint() {
-    return this.sm.getPropValue(this.comp, 'hint');
+    return this.comp.required ? this.sm.translate('comp_input.pflichtfeld') : this.sm.getPropValue(this.comp, 'hint');
   }
 
   onBlur(): void {
-    if (this.sm.Schema.noValidateOnBlur) {
-      return
-    }
-    const value = this.sm.getValue(this.comp);
-    this.sm.validate(this.comp, value);
+    // if (this.sm.Schema.noValidateOnBlur) {
+    //   return
+    // }
+    // const value = this.sm.getValue(this.comp);
+    // this.sm.validate(this.comp, value);
   }
 
   onClick() {

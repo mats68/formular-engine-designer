@@ -6,9 +6,9 @@
             [disabled]='disabled' />
     </div>
     <span matSuffix *ngIf='comp.suffix' class="suffix">{{comp.suffix}}</span>
-    <mat-hint *ngIf='comp.hint || getError()'>
+    <mat-hint *ngIf='hint || getError()'>
         <div *ngIf='getError()' class="error-color">{{getError()}}</div>
-        <div *ngIf='comp.hint && !getError()'>{{hint}}</div>
+        <div *ngIf='hint && !getError()'>{{hint}}</div>
     </mat-hint>
     <mat-autocomplete #auto="matAutocomplete" (optionSelected)="itemSelected($event)">
         <mat-option *ngFor="let option of items$ | async" [value]="option" class="text-xs">

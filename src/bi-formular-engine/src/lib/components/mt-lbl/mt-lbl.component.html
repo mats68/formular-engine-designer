@@ -1,1 +1,2 @@
-<span [class]='getClass()' [style]='styles("label")'>{{label}}</span>
+
+<span [class]='getClass()' [style]='styles("label")'><span *ngIf='comp.required' class="font-bold text-red-600"> - </span>{{label}}</span>

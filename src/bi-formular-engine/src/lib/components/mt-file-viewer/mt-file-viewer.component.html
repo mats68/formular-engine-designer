@@ -1,0 +1,6 @@
+<div *ngIf='sm.formularDTO && dateiURL' [style]='style' [class]="getclass()">
+    <div *ngIf='comp.label' [style]='comp.styleLabel' class="mb-4 font-bold">{{comp.label}}</div>
+    <div style="width: 100%;height: 100%;">
+        <iframe #file_viewer_frame [src]='dateiURL' frameborder="0" title="Datei Vorschau" style="width: 100%;height: 100%;"></iframe>
+    </div>
+</div>

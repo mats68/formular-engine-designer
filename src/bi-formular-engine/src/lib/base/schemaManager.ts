@@ -3,16 +3,14 @@ import { strings } from './strings';
 import { ISchema, IComponent, ComponentType, ISelectOptionItems, DataType, IScreenSize, IAppearance, SchemaKeys, ComponentKeys, IMussfelder, IComponentString, ITranslatableString } from './types';
 import { err_schema, err_notype, err_typewrong, err_noChild, err_zeroChild, err_noField, err_doubleField, err_doubleName, err_noOptions, err_OptionsArray, err_zeroOptions, err_wrongOptions, err_OptionsDoubleValues, err_noIcon, err_noDataTableInDataTable, err_noDataTableNoField, err_unn } from './constants'
 import { Subject } from 'rxjs';
-import cloneDeep from 'lodash.clonedeep';
-import merge from 'lodash.merge';
-import get from 'lodash.get';
-import set from 'lodash.set';
+import { cloneDeep, merge, get, set } from 'lodash-es';
 
 import * as moment_ from 'moment';
-// import { FormulareService } from 'src/app/services/formulare-service/formulare-service.service';
-// import { Formular } from 'src/app/services/formulare-service/Formular';
-// import { EFormularDTO, EProjektDTO } from 'src/app/api';
-// import { LayoutService } from 'src/app/services';
+import { FormulareService } from 'src/app/services/formulare-service/formulare-service.service';
+import { Formular } from 'src/app/services/formulare-service/Formular';
+import { EFormularDTO, EFormularStatus, EProjektDTO } from 'src/app/api';
+import { ProjektService } from 'src/app/services';
+import { Guid } from 'src/app/tools/Guid';
 const moment = moment_;
 
 /**
@@ -163,7 +161,26 @@ export interface ISchemaManagerContext {
 @Injectable({ providedIn: 'root' })
 export class SchemaManagerProvider
    implements ISchemaManagerContext {
-   constructor() {
+   constructor(context?: ISchemaManagerContext) {
+      if (!context) {
+         context = {} as ISchemaManagerContext;
+      }
+
+      if (!context.settings) {
+         context.settings = Object.assign({}, SCHEMA_MANAGER_DEFAULT_SETTINGS);
+      }
+
+      if (!context.services) {
+         context.services = {} as ISchemaManagerServices;
+      }
+
+      if (!context.translator) {
+         context.translator = new DefaultSchemaManagerTranslator();
+      }
+
+      Object.assign(this, context);
+
+      return;
    }
 
    public createSchemaManager(): SchemaManager {
@@ -202,28 +219,39 @@ export class SchemaManager {
     */
    private readonly _context: ISchemaManagerContext;
 
-   // get formular(): EFormularDTO {
-   //    if (this.formulareService?.formular) {
-   //       return (this.formulareService.formular as Formular).formularDto;
-   //    }
-   // }
+   get formularDTO(): EFormularDTO {
+      return this.service.curFormular
+   }
 
-   // get formulareService(): FormulareService {
-   //    return this.getService('formulare-service') as FormulareService;
-   // }
+   get formularStatus(): EFormularStatus {
+		return  this.formularDTO?.status;
+   }
+
+   get formular(): Formular {
+      if (this.formulareService?.formular) {
+         return (this.formulareService.formular as Formular);
+      }
+   }
+
+   get formulareService(): FormulareService {
+      return this.getService('formulare-service') as FormulareService;
+   }
 
 
-   // get service(): LayoutService {
-   //    return this.getService('layout-service') as LayoutService;
-   // }
+   get service(): ProjektService {
+      return this.getService('projekt-service') as ProjektService;
+   }
 
-   // projekt: EProjektDTO;
+   get projekt(): EProjektDTO {
+      return this.service.CurProjekt
+   }
+
 
    Schema: ISchema;
    Values: any;
    DruckValues: any;
    DiffValues: any;
-   MemValues = {};
+   MemValues: any = {};
    ValuesChanged: boolean;
    FormularInitialised: boolean;
    Strings: any;
@@ -231,6 +259,7 @@ export class SchemaManager {
    Errors: IError[];
    SchemaErrors: ISchemaError[];
    highlightedFields: IHighlight[];
+   AllValidating: boolean;
    AllValidated: boolean;
 
    OnFocus: Subject<IComponent>;
@@ -284,6 +313,17 @@ export class SchemaManager {
     * 	Die neu konstruierte `SchemaManager` Instanz.
     */
    private constructor(context: ISchemaManagerContext) {
+      // Wurde ein gültiger Schema Manager Kontext spezifiziert?
+      if (!context || !context.settings || !context.settings.date) {
+         // Nein, wirf eine entsprechende Ausnahme!
+         throw Error('An invalid Schema Manager Context has been specified!');
+      }
+
+      // Wurde die optionale 'Services' Sammlung initialisiert?
+      if (!context.services) {
+         // Nein, initialisiere die optionale 'Services' Sammlung nun.
+         context.services = {} as ISchemaManagerServices;
+      }
 
       // Speichere die Kontext Instanz nun intern.
       this._context = context;
@@ -300,12 +340,27 @@ export class SchemaManager {
       this.OnChange = new Subject<IComponent>();
       this.OnNextStep = new Subject<IComponent>();
 
-      // Wir sind fertig, kehre nun zurück.
-      return;
+		setTimeout(() => this.checkForValueChanges(), 500);
    }
+	private async checkForValueChanges() {
+		try {
+			// Nur machen wenn wirklich ein Formular angezeigt wird
+			if (this.Schema && this.Schema.guid && this.formular?.formularTyp.toString().toLocaleLowerCase() === this.Schema?.guid?.toLocaleLowerCase()) {
+				if (this.formular && this.ValuesChanged) {
+					this.formular.setFieldSetValue(this.Schema.attribut, 0, JSON.stringify(this.Values));
+					this.ValuesChanged = false;
+				}
+			}
+		} catch (error) {
+			console.error(error);
+		}
+		finally {
+			setTimeout(() => this.checkForValueChanges(), 500);
+		}
+	}
 
    public static create(context?: ISchemaManagerContext): SchemaManager {
-      return new SchemaManagerProvider().createSchemaManager();
+      return new SchemaManagerProvider(context).createSchemaManager();
    }
 
    public get Context(): ISchemaManagerContext {
@@ -495,7 +550,6 @@ export class SchemaManager {
    }
 
    InitSettings() {
-      this.Context.settings = SCHEMA_MANAGER_DEFAULT_SETTINGS;
       this.Strings = strings[this.Settings.language];
    }
 
@@ -662,46 +716,54 @@ export class SchemaManager {
    }
    async loadValuesFromDB(DokumentGuid: string, attribut: string) {
       // this.formulareService.unloadFormular(true)
-      // await this.formulareService.loadFormularAsync(DokumentGuid)
-      // const jsonStr = this.formulareService.formular.getFieldSetValue(attribut, 0);
-      // if (jsonStr) {
-      //    this.Values = JSON.parse(jsonStr)
-      // }
+      await this.formulareService.loadFormularAsync(DokumentGuid)
+      const jsonStr = this.formular?.getFieldSetValue(attribut, 0);
+      if (jsonStr) {
+         this.Values = JSON.parse(jsonStr)
+      }
+      this.service.curFormular = this.formular?.formularDto
+
    }
 
    async saveValuesToDB(fortschritt?: number) {
+      if (!this.formular) {
+         let projektService = this.getService('projekt-service') as ProjektService;
+         let dto: EFormularDTO = {
+            mandant: projektService.CurIdentity.mandant,
+				guid: Guid.create().toString(),
+            formularTyp: {
+               guid: this.Schema.guid,
+            },
+            dokument: {
+               werte: [
+                  {
+                     attribut: this.Schema.attribut,
+                     index: 0,
+                  }
+               ]
+            },
+         }
+         await this.formulareService.loadFormularAsync(dto, true);
+      }
+      this.formular?.setFieldSetValue(this.Schema.attribut, 0, JSON.stringify(this.Values));
 
-      // if (!this.formulareService.formular) {
-      //    let layoutService = this.getService('layout-service') as LayoutService;
-      //    let dto: EFormularDTO = {
-      //       mandant: layoutService.CurIdentity.mandant,
-      //       formularTyp: {
-      //          guid: this.Schema.guid,
-      //       },
-      //       dokument: {
-      //          werte: [
-      //             {
-      //                attribut: this.Schema.attribut,
-      //                index: 0,
-      //                // daten: JSON.stringify(this.Values),
-      //             }
-      //          ]
-      //       },
-      //    }
-      //    this.formulareService.loadFormular(dto, true);
-      // }
-      // // else {
-      // this.formulareService.formular.setFieldSetValue(this.Schema.attribut, 0, JSON.stringify(this.Values));
-      // // }
-
-      // if (fortschritt) (this.formulareService.formular as Formular).formularDto.fortschritt = fortschritt;
-      // await this.formulareService.saveFormularAsync();
-      // this.ValuesChanged = false
-      // const jsonStr = this.formulareService.formular.getFieldSetValue(this.Schema.attribut, 0);
-      // if (jsonStr) {
-      //    this.Values = JSON.parse(jsonStr)
-      // }
+      if (fortschritt && this.formularDTO) this.formularDTO.fortschritt = fortschritt;
+      await this.formulareService.saveFormularAsync();
+      this.ValuesChanged = false
+      const jsonStr = this.formular?.getFieldSetValue(this.Schema.attribut, 0);
+      if (jsonStr) {
+         this.Values = JSON.parse(jsonStr)
+      }
+      this.service.curFormular = this.formular?.formularDto
    }
+
+   async saveStatus(status: EFormularStatus) {
+		if (this.formular) {
+      this.formular.status = status as EFormularStatus;
+      await this.formulareService.saveFormularAsync();
+      this.service.emitFormularStatusChange(this.formular.status)
+   }
+	}
 
    setValue(field: string, value: any, arrayInd: number = -1): boolean {
       const comp = this.getCompByField(field)
@@ -765,9 +827,13 @@ export class SchemaManager {
 
       this.UpdateDruckValue(comp)
 
+      this.validate(comp, val, arrayInd)
+      // this.checkRemoveRequiredError(comp, val);
+
       if (comp.onChange) {
          comp.onChange(this, comp, val);
       }
+
 
       if (this.Schema.onChange) {
          this.Schema.onChange(this, comp, val);
@@ -786,18 +852,30 @@ export class SchemaManager {
          const pd = this.getParentDataTable(comp)
          arrayInd = pd.curRowInd;
       }
-      this.removeErrors(comp, arrayInd);
-      if (SchemaManager.hasNoValue(value) && comp.required) {
-         this.addErrors(comp, `${this.Strings.required}`, arrayInd);
+      if (comp.type !== 'panel') {
+         if (comp.required) {
+            this.removeErrors(comp, arrayInd);
+            if (SchemaManager.hasNoValue(value)) {
+               this.addErrors(comp, `${this.Strings.required}`, arrayInd);
+            } 
+         }
       }
       if (comp.validate) {
          const errs = comp.validate(this, comp, value);
-         this.addErrors(comp, errs, arrayInd);
-      }
+         if (errs) {
+            //Fehler erst einfügen und anzeigen, nachdem einmal validateAll() aufgerufen wurde (z.B. beim Signieren)
+            if (this.AllValidating || this.AllValidated) {
+               this.addErrors(comp, errs, arrayInd);
+            }
+         } else {
+            this.removeErrors(comp, arrayInd);
+         }
+      } 
    }
 
    validateAll() {
       this.Errors = []
+      this.AllValidating = true;
       this.validate(this.Schema, '');
       this.traverseSchema(c => {
          if (c.field) {
@@ -807,10 +885,13 @@ export class SchemaManager {
                const typ = SchemaManager.checkValueType(arrVal);
                if (typ === IValueType.array) {
                   arrVal.forEach((obj, ind) => {
-                     c.detailComponent.children.forEach(comp => {
+							this.traverseSchema(comp => {
+								if (comp.field) {
                         const value = get(obj, comp.field);
                         this.validate(comp, value, ind);
-                     })
+								}
+
+							}, undefined, c)
                   })
                }
             } else if (!this.fieldIsInDataTable(c)) {
@@ -821,19 +902,56 @@ export class SchemaManager {
       });
       if (this.Schema.validate) {
          const errs = this.Schema.validate(this, this.Schema, null);
-         this.addErrors(this.Schema, errs);
+         if (errs) {
+            this.addErrors(this.Schema, errs);
+         }
       }
+      this.AllValidating = false;
       this.AllValidated = true;
    }
 
    private addErrors(comp: IComponent, errors?: string | string[], arrayInd?: number) {
       if (SchemaManager.hasNoValue(errors)) return;
-      if (typeof errors === 'string') errors = [errors];
-      const errs: IError[] = errors.map(error => {
-         return { comp, arrayInd, error };
-      });
-      this.Errors = this.Errors.concat(errs);
+      if (this.AllValidating || this.AllValidated) {
+         if (typeof errors === 'string') errors = [errors];
+         const errs: IError[] = errors.map(error => {
+            return { comp, arrayInd, error };
+         });
+         this.Errors = this.Errors.concat(errs);
+      }
    }
+
+	public getParentAbschnitt(comp: IComponent): IComponent | null {
+
+		let p = comp;
+		while (p) {
+		   if (p.istAbschnitt || !p.parentComp) {
+			  return p;
+		   }
+		   p = p.parentComp;
+		}
+		return this.Schema;
+	 }
+
+	public ScrollToParentAbschnitt(comp: IComponent) {
+		const p = this.getParentAbschnitt(comp)
+		document.querySelector('#' + p?.name).scrollIntoView();
+	}
+
+
+	public getErrorAbschnitte(): IComponent[] {
+		let res: IComponent[] = []
+		this.Errors.forEach(e => {
+			const ab = this.getParentAbschnitt(e.comp)
+			const vorh = res.find(c => c === ab)
+			if (!vorh) {
+				res.push(ab)
+			}
+		})
+		return res
+	}
+
+	   
 
    private removeErrors(comp: IComponent, arrayInd: number) {
       this.Errors = this.Errors.filter(e => !(e.comp === comp && e.arrayInd === arrayInd))
@@ -847,10 +965,20 @@ export class SchemaManager {
       this.Errors = [];
    }
 
+	// private checkRemoveRequiredError(comp: IComponent, val: any) {
+	// 	if (comp.required && !SchemaManager.hasNoValue(val)) {
+	// 		const ind = this.Errors.findIndex(e => e.comp === comp);
+	// 		if (ind > -1) {
+	// 			this.Errors = this.Errors.filter(e => !(e.comp === comp))
+	// 		}
+	// 	}
+	// }
+
+
    getError(comp: IComponent) {
       const pd = this.getParentDataTable(comp)
 
-      const arrayInd = pd && pd.curRowInd ? pd.curRowInd : -1;
+		const arrayInd = pd && typeof pd.curRowInd !== 'undefined' ? pd.curRowInd : -1;
       const error = this.Errors.find(e => e.comp === comp && e.arrayInd === arrayInd);
       return error ? error.error : '';
    }
@@ -872,7 +1000,6 @@ export class SchemaManager {
          if (comp.styles && comp.styles[stylename]) {
             return comp.styles[stylename];
          }
-         return ''
       }
    }
 
@@ -1121,7 +1248,6 @@ export class SchemaManager {
             return IValueType.object;
          }
       }
-      return IValueType.undefined;
    }
 
    checkOptionsValueType(val: any[]): boolean {

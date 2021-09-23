@@ -1,6 +1,5 @@
 import { DataType, IComponent, IComponentBoolFunction, IComponentString, IComponentStringFunction, IValueType, SchemaManager } from 'src/bi-formular-engine/src/public-api';
 // import { adress_suche_fn, adress_suche_panel } from './panel-adress-suche';
-import set from 'lodash.set';
 import { Router } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 

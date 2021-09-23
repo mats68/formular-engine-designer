@@ -3,7 +3,7 @@
 	<div class="flex items-center ml-3 mr-5 mb-4">
 		<div class="font-bold">{{this.sm.getPropValue(comp, 'label')}}</div>
 		<div class="ml-auto" *ngIf='!comp.hideAddBtn'>
-			<button mat-icon-button (click)="Insert()" [matTooltip]="">
+			<button mat-icon-button (click)="Insert()" [matTooltip]="this.sm.translate(this.KeyInsertRecord)">
 				<mat-icon color="primary">add_circle_outline</mat-icon>
 			</button>
 		</div>
@@ -12,7 +12,8 @@
 	<div class="grid grid-cols-16 gap-x-2 mx-3 h-auto">
 		<ng-container *ngFor="let coldef of comp.colDefs">
 			<div [class]="coldef.class">
-				<span class="text-xs">{{this.sm.resolveValue(coldef.title)}}</span>
+				<span *ngIf='!coldef.htmlTitle' class="text-xs">{{this.sm.resolveValue(coldef.title)}}</span>
+				<span *ngIf='coldef.htmlTitle' class="text-xs" [innerHTML]='coldef.title'></span>
 			</div>
 		</ng-container>
 	</div>
@@ -24,9 +25,10 @@
 					<ng-container *ngIf="isCheckBox(row, coldef)">
 						<mat-icon>{{row[coldef.field] ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
 					</ng-container>
-					<ng-container *ngIf='!isCheckBox(row, coldef)'>
+					<ng-container *ngIf='isNormalRow(row, coldef)'>
 						{{getCellText(row, coldef)}}
 					</ng-container>
+					<span *ngIf='isHTMLRow(row, coldef)' [innerHTML]='getCellText(row, coldef)'></span>
 				</div>
 
 				<div class="col-start-16 flex">
@@ -43,10 +45,10 @@
 					<mt-item [comp]="comp.detailComponent" [sm]="sm"></mt-item>
 					<div class="flex items-center">
 						<div class="ml-auto mb-4 mr-4 shadow-sm">
-							<button mat-icon-button (click)="CopyRow()" [matTooltip]="">
+							<button mat-icon-button (click)="CopyRow()" [matTooltip]="this.sm.translate(this.KeyCopyRecord)">
 								<mat-icon color="primary">content_copy</mat-icon>
 							</button>
-							<button mat-icon-button (click)="DeleteRow()" [matTooltip]="">
+							<button mat-icon-button (click)="DeleteRow()" [matTooltip]="this.sm.translate(this.KeyDeleteRecord)">
 								<mat-icon color="accent">delete</mat-icon>
 							</button>
 						</div>

@@ -6,7 +6,7 @@
   (click)='onClick()'
   [matTooltip]='tooltip'>
   <mat-icon *ngIf='comp.icon' class="text-with-icon">{{comp.icon}}</mat-icon>
-  <span [style]='styles("label")'>{{label}}</span>
+  <span [style]='styles("label")'[class]="getClass('','text')">{{label}}</span>
 </button>
 
 <button mat-flat-button *ngIf='k("flat")'
@@ -17,7 +17,7 @@
   (click)='onClick()'
   [matTooltip]='tooltip'>
   <mat-icon *ngIf='comp.icon' [class]="getClass('text-with-icon','icon')">{{comp.icon}}</mat-icon>
-  <span [style]='styles("label")'>{{label}}</span>
+  <span [style]='styles("label")'[class]="getClass('','text')">{{label}}</span>
 </button>
 
 <button mat-raised-button *ngIf='k("raised")'
@@ -28,7 +28,7 @@
   (click)='onClick()'
   [matTooltip]='tooltip'>
   <mat-icon *ngIf='comp.icon' [class]="getClass('text-with-icon','icon')">{{comp.icon}}</mat-icon>
-  <span [style]='styles("label")'>{{label}}</span>
+  <span [style]='styles("label")'[class]="getClass('','text')">{{label}}</span>
 </button>
 
 <button mat-stroked-button *ngIf='k("stroked")'
@@ -39,7 +39,7 @@
   (click)='onClick()'
   [matTooltip]='tooltip'>
   <mat-icon *ngIf='comp.icon' [class]="getClass('text-with-icon','icon')">{{comp.icon}}</mat-icon>
-  <span [style]='styles("label")'>{{label}}</span>
+  <span [style]='styles("label")'[class]="getClass('','text')">{{label}}</span>
 </button>
 
 <button *ngIf='k("icon")'

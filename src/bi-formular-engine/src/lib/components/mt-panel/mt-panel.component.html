@@ -1,3 +1,8 @@
 <div [style]='style' [class]="getClass(undefined, 'panel')" [id]='comp.name' tabindex="1">
 	<mt-container [comp]='comp' [sm]='sm' [class]="comp.class"></mt-container>
 </div>
+<mat-hint *ngIf='hint || getError()'>
+	<div *ngIf='getError()' class="error-color error-font">{{getError()}}</div>
+	<div *ngIf='hint && !getError()' class="error-font">{{hint}}</div>
+</mat-hint>
+

@@ -1,0 +1,45 @@
+.inputfile {
+    width: 0.1px;
+    height: 0.1px;
+    // text-color: #AEC7C1;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+  }
+  .inputfile:focus + label {
+    outline: 1px dotted #000;
+    outline: -webkit-focus-ring-color auto 5px;
+  }
+  .inputfile + label * {
+    pointer-events: none;
+  }
+  .upload-area:hover {
+    cursor: pointer;
+  }
+  .file_border{
+  // margin-left: 0.5rem;    
+  width: 100%;
+  border: #dee1e5;
+  border-style: dashed;
+  border-width: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px;
+  box-sizing: border-box;
+  min-width: 160px;
+}
+
+.file_icon{
+  fill: #348e7a;
+  margin-right: 11px;
+}
+
+.file_text{
+  color: #348e7a;
+  font-size: 16px;
+  font-family: Inter;
+  letter-spacing: 0.018em;
+  // text-align: center;
+}

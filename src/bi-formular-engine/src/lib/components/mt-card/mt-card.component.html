@@ -1,5 +1,5 @@
 <mat-card [style]='style' class='border-formstatus_leer' [id]='name'>
-    <mat-card-header>
+    <mat-card-header *ngIf='label'>
         <mat-card-title [style]='styles("header")'>
             <div class="flex items-center mb-4">
                 <span class="text-xl font-bold" [style]='styles("label")'>{{label}}</span>

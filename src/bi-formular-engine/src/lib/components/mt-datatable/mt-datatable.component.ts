@@ -3,6 +3,7 @@ import { IValueType, SchemaManager } from '../../base/schemaManager';
 import { ColDef, IComponent, ISummaryFunction } from '../../base/types';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MtBaseComponent } from '../../base/mt-base/mt-base.component';
+import { marker } from '@ngneat/transloco-keys-manager/marker';
 
 @Component({
 	selector: 'mt-datatable',
@@ -10,9 +11,9 @@ import { MtBaseComponent } from '../../base/mt-base/mt-base.component';
 	styleUrls: ['./mt-datatable.component.scss']
 })
 export class MtDatatableComponent extends MtBaseComponent implements OnInit, OnChanges {
-	// readonly KeyInsertRecord = marker('comp_data_table.tooltip_insert_record');
-	// readonly KeyCopyRecord = marker('comp_data_table.tooltip_copy_record');
-	// readonly KeyDeleteRecord = marker('comp_data_table.tooltip_delete_record');
+	readonly KeyInsertRecord = marker('comp_data_table.tooltip_insert_record');
+	readonly KeyCopyRecord = marker('comp_data_table.tooltip_copy_record');
+	readonly KeyDeleteRecord = marker('comp_data_table.tooltip_delete_record');
 
 	@Input() curRowInd: number;
 	@Input() data: any;
@@ -41,6 +42,15 @@ export class MtDatatableComponent extends MtBaseComponent implements OnInit, OnC
 		return (typeof val === 'boolean')
 	}
 
+  isNormalRow(row: any, colDef: ColDef): boolean {
+		return (!colDef.htmlContent && !this.isCheckBox(row, colDef))
+	}
+
+  isHTMLRow(row: any, colDef: ColDef): boolean {
+		return (colDef.htmlContent)
+	}
+
+
 	getCellText(row: any, colDef: ColDef): string {
 		if (colDef.expression) {
 			return colDef.expression(row);
@@ -48,6 +58,7 @@ export class MtDatatableComponent extends MtBaseComponent implements OnInit, OnC
 
 		return row[colDef.field];
 	}
+
 
 
   Insert(): void {

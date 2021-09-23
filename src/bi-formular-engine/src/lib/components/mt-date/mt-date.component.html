@@ -6,8 +6,8 @@
   [formControl]="date"  />
   <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
   <mat-datepicker #dp></mat-datepicker>
-  <mat-hint>
+  <mat-hint *ngIf='hint || getError()'>
     <div *ngIf='getError()' class="error-color">{{getError()}}</div>
-    <div *ngIf='comp.hint && !getError()'>{{hint}}</div>
+    <div *ngIf='hint && !getError()'>{{hint}}</div>
   </mat-hint>
 </mat-form-field>

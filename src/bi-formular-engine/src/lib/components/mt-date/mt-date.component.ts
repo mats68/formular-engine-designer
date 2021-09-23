@@ -70,13 +70,13 @@ export class MtDateComponent extends MtBaseComponent implements OnInit, OnChange
   updateFormat() {
     this.dateAdapter.setLocale(this.sm.Settings.language);
     // Hack from here: https://github.com/angular/components/issues/8355
-    setTimeout(() => {
-      const d = JSON.parse(JSON.stringify(this.picker._datepickerInput._dateFormats));
-      d.display.dateInput = this.sm.Settings.date.display.dateInput;
-      d.display.monthYearLabel = this.sm.Settings.date.display.monthYearLabel;
-      d.parse.dateInput = this.parseDateInput
-      this.picker._datepickerInput._dateFormats = d;
-    });
+    // setTimeout(() => {
+    //   const d = JSON.parse(JSON.stringify(this.picker.datepickerInput._dateFormats));
+    //   d.display.dateInput = this.sm.Settings.date.display.dateInput;
+    //   d.display.monthYearLabel = this.sm.Settings.date.display.monthYearLabel;
+    //   d.parse.dateInput = this.parseDateInput
+    //   this.picker.datepickerInput._dateFormats = d;
+    // });
 
   }
 

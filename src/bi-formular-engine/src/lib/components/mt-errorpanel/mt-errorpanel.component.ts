@@ -1,4 +1,5 @@
 import { Component, OnInit, OnChanges, Input, SimpleChanges } from '@angular/core';
+import { MtBaseComponent } from '../../base/mt-base/mt-base.component';
 import { SchemaManager, IError } from '../../base/schemaManager';
 import { IComponent } from '../../base/types';
 
@@ -7,39 +8,48 @@ import { IComponent } from '../../base/types';
   templateUrl: './mt-errorpanel.component.html',
   styleUrls: ['./mt-errorpanel.component.scss']
 })
-export class MtErrorpanelComponent implements OnInit, OnChanges {
-  @Input() sm: SchemaManager;
-  @Input() comp: IComponent;
+export class MtErrorpanelComponent extends MtBaseComponent implements OnInit, OnChanges {
   @Input() Errors: IError[];
   @Input() ErrorCount: number;
-
-  constructor() { }
+  ErrorAbschnitte: IComponent[] = []
 
   ngOnInit(): void {
   }
 
   ngOnChanges(): void {
-  }
+    this.ErrorAbschnitte = this.sm.getErrorAbschnitte()
 
-  clickError(error: IError) {
-    this.sm.DoFocus(error.comp, error.arrayInd);
   }
 
   hidePanel() {
-    this.sm.AllValidated = false;
+    // this.sm.AllValidated = false;
   }
 
-  panelVisible(): boolean {
-    return (this.Errors && this.Errors.length > 0 && this.sm.AllValidated);
+  // panelVisible(): boolean {
+  //   return (this.Errors && this.Errors.length > 0 && this.sm.AllValidated);
+  // }
+
+  hasError(): boolean {
+    return this.Errors && this.Errors.length > 0
   }
 
-getErrorLabel(error: IError): string {
-    let lb = '';
-    if (!error.comp) return lb;
-    lb = this.sm.getPropValue(error.comp, 'label');
-    if (!lb) return '';
-    const suff = error.arrayInd !== -1 ? ` ${this.sm.Strings.row} [${error.arrayInd+1}]` : '';
-    return `${lb}${suff}`;
+  getBgClass(): string {
+    return  this.hasError() ? 'bg-error' : 'bg-gray-left'
+  }
+  
+  getText(): string {
+    return this.hasError() ?  this.sm.translate('comp_errorpanel.text_nok') : this.sm.translate('comp_errorpanel.text_ok')
+  }
+
+
+
+  getErrorLabel(comp: IComponent): string {
+    const lb = this.sm.getPropValue(comp, 'label');
+    return lb || 'Fehler';
+  }
+
+  clickError(comp: IComponent) {
+    this.sm.ScrollToParentAbschnitt(comp)
   }
 
 

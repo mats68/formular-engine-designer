@@ -29,8 +29,9 @@
 <mt-icon *ngIf='isComp("icon")' [comp]='comp' [sm]='sm'></mt-icon>
 <mt-html *ngIf='isComp("html")' [comp]='comp' [sm]='sm'></mt-html>
 <mt-divider *ngIf='isComp("divider")' [comp]='comp' [sm]='sm'></mt-divider>
+<mt-div *ngIf='isComp("div")' [comp]='comp' [sm]='sm'></mt-div>
 <mt-errorpanel *ngIf='isComp("errorpanel")' [comp]='comp' [sm]='sm' [Errors]='sm.Errors' [ErrorCount]='sm.Errors.length'></mt-errorpanel>
 <mt-listpanel *ngIf='isComp("listpanel")' [comp]='comp' [sm]='sm' [listitems]='comp.listitems'></mt-listpanel>
 <mt-spinner *ngIf='isComp("spinner")' [comp]='comp' [sm]='sm'></mt-spinner>
-<!-- <mt-file-uploader *ngIf='isComp("fileuploader")' [comp]='comp' [sm]='sm'></mt-file-uploader> -->
-<!-- <mt-file-viewer *ngIf='isComp("fileviewer")' [comp]='comp' [sm]='sm'></mt-file-viewer> -->
+<mt-file-uploader *ngIf='isComp("fileuploader")' [comp]='comp' [sm]='sm'></mt-file-uploader>
+<mt-file-viewer *ngIf='isComp("fileviewer")' [comp]='comp' [sm]='sm'></mt-file-viewer>
