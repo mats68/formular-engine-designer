@@ -1,0 +1,29 @@
+// Diese Datei soll exklusiv die benötigten/verwendeten Angular Material Design Komponenten exportieren!
+export { MatAutocompleteModule } from '@angular/material/autocomplete';
+export { MatBadgeModule } from '@angular/material/badge';
+export { MatButtonModule } from '@angular/material/button';
+export { MatCardModule } from '@angular/material/card';
+export { MatCheckboxModule } from '@angular/material/checkbox';
+export { MatDatepickerModule } from '@angular/material/datepicker';
+export { MatDialogModule } from '@angular/material/dialog';
+export { MatExpansionModule } from '@angular/material/expansion';
+export { MatFormFieldModule } from '@angular/material/form-field';
+export { MatIconModule } from '@angular/material/icon';
+export { MatInputModule } from '@angular/material/input';
+export { MatListModule } from '@angular/material/list';
+export { MatMenuModule } from '@angular/material/menu';
+export { MatNativeDateModule } from '@angular/material/core';
+export { MatPaginatorModule } from '@angular/material/paginator';
+export { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+export { MatRadioModule } from '@angular/material/radio';
+export { MatSelectModule } from '@angular/material/select';
+export { MatSidenavModule } from '@angular/material/sidenav';
+export { MatSlideToggleModule } from '@angular/material/slide-toggle';
+export { MatSortModule } from '@angular/material/sort';
+export { MatStepperModule } from '@angular/material/stepper';
+export { MatTableModule } from '@angular/material/table';
+export { MatTabsModule } from '@angular/material/tabs';
+export { MatToolbarModule } from '@angular/material/toolbar';
+export { MatTooltipModule } from '@angular/material/tooltip'
+
+export { ResizableModule } from 'angular-resizable-element';

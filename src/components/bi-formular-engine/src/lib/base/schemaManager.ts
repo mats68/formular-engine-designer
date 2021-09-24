@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { strings } from './strings';
 import { ISchema, IComponent, ComponentType, ISelectOptionItems, DataType, IScreenSize, IAppearance, SchemaKeys, ComponentKeys, IMussfelder, IComponentString, ITranslatableString } from './types';
 import { err_schema, err_notype, err_typewrong, err_noChild, err_zeroChild, err_noField, err_doubleField, err_doubleName, err_noOptions, err_OptionsArray, err_zeroOptions, err_wrongOptions, err_OptionsDoubleValues, err_noIcon, err_noDataTableInDataTable, err_noDataTableNoField, err_unn } from './constants'
@@ -161,7 +161,7 @@ export interface ISchemaManagerContext {
 @Injectable({ providedIn: 'root' })
 export class SchemaManagerProvider
    implements ISchemaManagerContext {
-   constructor(context?: ISchemaManagerContext) {
+   constructor(@Inject('context') private context: ISchemaManagerContext) {
       if (!context) {
          context = {} as ISchemaManagerContext;
       }
@@ -224,7 +224,7 @@ export class SchemaManager {
    }
 
    get formularStatus(): EFormularStatus {
-		return  this.formularDTO?.status;
+      return this.formularDTO?.status;
    }
 
    get formular(): Formular {
@@ -340,24 +340,24 @@ export class SchemaManager {
       this.OnChange = new Subject<IComponent>();
       this.OnNextStep = new Subject<IComponent>();
 
-		setTimeout(() => this.checkForValueChanges(), 500);
+      setTimeout(() => this.checkForValueChanges(), 500);
    }
-	private async checkForValueChanges() {
-		try {
-			// Nur machen wenn wirklich ein Formular angezeigt wird
-			if (this.Schema && this.Schema.guid && this.formular?.formularTyp.toString().toLocaleLowerCase() === this.Schema?.guid?.toLocaleLowerCase()) {
-				if (this.formular && this.ValuesChanged) {
-					this.formular.setFieldSetValue(this.Schema.attribut, 0, JSON.stringify(this.Values));
-					this.ValuesChanged = false;
-				}
-			}
-		} catch (error) {
-			console.error(error);
-		}
-		finally {
-			setTimeout(() => this.checkForValueChanges(), 500);
-		}
-	}
+   private async checkForValueChanges() {
+      try {
+         // Nur machen wenn wirklich ein Formular angezeigt wird
+         if (this.Schema && this.Schema.guid && this.formular?.formularTyp.toString().toLocaleLowerCase() === this.Schema?.guid?.toLocaleLowerCase()) {
+            if (this.formular && this.ValuesChanged) {
+               this.formular.setFieldSetValue(this.Schema.attribut, 0, JSON.stringify(this.Values));
+               this.ValuesChanged = false;
+            }
+         }
+      } catch (error) {
+         console.error(error);
+      }
+      finally {
+         setTimeout(() => this.checkForValueChanges(), 500);
+      }
+   }
 
    public static create(context?: ISchemaManagerContext): SchemaManager {
       return new SchemaManagerProvider(context).createSchemaManager();
@@ -730,7 +730,7 @@ export class SchemaManager {
          let projektService = this.getService('projekt-service') as ProjektService;
          let dto: EFormularDTO = {
             mandant: projektService.CurIdentity.mandant,
-				guid: Guid.create().toString(),
+            guid: Guid.create().toString(),
             formularTyp: {
                guid: this.Schema.guid,
             },
@@ -758,12 +758,12 @@ export class SchemaManager {
    }
 
    async saveStatus(status: EFormularStatus) {
-		if (this.formular) {
-      this.formular.status = status as EFormularStatus;
-      await this.formulareService.saveFormularAsync();
-      this.service.emitFormularStatusChange(this.formular.status)
+      if (this.formular) {
+         this.formular.status = status as EFormularStatus;
+         await this.formulareService.saveFormularAsync();
+         this.service.emitFormularStatusChange(this.formular.status)
+      }
    }
-	}
 
    setValue(field: string, value: any, arrayInd: number = -1): boolean {
       const comp = this.getCompByField(field)
@@ -857,7 +857,7 @@ export class SchemaManager {
             this.removeErrors(comp, arrayInd);
             if (SchemaManager.hasNoValue(value)) {
                this.addErrors(comp, `${this.Strings.required}`, arrayInd);
-            } 
+            }
          }
       }
       if (comp.validate) {
@@ -870,7 +870,7 @@ export class SchemaManager {
          } else {
             this.removeErrors(comp, arrayInd);
          }
-      } 
+      }
    }
 
    validateAll() {
@@ -885,13 +885,13 @@ export class SchemaManager {
                const typ = SchemaManager.checkValueType(arrVal);
                if (typ === IValueType.array) {
                   arrVal.forEach((obj, ind) => {
-							this.traverseSchema(comp => {
-								if (comp.field) {
-                        const value = get(obj, comp.field);
-                        this.validate(comp, value, ind);
-								}
+                     this.traverseSchema(comp => {
+                        if (comp.field) {
+                           const value = get(obj, comp.field);
+                           this.validate(comp, value, ind);
+                        }
 
-							}, undefined, c)
+                     }, undefined, c)
                   })
                }
             } else if (!this.fieldIsInDataTable(c)) {
@@ -921,37 +921,37 @@ export class SchemaManager {
       }
    }
 
-	public getParentAbschnitt(comp: IComponent): IComponent | null {
+   public getParentAbschnitt(comp: IComponent): IComponent | null {
 
-		let p = comp;
-		while (p) {
-		   if (p.istAbschnitt || !p.parentComp) {
-			  return p;
-		   }
-		   p = p.parentComp;
-		}
-		return this.Schema;
-	 }
+      let p = comp;
+      while (p) {
+         if (p.istAbschnitt || !p.parentComp) {
+            return p;
+         }
+         p = p.parentComp;
+      }
+      return this.Schema;
+   }
 
-	public ScrollToParentAbschnitt(comp: IComponent) {
-		const p = this.getParentAbschnitt(comp)
-		document.querySelector('#' + p?.name).scrollIntoView();
-	}
+   public ScrollToParentAbschnitt(comp: IComponent) {
+      const p = this.getParentAbschnitt(comp)
+      document.querySelector('#' + p?.name).scrollIntoView();
+   }
 
 
-	public getErrorAbschnitte(): IComponent[] {
-		let res: IComponent[] = []
-		this.Errors.forEach(e => {
-			const ab = this.getParentAbschnitt(e.comp)
-			const vorh = res.find(c => c === ab)
-			if (!vorh) {
-				res.push(ab)
-			}
-		})
-		return res
-	}
+   public getErrorAbschnitte(): IComponent[] {
+      let res: IComponent[] = []
+      this.Errors.forEach(e => {
+         const ab = this.getParentAbschnitt(e.comp)
+         const vorh = res.find(c => c === ab)
+         if (!vorh) {
+            res.push(ab)
+         }
+      })
+      return res
+   }
 
-	   
+
 
    private removeErrors(comp: IComponent, arrayInd: number) {
       this.Errors = this.Errors.filter(e => !(e.comp === comp && e.arrayInd === arrayInd))
@@ -965,20 +965,20 @@ export class SchemaManager {
       this.Errors = [];
    }
 
-	// private checkRemoveRequiredError(comp: IComponent, val: any) {
-	// 	if (comp.required && !SchemaManager.hasNoValue(val)) {
-	// 		const ind = this.Errors.findIndex(e => e.comp === comp);
-	// 		if (ind > -1) {
-	// 			this.Errors = this.Errors.filter(e => !(e.comp === comp))
-	// 		}
-	// 	}
-	// }
+   // private checkRemoveRequiredError(comp: IComponent, val: any) {
+   // 	if (comp.required && !SchemaManager.hasNoValue(val)) {
+   // 		const ind = this.Errors.findIndex(e => e.comp === comp);
+   // 		if (ind > -1) {
+   // 			this.Errors = this.Errors.filter(e => !(e.comp === comp))
+   // 		}
+   // 	}
+   // }
 
 
    getError(comp: IComponent) {
       const pd = this.getParentDataTable(comp)
 
-		const arrayInd = pd && typeof pd.curRowInd !== 'undefined' ? pd.curRowInd : -1;
+      const arrayInd = pd && typeof pd.curRowInd !== 'undefined' ? pd.curRowInd : -1;
       const error = this.Errors.find(e => e.comp === comp && e.arrayInd === arrayInd);
       return error ? error.error : '';
    }

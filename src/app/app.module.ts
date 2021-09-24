@@ -1,8 +1,8 @@
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { inject, NgModule } from '@angular/core';
-import { BiFormModuleModule, ISchemaManagerContext, ISchemaManagerServices, ISchemaManagerTranslator, SchemaManagerProvider } from 'src/bi-formular-engine/src/public-api';
+import { BiFormModuleModule, ISchemaManagerContext, ISchemaManagerServices, ISchemaManagerTranslator, SchemaManagerProvider } from 'src/components/bi-formular-engine/src/public-api';
 import { TranslocoPersistLangModule, TRANSLOCO_PERSIST_LANG_STORAGE } from '@ngneat/transloco-persist-lang';
 import { TranslocoService } from '@ngneat/transloco';
 
@@ -18,6 +18,13 @@ import {
 }
 	from './services';
 import { FormulareService } from './services/formulare-service/formulare-service.service';
+import { TranslocoRootModule } from './transloco/transloco-root.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { InlineSVGModule } from 'ng-inline-svg';
+import { MaterialDesignModule } from 'src/components/material-design/material-design.module';
+import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FileUploadModule } from 'ng2-file-upload';
 
 
 @NgModule({
@@ -26,9 +33,18 @@ import { FormulareService } from './services/formulare-service/formulare-service
 
 	],
 	imports: [
-    BiFormModuleModule,
+		BiFormModuleModule,
 		BrowserAnimationsModule,
 		BrowserModule,
+		CommonModule,
+		FileUploadModule,
+		FormsModule,
+		HttpClientModule,
+		InlineSVGModule,
+		MaterialDesignModule,
+		ReactiveFormsModule,
+		RouterModule.forRoot([]),
+		TranslocoRootModule,
 		TranslocoPersistLangModule.init({
 			storage: {
 				provide: TRANSLOCO_PERSIST_LANG_STORAGE,

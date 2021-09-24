@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+	<defs>
+		<style>.background{fill:none;}</style>
+	</defs>
+	<rect class="background" width="24" height="24"/>
+	<path class="icon" d="M958,528v16.562l-5.281-5.281-1.438,1.438,7,7,.719.687.719-.687,7-7-1.438-1.438L960,544.562V528Zm-8,22v2h18v-2Zm0,0" transform="translate(-947 -528)"/>
+</svg>

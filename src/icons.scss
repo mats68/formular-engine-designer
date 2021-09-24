@@ -1,0 +1,26 @@
+@mixin icon-projekt($backgroundColor: #FCC42F, $plateColor: none, $iconColor: false, $width: auto, $height: 100%) {
+	::ng-deep > svg {
+		display: block;
+
+		width: $width;
+		height: $height;
+
+		@if($backgroundColor) {
+			.background {
+				fill: $backgroundColor;
+			}
+		}
+
+		@if($plateColor) {
+			.plate {
+				fill: $plateColor;
+			}
+		}
+
+		@if($iconColor) {
+			.icon {
+				fill: $iconColor;
+			}
+		}
+	}
+}

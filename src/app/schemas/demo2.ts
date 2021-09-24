@@ -1,4 +1,4 @@
-import { ISchema } from "src/bi-formular-engine/src/public-api";
+import { ISchema } from "src/components/bi-formular-engine/src/public-api";
 import { card_panel, label_Input, label_Input_Date_ISO } from "../schema-utils";
 
 export const DEMO_2: ISchema = {

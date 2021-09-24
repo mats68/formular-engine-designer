@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 759 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1,0,0,1,-4098.43,-5159.92)">
+        <g transform="matrix(4.16667,0,0,4.16667,0,0)">
+            <g transform="matrix(1,0,0,1,-434.698,329.196)">
+                <g transform="matrix(1,0,0,1,1049.82,129.879)">
+                    <text x="379.118px" y="792.191px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;fill:white;">E<tspan x="392.654px 398.183px 409.724px 420.254px 426.785px 434.309px " y="792.191px 792.191px 792.191px 792.191px 792.191px 792.191px ">lektro</tspan></text>
+                    <text x="445.85px" y="792.191px" style="font-family:'Arial-BoldMT', 'Arial', sans-serif;font-weight:700;font-size:18px;fill:white;">F<tspan x="458.375px 470.9px 479.435px " y="792.191px 792.191px 792.191px ">orm</tspan></text>
+                    <text x="505.133px" y="792.191px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:18px;fill:white;"><tspan x="505.133px 515.663px 527.204px 532.733px 544.274px " y="792.191px 792.191px 792.191px 792.191px 792.191px ">solar</tspan></text>
+                </g>
+                <g transform="matrix(-1,0,0,1,1946.94,-855.813)">
+                    <rect x="447.061" y="1785.85" width="3" height="3" style="fill:white;"/>
+                </g>
+                <g transform="matrix(-1,0,0,1,1974.01,-855.813)">
+                    <rect x="460.594" y="1785.85" width="3" height="3" style="fill:white;"/>
+                </g>
+                <g transform="matrix(-1,0,0,1,1789.82,-855.747)">
+                    <rect x="368.499" y="1785.81" width="3" height="3" style="fill:white;"/>
+                </g>
+                <g transform="matrix(-1,0,0,1,1899.22,-855.747)">
+                    <rect x="423.199" y="1785.81" width="3" height="3" style="fill:white;"/>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

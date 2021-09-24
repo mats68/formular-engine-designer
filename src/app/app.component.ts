@@ -1,7 +1,10 @@
-import { Component } from '@angular/core';
-import { ISchema, ISelectOptionItems, SchemaManager, SchemaManagerProvider } from 'src/bi-formular-engine/src/public-api';
+import { Component, Inject } from '@angular/core';
+import { ISchema, ISelectOptionItems, SchemaManager, SchemaManagerProvider } from 'src/components/bi-formular-engine/src/public-api';
 import * as schemas from 'src/app/schemas';
 import { initInputWidths, initLabels } from './schema-utils';
+import { ProjektService } from './services';
+import { TranslocoService } from '@ngneat/transloco';
+import { DOCUMENT } from '@angular/common';
 
 let _schema: ISchema
 let _SchemaManager: SchemaManager
@@ -13,6 +16,27 @@ let _SchemaManager: SchemaManager
 })
 export class AppComponent {
   title = 'formular-engine-designer';
+	constructor(
+		private readonly _projektService: ProjektService,
+		private readonly _translationService: TranslocoService,
+		@Inject(DOCUMENT)
+		private readonly _document: any,
+    private readonly _schemaManagerProvider: SchemaManagerProvider,
+	)
+	{
+
+		// Observiere die aktuell ausgewählte Sprache mittels dem Transloco-Service.
+		this._translationService.langChanges$.subscribe(
+			(selectedLanguage: string) =>
+			{
+				// Die Sprache wurde geändert, aktualisiere den Wert des `lang`_Attributes des `<html>` Elementes.
+				this._document.documentElement.lang = selectedLanguage;
+			}
+		);
+    _SchemaManager = this._schemaManagerProvider.createSchemaManager();
+
+	}
+
   get schemaManager() {return _SchemaManager}
   get schema() {return _schema}
 
@@ -55,13 +79,13 @@ export class AppComponent {
     ]
   }
 
-  constructor(
-    private readonly _schemaManagerProvider: SchemaManagerProvider,
-  ) {
-    _SchemaManager = this._schemaManagerProvider.createSchemaManager();
+  // constructor(
+  //   // private readonly _schemaManagerProvider: SchemaManagerProvider,
+  // ) {
+  //   // _SchemaManager = this._schemaManagerProvider.createSchemaManager();
 
 
-  }
+  // }
 
   werte_anzeigen(): boolean {
     return this.schema && this.schemaManagerSelect?.Values?.v

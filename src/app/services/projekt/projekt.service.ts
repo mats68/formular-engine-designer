@@ -339,7 +339,6 @@ export class ProjektService {
 	NavbarExpanded: boolean = false;
 	NotificationbarExpanded: boolean = false;
 	CurProjekt: EProjektDTO = null;
-	curPhase: ProjektPhase = null;
 	CurAnlage: EAnlageDTO = null;
 	CurBeilageFileDef: BeilageFileDef = null
 	curFormular?: EFormularDTO
@@ -349,14 +348,10 @@ export class ProjektService {
 	CurIdentity: IdentityContextDTO = null
 	permissionSetDTO: PermissionSetDTO = null
 	CurMitarbeiter: MitarbeiterDTO = null
-	// CurGeschStelleDTO: GeschStelleDTO = null
-	SearchData: ISearchData = {}
 	Emitter = new EventEmitter.EventEmitter();
 
 	constructor(
 		private mitarbeiterService: MitarbeiterService,
-		private _authenticationService: AuthenticationService,
-		private authorizationService: AuthorizationService,
 		private projekteService: EProjekteService,
 		private aktionenService: EAktionenService,
 		private dokumenteService: EDokumenteService,
@@ -394,83 +389,83 @@ export class ProjektService {
 
 	public get Router() { return this.router; }
 
-	public Load_Identity_Berechtigungen(): Promise<string> {
-		return new Promise((resolve, reject) => {
-			var navItems: INavbarItem[] = [StartseiteItem, ProjekteItem]
-			this.navbarItems$.next(navItems);
-			this.LoadIdentityContext()
-				.then(s => this.LoadBerechtigungenSet())
-				.then(s => this.IsHoldingAdmin())
-				.then(h => {
-					if (h === true) {
-						navItems.push(GeschStellenItem);
-						navItems.push(ProduktLizenzenItem);
-						this.navbarItems$.next(navItems);
-					}
-					resolve('')
-				})
-				.catch(error => {
-					reject(error)
-				})
-		});
-	}
+	// public Load_Identity_Berechtigungen(): Promise<string> {
+	// 	return new Promise((resolve, reject) => {
+	// 		var navItems: INavbarItem[] = [StartseiteItem, ProjekteItem]
+	// 		this.navbarItems$.next(navItems);
+	// 		this.LoadIdentityContext()
+	// 			.then(s => this.LoadBerechtigungenSet())
+	// 			.then(s => this.IsHoldingAdmin())
+	// 			.then(h => {
+	// 				if (h === true) {
+	// 					navItems.push(GeschStellenItem);
+	// 					navItems.push(ProduktLizenzenItem);
+	// 					this.navbarItems$.next(navItems);
+	// 				}
+	// 				resolve('')
+	// 			})
+	// 			.catch(error => {
+	// 				reject(error)
+	// 			})
+	// 	});
+	// }
 
 
-	public IsBIAdmin(): Promise<boolean> {
-		return this.authorizationService.isBiAdministrator();
-	}
+	// public IsBIAdmin(): Promise<boolean> {
+	// 	return this.authorizationService.isBiAdministrator();
+	// }
 
-	public IsHoldingAdmin(): Promise<boolean> {
-		return this.authorizationService.isHoldingAdministrator();
-	}
+	// public IsHoldingAdmin(): Promise<boolean> {
+	// 	return this.authorizationService.isHoldingAdministrator();
+	// }
 
-	public LoadBerechtigungenSet(): Promise<string> {
-		return this.authorizationService.getGlobalIdentityPermissionsSet().toPromise()
-			.then(t => '')
-			.catch(error => {
-				const err = 'No roles for user defined'
-				console.error(err, error)
-				this.permissionSetDTO = undefined
-				return err
-			});
-	}
+	// public LoadBerechtigungenSet(): Promise<string> {
+	// 	return this.authorizationService.getGlobalIdentityPermissionsSet().toPromise()
+	// 		.then(t => '')
+	// 		.catch(error => {
+	// 			const err = 'No roles for user defined'
+	// 			console.error(err, error)
+	// 			this.permissionSetDTO = undefined
+	// 			return err
+	// 		});
+	// }
 
-	private LoadIdentityContext(): Promise<string> {
-		return new Promise((resolve, reject) => {
-			if (this.CurIdentity && this.Identities) {
-				resolve('')
-				return
-			}
-			this.mitarbeiterService.apiV1MitarbeiterApiV1MitarbeiterIdentityGet().pipe(catchError(e => {
-				const error = 'Fehler bei Abfrage des Identity Contexts'
-				console.error(error)
-				reject(error)
-				return throwError(e);
-			})).subscribe(
-				(data) => {
-					data = data ?? [];
-					this.Identities = data;
-					if (data.length === 1) {
-						this.SwitchIdentityContext(data[0])
-						resolve('')
-					} else if (data.length > 1) {
-						resolve('')
-					} else {
-						const error = 'Identity Context: Keine Identitäten gefunden!'
-						console.error(error)
-						reject(error)
-					}
-				})
-		}
-		)
-	}
+	// private LoadIdentityContext(): Promise<string> {
+	// 	return new Promise((resolve, reject) => {
+	// 		if (this.CurIdentity && this.Identities) {
+	// 			resolve('')
+	// 			return
+	// 		}
+	// 		this.mitarbeiterService.apiV1MitarbeiterApiV1MitarbeiterIdentityGet().pipe(catchError(e => {
+	// 			const error = 'Fehler bei Abfrage des Identity Contexts'
+	// 			console.error(error)
+	// 			reject(error)
+	// 			return throwError(e);
+	// 		})).subscribe(
+	// 			(data) => {
+	// 				data = data ?? [];
+	// 				this.Identities = data;
+	// 				if (data.length === 1) {
+	// 					this.SwitchIdentityContext(data[0])
+	// 					resolve('')
+	// 				} else if (data.length > 1) {
+	// 					resolve('')
+	// 				} else {
+	// 					const error = 'Identity Context: Keine Identitäten gefunden!'
+	// 					console.error(error)
+	// 					reject(error)
+	// 				}
+	// 			})
+	// 	}
+	// 	)
+	// }
 
-	SwitchIdentityContext(identity: IdentityContextDTO) {
-		this.permissionSetDTO = undefined
-		this.CurIdentity = identity
-		this.authorizationService.purgePermissionsSetCache()
-		this.authorizationService.switchContext(identity.mandant, identity.holding, identity.geschaeftsstelle, identity.mitarbeiter)
-	}
+	// SwitchIdentityContext(identity: IdentityContextDTO) {
+	// 	this.permissionSetDTO = undefined
+	// 	this.CurIdentity = identity
+	// 	this.authorizationService.purgePermissionsSetCache()
+	// 	this.authorizationService.switchContext(identity.mandant, identity.holding, identity.geschaeftsstelle, identity.mitarbeiter)
+	// }
 
 	registerReloadProjekt(fn: any) {
 		this.Emitter.on('reloadProjekt', fn)
@@ -521,17 +516,17 @@ export class ProjektService {
 	}
 
 
-	registerExpandPhase(fn: (projektPhase: ProjektPhase) => void) {
-		this.Emitter.on('expandPhase', fn)
-	}
+	// registerExpandPhase(fn: (projektPhase: ProjektPhase) => void) {
+	// 	this.Emitter.on('expandPhase', fn)
+	// }
 
-	unRegisterExpandPhase(fn: (projektPhase: ProjektPhase) => void) {
-		this.Emitter.removeListener('expandPhase', fn)
-	}
+	// unRegisterExpandPhase(fn: (projektPhase: ProjektPhase) => void) {
+	// 	this.Emitter.removeListener('expandPhase', fn)
+	// }
 
-	emitReloadExpandPhase(projektPhase: ProjektPhase) {
-		this.Emitter.emit('expandPhase', projektPhase)
-	}
+	// emitReloadExpandPhase(projektPhase: ProjektPhase) {
+	// 	this.Emitter.emit('expandPhase', projektPhase)
+	// }
 
 	registerFormularStatusChange(fn: (status: EFormularStatus) => void) {
 		this.Emitter.on('formularStatusChange', fn)
@@ -611,17 +606,17 @@ export class ProjektService {
 		let startItems: BreadCrumbItem[] = []
 
 		// das zweite BreadCrumb Item mit such-item ersetzen / ergänzen falls in einer Suche war
-		if (this.BreadCrumbInSearch && this.SearchData.searchText) {
-			const searchText = this.SearchData.searchText.split(' ').filter(s => s !== ' ' && s !== '').map(s => '"' + s + '"').join(' und ')
-			startItems.push({ titel: `Suche nach ${searchText}`, url: '/search', queryParams: { search: this.SearchData.searchText, originurl: this.SearchData.originUrl } })
-			if (items.length === 1) {
-				startItems.push(items[0])
-			} else if (items.length === 2) {
-				startItems.push(items[1])
-			}
-		} else {
-			startItems.push(...items)
-		}
+		// if (this.BreadCrumbInSearch && this.SearchData.searchText) {
+		// 	const searchText = this.SearchData.searchText.split(' ').filter(s => s !== ' ' && s !== '').map(s => '"' + s + '"').join(' und ')
+		// 	startItems.push({ titel: `Suche nach ${searchText}`, url: '/search', queryParams: { search: this.SearchData.searchText, originurl: this.SearchData.originUrl } })
+		// 	if (items.length === 1) {
+		// 		startItems.push(items[0])
+		// 	} else if (items.length === 2) {
+		// 		startItems.push(items[1])
+		// 	}
+		// } else {
+		// 	startItems.push(...items)
+		// }
 		this.BreadCrumbData = startItems
 		// if (this.BreadCrumbData.length === 0) {
 		// 	this.BreadCrumbData = [{ titel: 'Startseite', url: '/dashboard' }]
@@ -629,13 +624,13 @@ export class ProjektService {
 	}
 
 
-	CurIdentityBenutzerName(): string {
-		if (this.CurIdentity) {
-			return `${this.CurIdentity.mitarbeiterVorname} ${this.CurIdentity.mitarbeiterNachname}`
-		} else {
-			return this._authenticationService.userName;
-		}
-	}
+	// CurIdentityBenutzerName(): string {
+	// 	if (this.CurIdentity) {
+	// 		return `${this.CurIdentity.mitarbeiterVorname} ${this.CurIdentity.mitarbeiterNachname}`
+	// 	} else {
+	// 		return this._authenticationService.userName;
+	// 	}
+	// }
 
 	/**
 	 * Diese Methode setzt den Seiten-Hintergrund auf die angegebene Bild-URL.
@@ -947,50 +942,51 @@ export class ProjektService {
 
 
 	public SavePDFAttachment(formular: EFormularDTO, formularTyp: string): Promise<any> {
-		if (!formularTyp)
-			formularTyp = guid_attachment;
+		return
+	// 	if (!formularTyp)
+	// 		formularTyp = guid_attachment;
 
 
-		const existing = formular.formularDokumentPool?.find(b => b.formularBeilage?.formularTyp.guid === formularTyp)
-		if (existing && existing.formularBeilage) {
-			if (!confirm(`Vorhandene Beilage "${existing.formularBeilage.dokument.originalName}" ersetzen ?`)) {
-				return
-			}
-		}
-		const guid = existing && existing.formularBeilage ? existing.formularBeilage.guid : Guid.create().toString();
+	// 	const existing = formular.formularDokumentPool?.find(b => b.formularBeilage?.formularTyp.guid === formularTyp)
+	// 	if (existing && existing.formularBeilage) {
+	// 		if (!confirm(`Vorhandene Beilage "${existing.formularBeilage.dokument.originalName}" ersetzen ?`)) {
+	// 			return
+	// 		}
+	// 	}
+	// 	const guid = existing && existing.formularBeilage ? existing.formularBeilage.guid : Guid.create().toString();
 
-		const beilage: EFormularBeilageDTO = {
-			mandant: formular.mandant,
-			formular: formular.guid,
-			guid: guid,
-			formularTyp: {
-				guid: formularTyp,
-			},
-		}
+	// 	const beilage: EFormularBeilageDTO = {
+	// 		mandant: formular.mandant,
+	// 		formular: formular.guid,
+	// 		guid: guid,
+	// 		formularTyp: {
+	// 			guid: formularTyp,
+	// 		},
+	// 	}
 
-		return this.formulareService.apiV1EFormulareAttachmentsPost(
-			beilage
-		).pipe(map(
-			(data) => {
-				return data;
-			}),
-			catchError(e => {
-				console.error('Fehler beim Speichern des Attachments', e);
-				return throwError(e);
-			})).toPromise() as Promise<any>
-	}
+	// 	return this.formulareService.apiV1EFormulareAttachmentsPost(
+	// 		beilage
+	// 	).pipe(map(
+	// 		(data) => {
+	// 			return data;
+	// 		}),
+	// 		catchError(e => {
+	// 			console.error('Fehler beim Speichern des Attachments', e);
+	// 			return throwError(e);
+	// 		})).toPromise() as Promise<any>
+	// }
 
-	public DeletePDFAttachment(guid: string): Promise<any> {
-		return this.formulareService.apiV1EFormulareAttachmentsGuidDelete(
-			guid
-		).pipe(map(
-			(data) => {
-				return data;
-			}),
-			catchError(e => {
-				console.error('Fehler beim Löschen des Attachments', e);
-				return throwError(e);
-			})).toPromise() as Promise<any>
+	// public DeletePDFAttachment(guid: string): Promise<any> {
+	// 	return this.formulareService.apiV1EFormulareAttachmentsGuidDelete(
+	// 		guid
+	// 	).pipe(map(
+	// 		(data) => {
+	// 			return data;
+	// 		}),
+	// 		catchError(e => {
+	// 			console.error('Fehler beim Löschen des Attachments', e);
+	// 			return throwError(e);
+	// 		})).toPromise() as Promise<any>
 	}
 
 
@@ -1015,30 +1011,30 @@ export class ProjektService {
 		await this.SavePDF(formular.dokument.guid, file)
 	}
 
-	async SavePDF_as_Beilage(file: File, auftragsGuid: string, dokumentGuid: string, formularTypGuid: string): Promise<any> {
-		if (dokumentGuid) {
-			let formular = await this.LoadFormular(dokumentGuid)
-			const doc = await this.SavePDFAttachment(formular, formularTypGuid);
-			await this.SavePDF(doc.dokument.guid, file);
+	// async SavePDF_as_Beilage(file: File, auftragsGuid: string, dokumentGuid: string, formularTypGuid: string): Promise<any> {
+	// 	if (dokumentGuid) {
+	// 		let formular = await this.LoadFormular(dokumentGuid)
+	// 		const doc = await this.SavePDFAttachment(formular, formularTypGuid);
+	// 		await this.SavePDF(doc.dokument.guid, file);
 
-			const dokumentPool: EAuftragDokumentPoolDTO = {
-				guidAuftrag: auftragsGuid,
-				guidBeilage: doc.guid
-			}
-			await this.Save_Dokument_Pool(dokumentPool)
+	// 		const dokumentPool: EAuftragDokumentPoolDTO = {
+	// 			guidAuftrag: auftragsGuid,
+	// 			guidBeilage: doc.guid
+	// 		}
+	// 		await this.Save_Dokument_Pool(dokumentPool)
 
-			const formularDokumentPool: EFormularDokumentPoolDTO = {
-				guidFormular: formular.guid,
-				guidFormularBeilagen: doc.guid
-			}
+	// 		const formularDokumentPool: EFormularDokumentPoolDTO = {
+	// 			guidFormular: formular.guid,
+	// 			guidFormularBeilagen: doc.guid
+	// 		}
 
-			let result = await this.Insert_Remove_FormularDokumentPool(true, formularDokumentPool);
-			// Formular noch mal vom Server laden, damit die Beilagen nun wirklich komplett sind
-			formular = await this.LoadFormular(dokumentGuid);
-			const beilage = formular.formularDokumentPool.find(fdp=>fdp.formularBeilage.guid == doc.guid);
-			return beilage;
-		}
-	}
+	// 		let result = await this.Insert_Remove_FormularDokumentPool(true, formularDokumentPool);
+	// 		// Formular noch mal vom Server laden, damit die Beilagen nun wirklich komplett sind
+	// 		formular = await this.LoadFormular(dokumentGuid);
+	// 		const beilage = formular.formularDokumentPool.find(fdp=>fdp.formularBeilage.guid == doc.guid);
+	// 		return beilage;
+	// 	}
+	// }
 
 	get_PoolBeilage_FromTyp(projekt: EProjektDTO, guidBeilageTyp: string): string | null {
 		if (projekt && projekt.auftrag && projekt.auftrag.dokumente) {
@@ -1445,22 +1441,22 @@ export class ProjektService {
 			})).toPromise() as Promise<string>
 	}
 
-	public Show_Anbieter_Dialog(mitarbeiter: MitarbeiterDTO): Promise<string | void> {
-		this.CurMitarbeiter = mitarbeiter
+	// public Show_Anbieter_Dialog(mitarbeiter: MitarbeiterDTO): Promise<string | void> {
+	// 	this.CurMitarbeiter = mitarbeiter
 
-		return new Promise<string>(
-			async (resolve) => {
-				const dialogRef = this.dialog.open(ProfilAnbieterDialogComponent, {
-					width: '50vw',
-					height: '75vh',
-				});
-				dialogRef.afterClosed().subscribe(() => {
-					// mitarbeiter.pronovoRestKey = this.CurMitarbeiter.pronovoRestKey;
-					resolve(this.CurMitarbeiter.pronovoRestKey);
-				});
+	// 	return new Promise<string>(
+	// 		async (resolve) => {
+	// 			const dialogRef = this.dialog.open(ProfilAnbieterDialogComponent, {
+	// 				width: '50vw',
+	// 				height: '75vh',
+	// 			});
+	// 			dialogRef.afterClosed().subscribe(() => {
+	// 				// mitarbeiter.pronovoRestKey = this.CurMitarbeiter.pronovoRestKey;
+	// 				resolve(this.CurMitarbeiter.pronovoRestKey);
+	// 			});
 
-			}).catch((reason) => console.error("Fehler beim updaten der Anlage", reason));
-	}
+	// 		}).catch((reason) => console.error("Fehler beim updaten der Anlage", reason));
+	// }
 
 	public SaveProfil(mitarbeiter: MitarbeiterDTO) {
 		this.mitarbeiterService.apiV1MitarbeiterPut(mitarbeiter).pipe(map(

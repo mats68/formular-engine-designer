@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+	<defs>
+		<style>.background{fill:none;}</style>
+	</defs>
+	<rect class="background" width="24" height="24"/>
+	<path class="icon" d="M5,3A2.014,2.014,0,0,0,3,5V19a2.014,2.014,0,0,0,2,2H19a2.014,2.014,0,0,0,2-2V7L17,3ZM5,5H16.172L19,7.828V19H5ZM7,7v3h8V7Zm4.5,5A2.5,2.5,0,1,0,14,14.5,2.5,2.5,0,0,0,11.5,12Z"/>
+</svg>

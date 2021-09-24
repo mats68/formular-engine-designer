@@ -345,7 +345,7 @@ body.bi-theme .mat-form-field {
 			// Element für den Strich unter dem Eingabefeld und dessen Ripple-Effekt.
 			.mat-form-field-underline {
 				// Setze die korrekte Farbe für den Strich.
-				background-color: next-gen-control-color('accent');
+				background-color: next-gen-primary-color(1); //next-gen-control-color('accent');
 			}
 
 			// Stile für das Eingabeelement, wenn sich der Mauszeiger direkt über dem
@@ -408,7 +408,7 @@ body.bi-theme .mat-form-field {
 			// Element für den Strich unter dem Eingabefeld und dessen Ripple-Effekt.
 			.mat-form-field-underline {
 				// Setze die entsprechende Farbe für den Strich.
-				background-color: next-gen-control-color('accent');
+				background-color: next-gen-primary-color(1);
 			}
 		}
 
@@ -1181,6 +1181,12 @@ body.bi-theme {
 	background-color: #DEE1E5;
 }
 
+.bg-error {
+	background-color: #FFA8A8;
+}
+
+
+
 .primary-color1 {
 	color: next-gen-primary-color(1);
 }
@@ -1282,7 +1288,7 @@ body.bi-theme .mt-checkbox-group {
 	&:hover{
 		background-color: next-gen-control-color('hover');
 	}
-	border-bottom: 1px solid next-gen-control-color('accent');
+	border-bottom: 1px solid next-gen-primary-color(1);;
 }
 
 body.bi-theme .file-uploader {
@@ -1319,5 +1325,21 @@ body.bi-theme .file-uploader {
 .panel-from-superior{
    border-left: 4px solid next-gen-secondary-color(1);
    padding-left: 0.5rem;
+}
+
+.projekt-color-border {
+	border-left: 4px solid next-gen-secondary-color(1);
+}
+
+.projekt-color-fill {
+	fill: next-gen-secondary-color(1);
+}
+
+.whitespace-pre {
+	white-space: pre;
+}
+
+.whitespace-pre-line {
+	white-space: pre-line;
 }
 
