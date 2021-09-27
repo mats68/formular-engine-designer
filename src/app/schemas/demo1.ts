@@ -1,5 +1,5 @@
-import { ISchema } from "src/components/bi-formular-engine/src/public-api";
-import { card_hint_panel, card_panel, label_Input, schemaClassLayout } from "../schema-utils";
+import { ISchema } from "src/app/components/bi-formular-engine/src/public-api";
+import { card_hint_panel, card_panel, label_Input, schemaClassLayout } from "./schema-utils";
 
 export const DEMO_1: ISchema = {
     type: 'panel',

@@ -1,5 +1,5 @@
 import { TranslocoService } from "@ngneat/transloco";
-import { ISchemaManagerTranslator } from "src/components/bi-formular-engine/src/public-api";
+import { ISchemaManagerTranslator } from "src/app/components/bi-formular-engine/src/public-api";
 
 export class TranslocoSchemaManagerTranslator
 	implements ISchemaManagerTranslator

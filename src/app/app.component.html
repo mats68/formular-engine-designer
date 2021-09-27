@@ -1,15 +1,22 @@
-<div class="content">
-  <div>
-    <bi-form [schemaManager]="schemaManagerSelect" [schema]="schemaSelect"></bi-form>
+<ng-container *transloco="let t">
+
+  <div class="content">
+    <div>
+      <bi-form [schemaManager]="schemaManagerSelect" [schema]="schemaSelect"></bi-form>
+    </div>
+    <mat-divider class="mb-2"></mat-divider>
+
+
+    <div *ngIf='schema'>
+      <bi-form [schemaManager]="schemaManager" [schema]="schema"></bi-form>
+    </div>
+    <div *ngIf='werte_anzeigen()' class="mt-10 ">
+      <div>Werte:</div>
+      <mat-divider class="mt-2 mb-2"></mat-divider>
+      <div class="bg-gray-50 border-gray-300 shadow-sm p-4">
+        {{werte()}}
+      </div>
+    </div>
+
   </div>
-
-
-  <div *ngIf='schema'>
-    <bi-form [schemaManager]="schemaManager" [schema]="schema"></bi-form>
-  </div>
-
-  <div *ngIf='werte_anzeigen()' class="mt-10">
-    {{werte()}}
-  </div>
-
-</div>
+</ng-container>

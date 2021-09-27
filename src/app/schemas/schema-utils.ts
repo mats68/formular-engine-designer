@@ -1,4 +1,4 @@
-import { DataType, IComponent, IComponentBoolFunction, IComponentString, IComponentStringFunction, IValueType, SchemaManager } from 'src/components/bi-formular-engine/src/public-api';
+import { DataType, IComponent, IComponentBoolFunction, IComponentString, IComponentStringFunction, IValueType, SchemaManager } from 'src/app/components/bi-formular-engine/src/public-api';
 // import { adress_suche_fn, adress_suche_panel } from './panel-adress-suche';
 import { Router } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';

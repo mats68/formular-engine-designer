@@ -2,7 +2,7 @@ import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { Component, OnInit, Input, ViewChild, OnDestroy } from '@angular/core';
 import { set } from 'lodash-es';
 import { Subscription } from 'rxjs';
-import { IComponent } from 'src/components/bi-formular-engine/src/public-api';
+import { IComponent } from 'src/app/components/bi-formular-engine/src/public-api';
 
 import { MtBaseComponent } from '../../base/mt-base/mt-base.component';
 
