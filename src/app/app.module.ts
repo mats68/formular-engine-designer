@@ -25,11 +25,13 @@ import { MaterialDesignModule } from 'src/app/components/material-design/materia
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FileUploadModule } from 'ng2-file-upload';
+import { DatepickerComponent } from './datepicker/datepicker.component';
 
 
 @NgModule({
 	declarations: [
 		AppComponent,
+		DatepickerComponent,
 
 	],
 	imports: [
