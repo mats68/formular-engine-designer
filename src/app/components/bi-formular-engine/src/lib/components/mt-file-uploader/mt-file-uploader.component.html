@@ -1,5 +1,5 @@
 <div [style]='style' [class]='getClass()'>
-    <div ng2FileDrop class="upload-area mb-4" (onFileDrop)='onFileDropped($event)' (click)="clickZone()" *ngIf='!fnp'
+    <div ng2FileDrop class="upload-area mb-4" (onFileDrop)='onFileDropped($event)' (click)="clickZone()" *ngIf='!fileNameInfo'
         [uploader]="uploaderdd">
         <div class="text-primary file_border file_text mb-4">
             <mat-spinner *ngIf='saving' [diameter]='20' class="mr-2"></mat-spinner>
@@ -8,7 +8,7 @@
                     d="M13,2,7.5,7.5h4.4v9.9h2.2V7.5h4.4ZM2,9.7V21.8A2.216,2.216,0,0,0,4.2,24H21.8A2.216,2.216,0,0,0,24,21.8V9.7H21.8V21.8H4.2V9.7Z"
                     transform="translate(-2 -2)"></path>
             </svg>
-            <span *ngIf='comp.label'>{{comp.label}}</span>
+            <span *ngIf='comp.label'>{{label}}</span>
         </div>
     </div>
 
@@ -16,33 +16,33 @@
         <input type="file" #fileInput ng2FileSelect [uploader]="uploader" [accept]='getAllowedFileType()' (onFileSelected)='onFileSelected()' name="file" id="file" class="inputfile">
     </div>
 
-    <ng-container *ngIf='fnp'>
+    <ng-container *ngIf='fileNameInfo'>
         <div [class]="getBackground()">
             <div class="bg-accent-2 w-10 h-10 flex items-center">
-                <ng-container *ngIf='fnp.shortName === ""'>
+                <ng-container *ngIf='fileNameInfo.shortName === ""'>
                     <mat-icon class="ml-2">attachment</mat-icon>
                 </ng-container>
 
-                <ng-container *ngIf='fnp.shortName !== ""'>
+                <ng-container *ngIf='fileNameInfo.shortName !== ""'>
                     <div class="flex items-center justify-center w-40px h-40px bg-accent-2">
-                        <span>{{fnp.shortName}}</span>
+                        <span>{{fileNameInfo.shortName}}</span>
                     </div>
                 </ng-container>
             </div>
             <div class="ml-4">
                 <mat-checkbox *ngIf='comp.fileUploaderProps.uploadType === "Beilage"' [checked]='isAttached' (change)='changeBeilageAttached($event)'>{{getVerknuepfenText()}}</mat-checkbox>
-                <div class="font-bold cursor-pointer" (click)="onPDFClick()">{{fnp.originalName}}</div>
-                <div class="cursor-pointer" (click)="onPDFClick()">{{fnp.longName}}</div>
+                <div class="font-bold cursor-pointer" (click)="onPDFClick()">{{fileNameInfo.originalName}}</div>
+                <!-- <div class="cursor-pointer" (click)="onPDFClick()">{{fileNameInfo.longName}}</div> -->
             </div>
             <div class="flex-auto"></div>
-            <button mat-icon-button [matMenuTriggerFor]="menu">
+            <!-- <button mat-icon-button [matMenuTriggerFor]="menu">
                 <mat-icon color="primary">more_vert</mat-icon>
-            </button>
-            <mat-menu #menu="matMenu" xPosition="before">
+            </button> -->
+            <!-- <mat-menu #menu="matMenu" xPosition="before">
                 <button mat-menu-item (click)="deleteBeilage()">
                     Löschen
                 </button>
-            </mat-menu>
+            </mat-menu> -->
     </div>
     </ng-container>
 

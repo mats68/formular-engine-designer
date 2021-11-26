@@ -1,17 +1,25 @@
 import { Subject } from "rxjs";
-import { EFormularBeilageDTO, EFormularDokumentPoolDTO, EFormularDTO, EFormularStatus } from "src/app/api";
+import { SignaturDTO } from "src/app/api";
+import { DokumentTransferHistoryDTO } from "src/app/api";
+import { DokumentDTO, DokumentStatus } from "src/app/api";
 import { Guid } from "src/app/tools/Guid";
 import { FormularBase, FormularBaseChangeNotifierType, FormularState, IFormularBase } from "./FormularBase";
 import { FormularBeilage, IFormularBeilage } from "./FormularBeilage";
 import { asGuid } from './FormularUtils';
+import * as _ from "lodash-es";
+// import { sign } from "crypto";
 
 export interface IFormular extends IFormularBase {
-	readonly formularTyp: Guid;
+	readonly dokumentDef: Guid;
 	readonly beilagen: IFormularBeilage[];
 
 	getBeilagen(guid: string|Guid): IFormularBeilage[];
-	addBeilage(beilage: EFormularBeilageDTO): EFormularDokumentPoolDTO;
-	removeBeilage(beilage: EFormularBeilageDTO): EFormularDokumentPoolDTO;
+	addBeilage(beilage: DokumentDTO): DokumentDTO;
+	removeBeilage(beilage: DokumentDTO): DokumentDTO;
+	addTransferHistory(transferHistory: DokumentTransferHistoryDTO): DokumentTransferHistoryDTO;
+	removeTransferHistory(transferHistory: DokumentTransferHistoryDTO): DokumentTransferHistoryDTO;
+	addSignature(signatur: SignaturDTO): SignaturDTO;
+	removeSignature(signatur: SignaturDTO): SignaturDTO;
 }
 
 export class Formular extends FormularBase implements IFormular
@@ -21,7 +29,7 @@ export class Formular extends FormularBase implements IFormular
 	/**
 	 * Dieses Feld speichert das DTO Objekt, welches das Formular repräsentiert.
 	 */
-	private _dto: EFormularDTO;
+	private _dto: DokumentDTO;
 
 	private _beilagen: { [key: string]: FormularBeilage } = { };
 
@@ -32,15 +40,16 @@ export class Formular extends FormularBase implements IFormular
 	//#region Konstruktor.
 
 	public constructor(
-		formular: EFormularDTO,
+		dokument: DokumentDTO,
 		isNew: boolean,
 		changeNotifier: Subject<FormularBaseChangeNotifierType>,
 		state: FormularState = FormularState.Unchanged
 	)
 	{
-		super(formular.guid, formular.formularTyp.guid, formular.dokument, isNew, changeNotifier, state);
+		super(dokument.guid, dokument.dokumentDef.guid, dokument.dso, isNew, changeNotifier, state);
 
-		this._dto = formular;
+		this._dto = dokument;
+		this.status = dokument.status;
 	}
 
 	//#endregion
@@ -50,7 +59,7 @@ export class Formular extends FormularBase implements IFormular
 	/**
 	 * Diese Methode lädt die Formulardaten aus der spezifizierten Formular-DTO Instanz in diese `Formular` Instanz.
 	 *
-	 * @param formular
+	 * @param dokument
 	 * 	Die Formular-DTO Instanz aus welcher die Formulardaten ausgelesen werden sollen.
 	 *
 	 * @param force
@@ -60,7 +69,7 @@ export class Formular extends FormularBase implements IFormular
 	 * 	Das Formular oder eine der Formular-Beilagen hat ungesicherte Änderungen und der `force` Parameter war
 	 * 	`false`!
 	 */
-	public load(formular: EFormularDTO, force: boolean = false): void
+	public load(dokument: DokumentDTO, force: boolean = false): void
 	{
 		// Prüfe ob wir ungesicherte Änderungen haben und ob wir diese allenfalls verwerfen sollen.
 		if(this.state !== FormularState.Unchanged && force === false)
@@ -72,19 +81,19 @@ export class Formular extends FormularBase implements IFormular
 		}
 
 		// Alles bereit, ersetze nun die intern gespeicherte DTO Instanz.
-		this._dto = formular;
+		this._dto = dokument;
 
 		// Ladet den volatilen Status aus dem DTO.
 		this._status = this._dto.status;
 
 		// Aktualisiere nun zuerst die Formularbeilagen. Iteriere über alle Formularbeilagen aus der DTO Instanz.
-		for(let poolDto of this._dto.formularDokumentPool)
+		for(let poolDto of this._dto.beilagen)
 		{
 			// Rufe als erstes die GUID der Formularbeilage aus der DTO Instanz ab und speichere diese normalisiert in
 			// einer lokalen Variable ab.
 			let guid = ''
-			if (poolDto.formularBeilage) {
-				guid = Guid.parse(poolDto.formularBeilage.guid).toString();
+			if (poolDto) {
+				guid = Guid.parse(poolDto.guid).toString();
 			}
 
 			// Prüfe ob wir bereits eine `FormularBeilage` Instanz für dieses Formularbeilage instanziiert haben.
@@ -95,13 +104,13 @@ export class Formular extends FormularBase implements IFormular
 			if(formBeilage)
 			{
 				// Ja, also lade die Formularbeilage-DTO Instanz in die bestehende Instanz.
-				formBeilage.load(poolDto.formularBeilage, force);
+				formBeilage.load(poolDto, force);
 			}
 			else
 			{
 				// Nein, also erstelle eine neue `FormularBeilage` Instanz anhand der Formularbeilage-DTO Instanz.
-				if (poolDto.formularBeilage) {
-					formBeilage = new FormularBeilage(poolDto.formularBeilage, false, this.changeNotifier$, FormularState.Unchanged);
+				if (poolDto) {
+					formBeilage = new FormularBeilage(poolDto, false, this.changeNotifier$, FormularState.Unchanged);
 					// Und füge diese nun in unsere Sammlung der Formularbeilagen hinzu.
 					this._beilagen[guid] = formBeilage;
 				}
@@ -110,7 +119,7 @@ export class Formular extends FormularBase implements IFormular
 		}
 
 		// Aktualisiere nun noch die Formular-Werte anhand der spezifizierten DTO Instanz.
-		super.loadDocument(this._dto.dokument, force);
+		super.loadDocument(this._dto.dso, force);
 
 		// Wir haben das Formular komplett initialisiert, kehre nun zurück.
 		return;
@@ -129,10 +138,10 @@ export class Formular extends FormularBase implements IFormular
 		}
 
 		// Übernimmt volatilen Zustand in das DTO.
-		this._dto.status = this._status ?? EFormularStatus.Undefiniert;
+		this._dto.status = this._status ?? DokumentStatus.Undefiniert;
 
-		if(!this._dto.formularDokumentPool)
-			this._dto.formularDokumentPool = [];
+		if(!this._dto.beilagen)
+			this._dto.beilagen = [];
 
 		// Iteriere nun über jede unserer Formularbeilagen...
 		for(let beilage of Object.values(this._beilagen)) {
@@ -149,52 +158,69 @@ export class Formular extends FormularBase implements IFormular
 
 	public getBeilagen(guid: string|Guid): IFormularBeilage[]
 	{
-		const typ: Guid = asGuid(guid);
-
 		return Object.values(this._beilagen).filter(
-			(beilage) => beilage.formularTyp.equals(typ)
+			(beilage) => Guid.equals(beilage.dokumentDef, guid)
 		);
 	}
 
-	addBeilage(beilage: EFormularBeilageDTO): EFormularDokumentPoolDTO{
-		if(!this._dto.formularDokumentPool)
-			this._dto.formularDokumentPool = [];
+	addBeilage(dokumentBeilage: DokumentDTO): DokumentDTO{
+		if(!this._dto.beilagen)
+			this._dto.beilagen = [];
 
-		let formularDokumentPool : EFormularDokumentPoolDTO = this._dto.formularDokumentPool.find((fdp)=>fdp.formularBeilage.guid.toLocaleLowerCase() == beilage.guid.toLocaleLowerCase());
-		if(!formularDokumentPool){
-			const fdp: EFormularDokumentPoolDTO = {
-				mandant : this._dto.mandant,
-				guidFormular : this._dto.guid,
-				guidFormularBeilagen : beilage.guid,
-				formularBeilage : beilage,
-			}
-			this._dto.formularDokumentPool.push(fdp);
-			formularDokumentPool = fdp;
+		let beilage : DokumentDTO = this._dto.beilagen.find((b)=> Guid.equals(b.guid, dokumentBeilage.guid));
+		if(!beilage){
+			this._dto.beilagen.push(dokumentBeilage);
 		}
 
-		const guid = Guid.parse(beilage.guid).toString();
-		const formBeilage = new FormularBeilage(beilage, false, this.changeNotifier$, FormularState.Unchanged);
+		const guid = Guid.parse(dokumentBeilage.guid).toString();
+		const formBeilage = new FormularBeilage(dokumentBeilage, false, this.changeNotifier$, FormularState.Unchanged);
 		this._beilagen[guid] = formBeilage;
 		this.setState(FormularState.Modified);
 
-		formularDokumentPool.linkRemoved = false;
-		return formularDokumentPool;
+		return dokumentBeilage;
 	}
 
-	removeBeilage(beilage: EFormularBeilageDTO): EFormularDokumentPoolDTO{
-		let formularDokumentPool : EFormularDokumentPoolDTO;
-
-		if(this._dto.formularDokumentPool){
-			formularDokumentPool = this._dto.formularDokumentPool.find((fdp)=>fdp.guidFormularBeilagen.toLocaleLowerCase() == beilage.guid.toLocaleLowerCase());
-			this._dto.formularDokumentPool = this._dto.formularDokumentPool.filter((fdp)=>fdp !== formularDokumentPool);
+	removeBeilage(dokumentBeilage: DokumentDTO): DokumentDTO{
+		if(this._dto.beilagen){
+			this._dto.beilagen = this._dto.beilagen.filter((b)=> !Guid.equals(b.guid, dokumentBeilage.guid));
 		}
-		const guid = Guid.parse(beilage.guid).toString();
+		const guid = Guid.parse(dokumentBeilage.guid).toString();
 		delete this._beilagen[guid];
 		this.setState(FormularState.Modified);
 
-		if(formularDokumentPool)
-			formularDokumentPool.linkRemoved = true;
-		return formularDokumentPool;
+		return dokumentBeilage;
+	}
+
+	addTransferHistory(transferHistory: DokumentTransferHistoryDTO): DokumentTransferHistoryDTO{
+		if(!this._dto.transferHistory)
+			this._dto.transferHistory = [];
+		this._dto.transferHistory.push(transferHistory);
+		this.setState(FormularState.Modified);
+		return transferHistory;
+	}
+
+	removeTransferHistory(transferHistory: DokumentTransferHistoryDTO): DokumentTransferHistoryDTO{
+		if(this._dto.transferHistory){
+			this._dto.transferHistory = this._dto.transferHistory.filter((th)=> !_.isEqual(th, transferHistory));
+		}
+		this.setState(FormularState.Modified);
+		return transferHistory;
+	}
+
+	addSignature(signatur: SignaturDTO): SignaturDTO{
+		if(!this._dto.signaturen)
+			this._dto.signaturen = [];
+		this._dto.signaturen.push(signatur);
+		this.setState(FormularState.Modified);
+		return signatur;
+	}
+
+	removeSignature(signatur: SignaturDTO): SignaturDTO{
+		if(this._dto.signaturen){
+			this._dto.signaturen = this._dto.signaturen.filter((s)=> !_.isEqual(s, signatur));
+		}
+		this.setState(FormularState.Modified);
+		return signatur;
 	}
 
 	setUnchanged(){
@@ -209,12 +235,12 @@ export class Formular extends FormularBase implements IFormular
 
 	//#region Öffentliche Eigenschaften.
 
-	public get formularDto(): EFormularDTO {
+	public get dokumentDTO(): DokumentDTO {
 		return this._dto;
 	}
 
-	public get formularTyp(): Guid {
-		return asGuid(this._dto.formularTyp.guid);
+	public get dokumentDef(): Guid {
+		return asGuid(this._dto.dokumentDef.guid);
 	}
 
 	public get beilagen(): IFormularBeilage[]
@@ -222,15 +248,19 @@ export class Formular extends FormularBase implements IFormular
 		return Object.values(this._beilagen);
 	}
 
-	private _status: EFormularStatus;
+	private _status: DokumentStatus;
 
-	public get status(): EFormularStatus {
+	public get status(): DokumentStatus {
 		return this._status;
 	}
 
-	public set status(newStatus: EFormularStatus) {
+	public set status(newStatus: DokumentStatus) {
+		let current: DokumentStatus = this.dokumentDTO.status;
+
 		this._status = newStatus;
-		if (this._status !== this.formularDto.status) {
+		this.dokumentDTO.status = newStatus;
+
+		if (current !== this.dokumentDTO.status) {
 			this.setState(FormularState.Modified);
 		}
 	}

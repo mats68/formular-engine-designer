@@ -1,6 +1,13 @@
+<div *ngIf='hasDiff()'>
+    <mt-diff-btn [comp]='comp' [sm]='sm'></mt-diff-btn>
+</div>
 <div [class]="getClass('radio-group', 'group')" (click)='onClick()'>
     <mt-lbl *ngIf='comp.label' [sm]='sm' [comp]='comp'></mt-lbl>
     <mat-radio-group #name [(ngModel)]='Value' [style]='style' [disabled]='disabled'>
         <mat-radio-button *ngFor='let item of OptionsAsObjects' [value]='item.value' [class]="getClass('radio-button', 'button')">{{item.text}}</mat-radio-button>
     </mat-radio-group>
 </div>
+<mat-hint *ngIf='hint || getError()'>
+	<div *ngIf='getError()' class="error-color text-xs">{{getError()}}</div>
+	<div *ngIf='hint && !getError()' class="text-xs">{{hint}}</div>
+</mat-hint>

@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { EFormularDTO } from './eFormularDTO';
+import { DokumentDTO } from './dokumentDTO';
 
 
 /**
@@ -68,6 +68,6 @@ export interface EAktionDTO {
      * Die GUID der Formular-/Dokumentkategorie.
      */
     dokumentKategorie?: string;
-    dokument?: EFormularDTO;
+    dokument?: DokumentDTO;
 }
 

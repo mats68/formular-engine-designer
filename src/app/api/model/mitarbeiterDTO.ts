@@ -32,6 +32,8 @@ export interface MitarbeiterDTO {
     eMailD?: string | null;
     sprache?: string | null;
     pronovoRestKey?: string | null;
+    terravisTnId?: string | null;
+    terravisUserId?: string | null;
     funktion?: string | null;
     referenzNummer?: string | null;
     estiNummer?: string | null;

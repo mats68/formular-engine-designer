@@ -18,6 +18,7 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 import { ProduktLizenzDTO } from '../model/models';
+import { ProduktLizenzGutscheinDTO } from '../model/models';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
@@ -303,6 +304,70 @@ export class ProduktLizenzenService implements ProduktLizenzenServiceInterface {
 
         return this.httpClient.get<ProduktLizenzDTO>(`${this.configuration.basePath}/api/v1/ProduktLizenzen/${encodeURIComponent(String(guid))}`,
             {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * ProduktLizenz hinzufügen mittels einem Gutschein-Code
+     * @param holdingguid Holding-Guid der ProduktLizenz
+     * @param gutschein Gutschein-Code
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public apiV1ProduktLizenzenGutscheinPut(holdingguid?: string, gutschein?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<ProduktLizenzGutscheinDTO>;
+    public apiV1ProduktLizenzenGutscheinPut(holdingguid?: string, gutschein?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<ProduktLizenzGutscheinDTO>>;
+    public apiV1ProduktLizenzenGutscheinPut(holdingguid?: string, gutschein?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<ProduktLizenzGutscheinDTO>>;
+    public apiV1ProduktLizenzenGutscheinPut(holdingguid?: string, gutschein?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+
+        let queryParameters = new HttpParams({encoder: this.encoder});
+        if (holdingguid !== undefined && holdingguid !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>holdingguid, 'holdingguid');
+        }
+        if (gutschein !== undefined && gutschein !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>gutschein, 'gutschein');
+        }
+
+        let headers = this.defaultHeaders;
+
+        let credential: string | undefined;
+        // authentication (Brunner Informatik AG Cloud-Login) required
+        credential = this.configuration.lookupCredential('Brunner Informatik AG Cloud-Login');
+        if (credential) {
+            headers = headers.set('Authorization', 'Bearer ' + credential);
+        }
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.put<ProduktLizenzGutscheinDTO>(`${this.configuration.basePath}/api/v1/ProduktLizenzen/gutschein`,
+            null,
+            {
+                params: queryParameters,
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,

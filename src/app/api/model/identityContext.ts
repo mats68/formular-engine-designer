@@ -13,10 +13,10 @@ import { IdentityDescriptor } from './identityDescriptor';
 
 
 export interface IdentityContext { 
-    mandant?: string;
+    tenant?: string;
     holding?: string;
-    geschStelle?: string | null;
-    mitarbeiter?: string;
+    office?: string | null;
+    employee?: string;
     impersonate?: IdentityDescriptor;
 }
 

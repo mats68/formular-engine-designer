@@ -1,3 +1,10 @@
-<mat-checkbox #name color="primary" [(ngModel)]='Value' [style]='style' [disabled]='disabled' [class]='getClass("checkbox")' (click)='onClick()'>
+<span *ngIf='hasDiff()'>
+    <mt-diff-btn [comp]='comp' [sm]='sm'></mt-diff-btn>
+</span>
+<mat-checkbox #name color="primary" [(ngModel)]='Value' [style]='style' [disabled]='disabled' [class]='_getClass()' (click)='onClick()'>
 	<span [style]='styles("label")'>{{label}}</span>
 </mat-checkbox>
+<div *ngIf='pflichtfeld_hint || getError()'>
+	<mat-hint *ngIf='getError()' class="text-xs error-color">{{getError()}}</mat-hint>
+	<mat-hint *ngIf='pflichtfeld_hint && !getError()' class="text-xs">{{pflichtfeld_hint}}</mat-hint>
+</div>

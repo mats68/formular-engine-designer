@@ -1,60 +1,76 @@
-
-<div [style]='style' [class]='getClass()' *ngIf="data">
+<div [style]='style' [class]='getClass()' *ngIf="comp && data">
 	<div class="flex items-center ml-3 mr-5 mb-4">
-		<div class="font-bold">{{this.sm.getPropValue(comp, 'label')}}</div>
-		<div class="ml-auto" *ngIf='!comp.hideAddBtn'>
-			<button mat-icon-button (click)="Insert()" [matTooltip]="this.sm.translate(this.KeyInsertRecord)">
-				<mat-icon color="primary">add_circle_outline</mat-icon>
-			</button>
-		</div>
+		<div class="text-xl">{{this.sm.getPropValue(comp, 'label')}}</div>
 	</div>
 
-	<div class="grid grid-cols-16 gap-x-2 mx-3 h-auto">
+	<!-- Spalten Definitionen -->
+	<div [class]="'grid ' + gridClass + ' px-2 h-auto'">
 		<ng-container *ngFor="let coldef of comp.colDefs">
-			<div [class]="coldef.class">
-				<span *ngIf='!coldef.htmlTitle' class="text-xs">{{this.sm.resolveValue(coldef.title)}}</span>
-				<span *ngIf='coldef.htmlTitle' class="text-xs" [innerHTML]='coldef.title'></span>
+			<div [class]="coldef.class + ' ' + coldef.classTitle">
+				<span [class]="'flex ' + getAusrichtungTitle(coldef)">
+					<span *ngIf='!coldef.htmlTitle' class="text-xs whitespace-pre-line">{{this.sm.resolveValue(coldef.title)}}</span>
+					<span *ngIf='coldef.htmlTitle' [innerHTML]='coldef.title'></span>
+				</span>
 			</div>
 		</ng-container>
 	</div>
 
 	<div cdkDropList (cdkDropListDropped)="drop($event)">
-		<div *ngFor="let row of data; let ind = index" [class]="getRowClass(ind)" cdkDrag [cdkDragDisabled]="!comp.dragdrop">
-			<div class="grid grid-cols-16 items-center gap-2 mx-2 py-3 px-2">
-				<div *ngFor="let coldef of comp.colDefs" [class]="coldef.class">
-					<ng-container *ngIf="isCheckBox(row, coldef)">
-						<mat-icon>{{row[coldef.field] ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
-					</ng-container>
-					<ng-container *ngIf='isNormalRow(row, coldef)'>
-						{{getCellText(row, coldef)}}
-					</ng-container>
-					<span *ngIf='isHTMLRow(row, coldef)' [innerHTML]='getCellText(row, coldef)'></span>
+		<div *ngFor="let row of data; let ind = index" cdkDrag [cdkDragDisabled]="!comp.dragdrop" (click)="toggleExpand(ind)" class="mat-elevation-z1 mb-2">
+			<div [class]="'grid ' + gridClass + ' items-center gap-2 py-3 px-2 bg-gray-left'">
+				<div *ngFor="let coldef of comp.colDefs; let rowind = index" [class]="coldef.class + ' ' + coldef.classContent">
+					<span [class]="'flex ' + getAusrichtungContent(coldef)">
+						<!-- Button falls VNB Differenzen -->
+						<span *ngIf='rowind === 0 && hasDiff(ind)'>
+							<mt-diff-btn [comp]='comp' [sm]='sm'></mt-diff-btn>
+						</span>
+						<!-- Falls Error in der Zeile -->
+						<span *ngIf='rowind === 0 && rowHasError(ind)'>
+							<mat-icon class="error-color">error</mat-icon>
+						</span>
+
+						<!-- Drag-Handler -->
+						<span *ngIf='rowind === 0 && comp.dragdrop' cdkDragHandle class="cursor-move w-btn">
+							<mat-icon color="primary" class="text-sm">drag_handle</mat-icon>
+						</span>
+						<span *ngIf="isCheckBox(coldef)" [innerHTML]='getCb(row, coldef)'></span>
+						<span *ngIf='isNormalRow(coldef)'>
+							{{getCellText(row, coldef)}}
+						</span>
+						<span *ngIf='isHTMLRow(coldef)' [innerHTML]='getCellText(row, coldef)'></span>
+					</span>
+
 				</div>
 
-				<div class="col-start-16 flex">
-					<div class="ml-auto">
-						<button mat-icon-button (click)="toggleExpand(ind); $event.stopPropagation()">
+				<div [class]="gridClassLastColumn + ' col-span-1'">
+					<div class="flex">
+						<!-- Buttons für Aktionen Delete, Kopieren.. -->
+						<span [matMenuTriggerFor]="menu" #actionsMenuTrigger="matMenuTrigger" class="outline-none cursor-pointer w-btn" (mousedown)="notExpand = true">
+							<mat-icon color="primary">more_vert</mat-icon>
+						</span>
+						<mat-menu #menu="matMenu">
+							<button mat-menu-item class="text-primary" (click)="CopyRow(ind); $event.stopPropagation()">{{this.sm.translate(this.KeyCopyRecord)}}</button>
+							<button mat-menu-item class="text-primary" (click)="DeleteRow(ind); $event.stopPropagation()">{{this.sm.translate(this.KeyDeleteRecord)}}</button>
+						</mat-menu>
+						<span (click)="toggleExpand(ind); $event.stopPropagation()" class="cursor-pointer w-btn">
 							<mat-icon color="primary">{{getExpandIcon(ind)}}</mat-icon>
-						</button>
+						</span>
 					</div>
 				</div>
 			</div>
 
-			<div *ngIf="currow === row" class="px-2 py-4 border-1 border-gray-100 border-solid">
+			<!-- Eingabefelder aktueller Datensatz  -->
+			<div *ngIf="currow === row" class="px-2 py-4" (mousedown)="notExpand = true">
 				<div class="ml-2">
 					<mt-item [comp]="comp.detailComponent" [sm]="sm"></mt-item>
-					<div class="flex items-center">
-						<div class="ml-auto mb-4 mr-4 shadow-sm">
-							<button mat-icon-button (click)="CopyRow()" [matTooltip]="this.sm.translate(this.KeyCopyRecord)">
-								<mat-icon color="primary">content_copy</mat-icon>
-							</button>
-							<button mat-icon-button (click)="DeleteRow()" [matTooltip]="this.sm.translate(this.KeyDeleteRecord)">
-								<mat-icon color="accent">delete</mat-icon>
-							</button>
-						</div>
-					</div>
 				</div>
 			</div>
+
+		</div>
+		<div *ngIf='showInsertRow()' (click)="Insert()" class="mat-elevation-z1 mb-2 flex items-center py-4 px-4 cursor-pointer">
+			<!-- Insert Zeile -->
+			<mat-icon color="primary" class="ml-2 mr-2">add_circle_outline</mat-icon>
+			<span class="text-primary">{{addRowLabel}}</span>
 		</div>
 	</div>
 </div>

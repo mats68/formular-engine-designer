@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnChanges, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
+import { getBeilage } from 'src/app/schemas/schema-utils';
 import { MtBaseComponent } from '../../base/mt-base/mt-base.component';
 
 @Component({
@@ -43,17 +44,22 @@ export class MtFileVierwerComponent extends MtBaseComponent implements OnInit, O
   }
 
   public Print () : void {
+	  const afterPrint = (e)=> {
+		  console.log(e, 'after print')
+		};
+	  this._fileViewer.nativeElement.contentWindow.addEventListener('afterprint', afterPrint);
+	//   this._fileViewer.nativeElement.contentWindow._onAfterPrint.addEventListener(afterPrint)
 	  this._fileViewer.nativeElement.contentWindow.print();
   }
 
   public LoadPDF(): Promise<any> {
     const props = this.comp.fileViewerProps
     let guid = null
-    const beilage = this.sm.formularDTO?.formularDokumentPool?.find(b => b.formularBeilage?.formularTyp.guid === props.formularTypGuid)
+    const beilage = getBeilage(this.sm, props.dokumentDefGuid);
     if (props.uploadType === 'Formular') {
-      guid = this.sm.formularDTO?.dokument.guid
+      guid = this.sm.dokumentDTO?.dso.guid
     } else if (props.uploadType === 'Beilage') {
-      guid = beilage && beilage.formularBeilage && beilage.formularBeilage.dokument ? beilage.formularBeilage.dokument.guid : null
+      guid = beilage &&  beilage.dso ? beilage.dso.guid : null
     }
     if (guid) {
       return this.sm.service.LoadPDF(guid).then(data => {

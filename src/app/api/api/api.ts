@@ -7,6 +7,15 @@ export * from './angularKonfiguration.serviceInterface'
 export * from './appSettings.service';
 import { AppSettingsService } from './appSettings.service';
 export * from './appSettings.serviceInterface'
+export * from './definitionen.service';
+import { DefinitionenService } from './definitionen.service';
+export * from './definitionen.serviceInterface'
+export * from './dokumente.service';
+import { DokumenteService } from './dokumente.service';
+export * from './dokumente.serviceInterface'
+export * from './dso.service';
+import { DsoService } from './dso.service';
+export * from './dso.serviceInterface'
 export * from './eAktionen.service';
 import { EAktionenService } from './eAktionen.service';
 export * from './eAktionen.serviceInterface'
@@ -16,15 +25,9 @@ export * from './eAnlagen.serviceInterface'
 export * from './eAuftraege.service';
 import { EAuftraegeService } from './eAuftraege.service';
 export * from './eAuftraege.serviceInterface'
-export * from './eDokumente.service';
-import { EDokumenteService } from './eDokumente.service';
-export * from './eDokumente.serviceInterface'
 export * from './eFOnlineApi.service';
 import { EFOnlineApiService } from './eFOnlineApi.service';
 export * from './eFOnlineApi.serviceInterface'
-export * from './eFormulare.service';
-import { EFormulareService } from './eFormulare.service';
-export * from './eFormulare.serviceInterface'
 export * from './eLeistungen.service';
 import { ELeistungenService } from './eLeistungen.service';
 export * from './eLeistungen.serviceInterface'
@@ -64,4 +67,4 @@ export * from './produktLizenzen.serviceInterface'
 export * from './registrierung.service';
 import { RegistrierungService } from './registrierung.service';
 export * from './registrierung.serviceInterface'
-export const APIS = [AdressenService, AngularKonfigurationService, AppSettingsService, EAktionenService, EAnlagenService, EAuftraegeService, EDokumenteService, EFOnlineApiService, EFormulareService, ELeistungenService, EProjekteService, EmpfaengerService, GebaeudeService, GeschStellenService, HoldingsService, KompoDBApiService, M2HubService, MitarbeiterService, PermissionsService, PostleitzahlenService, ProduktLizenzenService, RegistrierungService];
+export const APIS = [AdressenService, AngularKonfigurationService, AppSettingsService, DefinitionenService, DokumenteService, DsoService, EAktionenService, EAnlagenService, EAuftraegeService, EFOnlineApiService, ELeistungenService, EProjekteService, EmpfaengerService, GebaeudeService, GeschStellenService, HoldingsService, KompoDBApiService, M2HubService, MitarbeiterService, PermissionsService, PostleitzahlenService, ProduktLizenzenService, RegistrierungService];

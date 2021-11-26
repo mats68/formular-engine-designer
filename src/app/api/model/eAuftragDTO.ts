@@ -9,7 +9,8 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { EAuftragDokumentDTO } from './eAuftragDokumentDTO';
+import { DokumentDTO } from './dokumentDTO';
+import { AdresseDTO } from './adresseDTO';
 import { EAuftragPhaseDTO } from './eAuftragPhaseDTO';
 
 
@@ -46,17 +47,9 @@ export interface EAuftragDTO {
      */
     kategorie?: string | null;
     /**
-     * Verrechnungsadresse des Auftraggebers, Fremdschlüssel auf GeschPartner.
+     * Anwender-Sprache.
      */
-    iD_RechAddr?: number | null;
-    /**
-     * Verrechnungsadresse, Fremdschlüssel auf GeschPartner.
-     */
-    iD_RechAdrGP?: number | null;
-    /**
-     * Auftrags-Vermittler / Provisionsempfänger, Fremdschlüssel auf GeschPartner.
-     */
-    iD_VermittlerGP?: number | null;
+    sprache?: string | null;
     /**
      * Kostenstelle 1.
      */
@@ -65,14 +58,6 @@ export interface EAuftragDTO {
      * Kostenstelle 2.
      */
     habenKst2?: string | null;
-    /**
-     * Installateur, Fremdschlüssel auf GeschPartner.
-     */
-    iD_Installateur?: number | null;
-    /**
-     * Kontrolleur, Fremdschlüssel auf GeschPartner.
-     */
-    iD_Kontrolleur?: number | null;
     /**
      * Netzbetreiberin, Fremdschlüssel auf GeschPartner.
      */
@@ -130,12 +115,28 @@ export interface EAuftragDTO {
      */
     erledigt?: boolean;
     /**
+     * Guid des Auftraggebers.
+     */
+    guidAuftraggeber?: string | null;
+    adresseAuftraggeber?: AdresseDTO;
+    /**
+     * Auftraggeber ist Gebäude-Eigentümer.
+     */
+    auftraggeberIstGebEigentuemer?: boolean | null;
+    /**
+     * <br>               Projektdaten, wie sie aus einem externen System importiert oder über die API übermittelt wurden.                <note type=\"important\">               Dieses Feld muss `null` sein oder ein gültiges JSON Objekt!              </note>
+     */
+    externalData?: any | null;
+    guidEmpfaengerVnb?: string | null;
+    guidEmpfaengerGemeinde?: string | null;
+    guidEmpfaengerPronovo?: string | null;
+    /**
      * Die Phasen dieses Elektro-Auftrags.
      */
     phasen?: Array<EAuftragPhaseDTO> | null;
     /**
      * Alle Dokumente im Dokumentpool dieses Auftrages.
      */
-    dokumente?: Array<EAuftragDokumentDTO> | null;
+    dokumente?: Array<DokumentDTO> | null;
 }
 

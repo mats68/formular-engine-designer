@@ -23,6 +23,20 @@ export class Guid {
 		 return new Guid(guid);
 	}
 
+	public static tryParse(guid: string|Guid, fallback: Guid|null = null): Guid|null
+	{
+		if(guid instanceof Guid) return guid;
+
+		try
+		{
+			return Guid.parse(guid);
+		}
+		catch
+		{
+			return fallback;
+		}
+	}
+
 	public static raw(): string {
 		 return [Guid.gen(2), Guid.gen(1), Guid.gen(1), Guid.gen(1), Guid.gen(3)].join("-");
 	}
@@ -52,6 +66,20 @@ export class Guid {
 		 // Comparing string `value` against provided `guid` will auto-call
 		 // toString on `guid` for comparison
 		 return Guid.isGuid(other) && this.value === other.toString().toUpperCase();
+	}
+
+	public static equals(left: Guid|string|null|undefined, right: Guid|string|null|undefined) : boolean{
+		if(left === right)
+			return true;
+
+		if(!left || !right)
+			return false;
+
+		try {
+			return asGuid(left).equals(asGuid(right));
+		} catch (error) {
+			return false;
+		}
 	}
 
 	public isEmpty(): boolean {

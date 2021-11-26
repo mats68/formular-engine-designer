@@ -1,5 +1,5 @@
 import { ISchema } from "src/app/components/bi-formular-engine/src/public-api";
-import { card_panel, label_Input, label_Input_Date_ISO } from "./schema-utils";
+import { card_panel, label_Input, label_Input_Date } from "./schema-utils";
 
 export const DEMO_2: ISchema = {
     type: 'panel',
@@ -12,7 +12,7 @@ export const DEMO_2: ISchema = {
         card_panel('Test-Panel 2', '',
             [
                 ...label_Input('Test-1', 'test-1', 20),
-                ...label_Input_Date_ISO('Datum', 'date')
+                ...label_Input_Date('Datum', 'date')
             ]),
             
     ],

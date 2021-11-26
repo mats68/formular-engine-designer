@@ -4,6 +4,7 @@ import { MatAutocompleteSelectedEvent, MatAutocomplete } from '@angular/material
 import { MtBaseComponent } from '../../base/mt-base/mt-base.component';
 import { from, Observable, of, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { marker } from '@ngneat/transloco-keys-manager/marker';
 
 
 //Lookup-Komponente mit Nachschlageliste mittels asynchrone API Call
@@ -97,13 +98,24 @@ export class MtLookupComponent extends MtBaseComponent implements OnInit, OnDest
   }
 
   itemSelected(event: MatAutocompleteSelectedEvent): void {
-    // if ()
+    this.sm.updateValue(this.comp, '');
     this.comp.lookup_ItemSelected(this.sm, this.comp, event.option.value)
+  }
+
+  clearClick() {
+    this.sm.updateValue(this.comp, '');
+    this.comp.lookup_clearClick(this.sm, this.comp)
+  }
+
+  getPlaceholder(): string {
+    
+    return this.placeholder || this.sm.translate(marker('comp_input.suchtext'))
   }
 
   ngOnDestroy() {
     this.unregisterFocus();
   }
+
 
 
 

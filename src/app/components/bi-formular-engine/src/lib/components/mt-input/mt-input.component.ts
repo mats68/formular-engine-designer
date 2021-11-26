@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
-import { MatAutocompleteSelectedEvent, MatAutocomplete } from '@angular/material/autocomplete';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 
 import { MtBaseComponent } from '../../base/mt-base/mt-base.component';
 import { IValueType, SchemaManager } from '../../base/schemaManager';
@@ -52,8 +52,18 @@ export class MtInputComponent extends MtBaseComponent implements OnInit, OnDestr
 
   Filter(value: string) {
     if (SchemaManager.checkValueType(value) === IValueType.string) {
-      const filterValue = value.toLowerCase();
-      this.filteredOptions = this.OptionsAsStrings.filter(option => option.toLowerCase().includes(filterValue));
+      if (this.comp.filterOptions) {
+        const filterValue = value.toLowerCase();
+        this.filteredOptions = this.OptionsAsStrings.filter(option => option.toLowerCase().includes(filterValue));
+        if (this.filteredOptions.length === 0) {
+          this.filteredOptions = this.OptionsAsStrings
+        }
+        if (this.filteredOptions.length === 1 && this.filteredOptions[0] === value) {
+          this.filteredOptions = this.OptionsAsStrings
+        }
+      } else {
+        this.filteredOptions = this.OptionsAsStrings
+      }
     } else {
       // array
     }

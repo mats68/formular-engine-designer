@@ -43,7 +43,7 @@ export interface KompoDBApiServiceInterface {
     /**
      * Gibt ein Produktdetail zurück.
      * 
-     * @param typ Einer von den Werten: \&quot;inverter\&quot;, \&quot;storage\&quot;, \&quot;pv_modules\&quot;
+     * @param typ Einer von den Werten: \&quot;inverter\&quot;, \&quot;storage\&quot;, \&quot;pv_panel\&quot;
      * @param uuid Product uuid
      */
     apiV1KompoDBApiDetailTypUuidGet(typ: string, uuid: string, extraHttpRequestParams?: any): Observable<KompoDbDTO>;

@@ -32,10 +32,24 @@ export interface EmpfaengerServiceInterface {
     apiV1EmpfaengerGuidGet(guid: string, extraHttpRequestParams?: any): Observable<EmpfaengerDTO>;
 
     /**
+     * Gibt alle Empfänger zurück für die spezifizierte Empfängerkategorie.
+     * 
+     * @param kat Guid der Empfängerkategorie.
+     */
+    apiV1EmpfaengerKategorieGet(kat?: string, extraHttpRequestParams?: any): Observable<Array<EmpfaengerDTO>>;
+
+    /**
      * Ruft alle Empfänger ab, welche an der spezifizierten Postleitzahl bzw. deren Gemeinden operieren.
      * 
      * @param plz 
      */
     apiV1EmpfaengerPlzGet(plz?: string, extraHttpRequestParams?: any): Observable<Array<EmpfaengerDTO>>;
+
+    /**
+     * Sucht nach Empfängern in den verschiedenen Feldern (Werk, Firma, Adresse, Stichwort, Email usw.) mittels Suchbegriff.
+     * 
+     * @param text Suchbegriff, nach welchem gesucht werden soll. Der Text soll nicht leer sein.
+     */
+    apiV1EmpfaengerSuchenGet(text?: string, extraHttpRequestParams?: any): Observable<Array<EmpfaengerDTO>>;
 
 }

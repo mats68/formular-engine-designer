@@ -35,6 +35,11 @@ export interface AdresseDTO {
      * Zweiter Teil des Firma-Namens
      */
     firma2?: string | null;
+    anrede?: string | null;
+    titel?: string | null;
+    vorname?: string | null;
+    name?: string | null;
+    namezusatz?: string | null;
     /**
      * Erste Zeile der Adresse
      */
@@ -43,6 +48,7 @@ export interface AdresseDTO {
      * Zweite Zeile der Adresse
      */
     adresse2?: string | null;
+    landKennz?: string | null;
     /**
      * Postleitzahl
      */
@@ -59,18 +65,12 @@ export interface AdresseDTO {
      * Die Telefon-Nummer
      */
     telefonD?: string | null;
-    anrede?: string | null;
-    titel?: string | null;
-    name?: string | null;
-    vorname?: string | null;
-    namezusatz?: string | null;
-    landKennz?: string | null;
+    telefonP?: string | null;
     telefonG?: string | null;
     telefonM?: string | null;
-    telefonP?: string | null;
-    sprachCode?: number | null;
     internet?: string | null;
     referenzNr?: string | null;
+    korrespondenzSprache?: string | null;
     /**
      * Diese Eigenschaft ruft den UTC Zeitstempel ab, wann diese Holding erstellt/erfasst wurde, oder setzt diesen.
      */

@@ -1,4 +1,5 @@
 import { Component, Input, ViewChild } from '@angular/core';
+import { marker } from '@ngneat/transloco-keys-manager/marker';
 import { Subscription } from 'rxjs';
 
 import { SchemaManager } from '../../base/schemaManager';
@@ -63,17 +64,15 @@ export class MtBaseComponent {
   }
 
   get disabled(): boolean {
-    if (typeof this.comp['disabled'] === 'function')
-      return this.sm.getPropValue(this.comp, 'disabled');
-
-    if (this.sm.AllDisabled)
-      return true;
-
-    return this.sm.getPropValue(this.comp, 'disabled');
+    return this.sm.getDisabled(this.comp)
   }
 
-  get placeholder(): boolean {
+  get placeholder(): string {
     return this.sm.getPropValue(this.comp, 'placeholder');
+  }
+
+  get suffix(): string {
+    return this.sm.getPropValue(this.comp, 'suffix');
   }
 
   get tooltip() {
@@ -81,21 +80,47 @@ export class MtBaseComponent {
   }
 
   get hint() {
-    return this.comp.required ? this.sm.translate('comp_input.pflichtfeld') : this.sm.getPropValue(this.comp, 'hint');
+    return (this.comp.required && this.comp.type !== 'panel') ? this.sm.translate(marker('comp_input.pflichtfeld')) : this.sm.getPropValue(this.comp, 'hint');
   }
 
   onBlur(): void {
     // if (this.sm.Schema.noValidateOnBlur) {
     //   return
     // }
-    // const value = this.sm.getValue(this.comp);
-    // this.sm.validate(this.comp, value);
+    const value = this.sm.getValue(this.comp);
+    this.sm.validate(this.comp, value);
   }
 
   onClick() {
     if (this.comp.onClick) {
       this.comp.onClick(this.sm, this.comp);
     }
+  }
+
+  hasDiff(_arrayInd?: number) {
+    let arrayInd = _arrayInd
+    if (this.sm.fieldIsInDataTable(this.comp)) {
+      const tbl = this.sm.getParentDataTable(this.comp)
+      if (tbl) {
+        arrayInd = tbl.curRowInd
+      }
+    }
+    if (this.comp.diff?.showDiffBtn) {
+      if (this.comp.diff?.neverShowDiffBtn) {
+        return false
+      }
+      if (typeof arrayInd !== 'undefined') {
+        if (this.comp.diff.arrayInds?.indexOf(arrayInd) > -1) {
+          return true
+        } else {
+          return false
+        }
+
+      } else {
+        return true
+      }
+    }
+    return false
   }
 
 

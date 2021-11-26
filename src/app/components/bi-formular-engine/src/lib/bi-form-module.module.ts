@@ -41,6 +41,7 @@ import { MtItemComponent } from './base/mt-item/mt-item.component';
 import { MtFormComponent } from './components/mt-form/mt-form.component';
 import { MtExpComponent } from './components/mt-exp/mt-exp.component';
 import { MtBtnComponent } from './components/mt-btn/mt-btn.component';
+import { MtDiffBtnComponent } from './components/mt-diff-btn/mt-diff-btn.component';
 import { MtDividerComponent } from './components/mt-divider/mt-divider.component';
 import { MtDivComponent } from './components/mt-div/mt-div.component';
 import { MtSpinnerComponent } from './components/mt-spinner/mt-spinner.component';
@@ -68,7 +69,6 @@ import { MtSidenavComponent } from './components/mt-sidenav/mt-sidenav.component
 import { MtFileUploaderComponent } from './components/mt-file-uploader/mt-file-uploader.component';
 import { MtFileVierwerComponent } from './components/mt-file-viewer/mt-file-viewer.component';
 import { MtItemOrTextComponent } from './base/mt-item-or-text/mt-item-or-text.component';
-import { BiDiffComponent } from './base/bi-diff/bi-diff.component';
 import { BiFormComponent } from './base/bi-form/bi-form.component';
 import { MatFormFieldDefaultOptions, MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
@@ -82,6 +82,7 @@ import { MatFormFieldDefaultOptions, MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@ang
     MtFormComponent,
     MtExpComponent,
     MtBtnComponent,
+    MtDiffBtnComponent,
     MtDividerComponent,
     MtDivComponent,
     MtSpinnerComponent,
@@ -97,7 +98,6 @@ import { MatFormFieldDefaultOptions, MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@ang
     MtLblComponent,
     MtPanelComponent,
     MtCardComponent,
-    BiDiffComponent,
     MtHtmlComponent,
     MtBaseComponent,
     MtLinkComponent,

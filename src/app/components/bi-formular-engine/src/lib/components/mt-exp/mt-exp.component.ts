@@ -18,12 +18,15 @@ export class MtExpComponent extends MtBaseComponent implements OnInit, OnDestroy
 
   afterExpand() {
     if (!this.comp.expanded) this.comp.expanded = true;
+    if (this.comp.onChange) {
+      this.comp.onChange(this.sm, this.comp, this.comp.expanded);
+    }
   }
-
+ 
   afterCollapse() {
     if (this.comp.expanded) this.comp.expanded = false;
+    if (this.comp.onChange) {
+      this.comp.onChange(this.sm, this.comp, this.comp.expanded);
+    }
   }
-
-
-
 }

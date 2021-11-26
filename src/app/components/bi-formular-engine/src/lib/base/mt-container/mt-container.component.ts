@@ -11,12 +11,11 @@ export class MtContainerComponent extends MtBaseComponent implements OnInit {
   usesGrid: boolean = false;
 
   ngOnInit(): void {
-    this.usesGrid = this.sm.usesGrid(this.comp);
   }
 
-  getHighlight(child: IComponent): string {
-    return this.sm.getDiffHighlight(child) ? ' highlight' : '';
-  }
+  // getHighlight(child: IComponent): string {
+  //   return this.sm.getDiffHighlight(child) ? ' highlight' : '';
+  // }
 
 
 }

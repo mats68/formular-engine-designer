@@ -65,6 +65,8 @@ export interface EProjektViewDTO {
     postOrt?: string | null;
     anzLeistungen?: number;
     fortschritte?: Array<number> | null;
+    phasen?: Array<string> | null;
+    phasenNamen?: Array<string> | null;
     idWerk?: number | null;
     vnb_Firma?: string | null;
     vnb_Adresse?: string | null;

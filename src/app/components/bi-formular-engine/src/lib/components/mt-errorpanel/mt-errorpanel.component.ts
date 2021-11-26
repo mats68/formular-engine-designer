@@ -1,57 +1,56 @@
 import { Component, OnInit, OnChanges, Input, SimpleChanges } from '@angular/core';
+import { marker } from '@ngneat/transloco-keys-manager/marker';
+import { hasAllRequired } from 'src/app/schemas/schema-utils';
 import { MtBaseComponent } from '../../base/mt-base/mt-base.component';
 import { SchemaManager, IError } from '../../base/schemaManager';
 import { IComponent } from '../../base/types';
 
 @Component({
-  selector: 'mt-errorpanel',
-  templateUrl: './mt-errorpanel.component.html',
-  styleUrls: ['./mt-errorpanel.component.scss']
+	selector: 'mt-errorpanel',
+	templateUrl: './mt-errorpanel.component.html',
+	styleUrls: ['./mt-errorpanel.component.scss']
 })
 export class MtErrorpanelComponent extends MtBaseComponent implements OnInit, OnChanges {
-  @Input() Errors: IError[];
-  @Input() ErrorCount: number;
-  ErrorAbschnitte: IComponent[] = []
+	@Input() Errors: IError[];
+	@Input() ErrorCount: number;
+	ErrorAbschnitte: IComponent[] = []
 
-  ngOnInit(): void {
-  }
+	ngOnInit(): void {
+	}
 
-  ngOnChanges(): void {
-    this.ErrorAbschnitte = this.sm.getErrorAbschnitte()
+	ngOnChanges(): void {
+		this.ErrorAbschnitte = this.sm.getErrorAbschnitte()
 
-  }
+	}
 
-  hidePanel() {
-    // this.sm.AllValidated = false;
-  }
+	hidePanel() {
+		// this.sm.AllValidated = false;
+	}
 
-  // panelVisible(): boolean {
-  //   return (this.Errors && this.Errors.length > 0 && this.sm.AllValidated);
-  // }
+	// panelVisible(): boolean {
+	//   return (this.Errors && this.Errors.length > 0 && this.sm.AllValidated);
+	// }
 
-  hasError(): boolean {
-    return this.Errors && this.Errors.length > 0
-  }
+	hasError(): boolean {
+		hasAllRequired(this.sm); 	// diese Zeile braucht es, damit alle Schemas richtig verfügbar sind.
+											// Ohne schiesst es hier und nichts geht mehr.
+		return this.Errors && this.Errors.length > 0;
+	}
 
-  getBgClass(): string {
-    return  this.hasError() ? 'bg-error' : 'bg-gray-left'
-  }
-  
-  getText(): string {
-    return this.hasError() ?  this.sm.translate('comp_errorpanel.text_nok') : this.sm.translate('comp_errorpanel.text_ok')
-  }
+	getBgClass(): string {
+		return this.hasError() ? 'bg-error' : 'bg-gray-left'
+	}
 
+	getText(): string {
+		return this.hasError() ? this.sm.translate(marker('comp_errorpanel.text_nok')) : this.sm.translate(marker('comp_errorpanel.text_ok'))
+	}
 
+	getErrorLabel(comp: IComponent): string {
+		const lb = this.sm.getPropValue(comp, 'label');
+		return lb || 'Fehler';
+	}
 
-  getErrorLabel(comp: IComponent): string {
-    const lb = this.sm.getPropValue(comp, 'label');
-    return lb || 'Fehler';
-  }
-
-  clickError(comp: IComponent) {
-    this.sm.ScrollToParentAbschnitt(comp)
-  }
-
-
-
+	clickError(comp: IComponent) {
+		this.sm.ScrollToParentAbschnitt(comp)
+	}
 }

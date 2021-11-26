@@ -28,6 +28,10 @@ export interface EAnlageDTO {
      */
     nummer?: string | null;
     /**
+     * Die Sequenznummer dieser Elektro-Anlage für Sortierungszwecke.
+     */
+    sequenzNummer?: number;
+    /**
      * Eidgenössischer Wohnungsidentifikator.
      */
     ewid?: number | null;

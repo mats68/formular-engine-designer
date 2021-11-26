@@ -12,9 +12,9 @@
 
 
 export interface IdentityDescriptor { 
-    mandant?: string;
+    tenant?: string;
     holding?: string;
-    geschStelle?: string | null;
-    mitarbeiter?: string;
+    office?: string | null;
+    employee?: string;
 }
 

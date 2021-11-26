@@ -17,11 +17,12 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
-import { AuftragsDefinitionDTO } from '../model/models';
-import { EProjectDTO } from '../model/models';
-import { EProjektDTO } from '../model/models';
-import { EProjektViewDTO } from '../model/models';
-import { IdentityContextDTO } from '../model/models';
+import { EfoCreateEProjectRequest } from '../model/models';
+import { EfoDeviceDTO } from '../model/models';
+import { EfoEProjectDTO } from '../model/models';
+import { EfoEProjectInfoDTO } from '../model/models';
+import { EfoIdentityContextDTO } from '../model/models';
+import { EfoLanguageCode } from '../model/models';
 import { ProblemDetails } from '../model/models';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -93,14 +94,14 @@ export class EFOnlineApiService implements EFOnlineApiServiceInterface {
     }
 
     /**
-     * Gibt eine Auflistung aller gültigen Identitätskontexte des authentifizierten Benutzers zurück.
+     * Retrieves all the identity contexts that are available to the currently authenticated user.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public apiV1EFOnlineApiIdentityGet(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<IdentityContextDTO>>;
-    public apiV1EFOnlineApiIdentityGet(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<IdentityContextDTO>>>;
-    public apiV1EFOnlineApiIdentityGet(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<IdentityContextDTO>>>;
-    public apiV1EFOnlineApiIdentityGet(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+    public apiV1EfoIdentityGet(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<EfoIdentityContextDTO>>;
+    public apiV1EfoIdentityGet(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<EfoIdentityContextDTO>>>;
+    public apiV1EfoIdentityGet(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<EfoIdentityContextDTO>>>;
+    public apiV1EfoIdentityGet(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
 
         let headers = this.defaultHeaders;
 
@@ -131,7 +132,7 @@ export class EFOnlineApiService implements EFOnlineApiServiceInterface {
             responseType = 'text';
         }
 
-        return this.httpClient.get<Array<IdentityContextDTO>>(`${this.configuration.basePath}/api/v1/EFOnlineApi/identity`,
+        return this.httpClient.get<Array<EfoIdentityContextDTO>>(`${this.configuration.basePath}/api/v1/efo/identity`,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
@@ -143,93 +144,44 @@ export class EFOnlineApiService implements EFOnlineApiServiceInterface {
     }
 
     /**
-     * @param eProjectDTO 
+     * Retireves the device with the specified type and the given component ID from the Eturnity AG component database.  It then adds the specified count of device(s) to the specified building within the tenant identified by the  identity context.
+     * @param buildingGuid The GUID of the building to which the device(s) should be added.
+     * @param componentType The type of the component to add.                The following values are possible: &#x60;pv_panel&#x60;, &#x60;inverter&#x60; or &#x60;storage&#x60;.
+     * @param componentID The ID of the device within the component database.
+     * @param count The count of device(s) to add to the specified building.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public apiV1EFOnlineApiProjectPost(eProjectDTO?: EProjectDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<EProjectDTO>;
-    public apiV1EFOnlineApiProjectPost(eProjectDTO?: EProjectDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<EProjectDTO>>;
-    public apiV1EFOnlineApiProjectPost(eProjectDTO?: EProjectDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<EProjectDTO>>;
-    public apiV1EFOnlineApiProjectPost(eProjectDTO?: EProjectDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
-
-        let headers = this.defaultHeaders;
-
-        let credential: string | undefined;
-        // authentication (Brunner Informatik AG Cloud-Login) required
-        credential = this.configuration.lookupCredential('Brunner Informatik AG Cloud-Login');
-        if (credential) {
-            headers = headers.set('Authorization', 'Bearer ' + credential);
+    public apiV1EfoProjectsDevicesByIdPost(buildingGuid: string, componentType: string, componentID: string, count?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<EfoDeviceDTO>;
+    public apiV1EfoProjectsDevicesByIdPost(buildingGuid: string, componentType: string, componentID: string, count?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<EfoDeviceDTO>>;
+    public apiV1EfoProjectsDevicesByIdPost(buildingGuid: string, componentType: string, componentID: string, count?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<EfoDeviceDTO>>;
+    public apiV1EfoProjectsDevicesByIdPost(buildingGuid: string, componentType: string, componentID: string, count?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+        if (buildingGuid === null || buildingGuid === undefined) {
+            throw new Error('Required parameter buildingGuid was null or undefined when calling apiV1EfoProjectsDevicesByIdPost.');
         }
-
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-                'text/plain',
-                'application/json',
-                'text/json'
-            ];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        if (componentType === null || componentType === undefined) {
+            throw new Error('Required parameter componentType was null or undefined when calling apiV1EfoProjectsDevicesByIdPost.');
         }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        if (componentID === null || componentID === undefined) {
+            throw new Error('Required parameter componentID was null or undefined when calling apiV1EfoProjectsDevicesByIdPost.');
         }
-
-
-        // to determine the Content-Type header
-        const consumes: string[] = [
-            'application/json',
-            'text/json',
-            'application/_*+json'
-        ];
-        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
-        if (httpContentTypeSelected !== undefined) {
-            headers = headers.set('Content-Type', httpContentTypeSelected);
-        }
-
-        let responseType: 'text' | 'json' = 'json';
-        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
-            responseType = 'text';
-        }
-
-        return this.httpClient.post<EProjectDTO>(`${this.configuration.basePath}/api/v1/EFOnlineApi/project`,
-            eProjectDTO,
-            {
-                responseType: <any>responseType,
-                withCredentials: this.configuration.withCredentials,
-                headers: headers,
-                observe: observe,
-                reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
-     * @param skip 
-     * @param limit 
-     * @param branches 
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public apiV1EFOnlineApiProjectTypesGet(skip?: number, limit?: number, branches?: Array<string>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<AuftragsDefinitionDTO>>;
-    public apiV1EFOnlineApiProjectTypesGet(skip?: number, limit?: number, branches?: Array<string>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<AuftragsDefinitionDTO>>>;
-    public apiV1EFOnlineApiProjectTypesGet(skip?: number, limit?: number, branches?: Array<string>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<AuftragsDefinitionDTO>>>;
-    public apiV1EFOnlineApiProjectTypesGet(skip?: number, limit?: number, branches?: Array<string>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
 
         let queryParameters = new HttpParams({encoder: this.encoder});
-        if (skip !== undefined && skip !== null) {
+        if (buildingGuid !== undefined && buildingGuid !== null) {
           queryParameters = this.addToHttpParams(queryParameters,
-            <any>skip, 'skip');
+            <any>buildingGuid, 'buildingGuid');
         }
-        if (limit !== undefined && limit !== null) {
+        if (componentType !== undefined && componentType !== null) {
           queryParameters = this.addToHttpParams(queryParameters,
-            <any>limit, 'limit');
+            <any>componentType, 'componentType');
         }
-        if (branches) {
-            branches.forEach((element) => {
-                queryParameters = this.addToHttpParams(queryParameters,
-                  <any>element, 'branches');
-            })
+        if (componentID !== undefined && componentID !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>componentID, 'componentID');
+        }
+        if (count !== undefined && count !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>count, 'count');
         }
 
         let headers = this.defaultHeaders;
@@ -261,7 +213,8 @@ export class EFOnlineApiService implements EFOnlineApiServiceInterface {
             responseType = 'text';
         }
 
-        return this.httpClient.get<Array<AuftragsDefinitionDTO>>(`${this.configuration.basePath}/api/v1/EFOnlineApi/project/types`,
+        return this.httpClient.post<EfoDeviceDTO>(`${this.configuration.basePath}/api/v1/efo/projects/devices/by-id`,
+            null,
             {
                 params: queryParameters,
                 responseType: <any>responseType,
@@ -274,80 +227,17 @@ export class EFOnlineApiService implements EFOnlineApiServiceInterface {
     }
 
     /**
-     * Ruft alle Elektro-Projekte aus dem im Identitätskontext des Benutzers spezifizierten Mandanten ab.
-     * @param limit Die maximale Anzahl der Elektro-Projekte, welche abgerufen werden sollen.
-     * @param skip Die Anzahl der Elektro-Projekte, welche übersprungen werden sollen.
+     * Deletes the device with the specified GUID from within the tenant specified by the identity context.
+     * @param guid The GUID of the device to delete.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public apiV1EFOnlineApiProjekteGet(limit?: number, skip?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<EProjektViewDTO>>;
-    public apiV1EFOnlineApiProjekteGet(limit?: number, skip?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<EProjektViewDTO>>>;
-    public apiV1EFOnlineApiProjekteGet(limit?: number, skip?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<EProjektViewDTO>>>;
-    public apiV1EFOnlineApiProjekteGet(limit?: number, skip?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
-
-        let queryParameters = new HttpParams({encoder: this.encoder});
-        if (limit !== undefined && limit !== null) {
-          queryParameters = this.addToHttpParams(queryParameters,
-            <any>limit, 'limit');
-        }
-        if (skip !== undefined && skip !== null) {
-          queryParameters = this.addToHttpParams(queryParameters,
-            <any>skip, 'skip');
-        }
-
-        let headers = this.defaultHeaders;
-
-        let credential: string | undefined;
-        // authentication (Brunner Informatik AG Cloud-Login) required
-        credential = this.configuration.lookupCredential('Brunner Informatik AG Cloud-Login');
-        if (credential) {
-            headers = headers.set('Authorization', 'Bearer ' + credential);
-        }
-
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-                'text/plain',
-                'application/json',
-                'text/json'
-            ];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
-
-
-        let responseType: 'text' | 'json' = 'json';
-        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
-            responseType = 'text';
-        }
-
-        return this.httpClient.get<Array<EProjektViewDTO>>(`${this.configuration.basePath}/api/v1/EFOnlineApi/projekte`,
-            {
-                params: queryParameters,
-                responseType: <any>responseType,
-                withCredentials: this.configuration.withCredentials,
-                headers: headers,
-                observe: observe,
-                reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
-     * Gibt das Projekt mit der spezifizierten GUID aus dem im Identitätskontext des Benutzers spezifizierten Mandanten  zurück.
-     * @param guid Die GUID des Projektes.
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public apiV1EFOnlineApiProjekteGuidGet(guid: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<EProjektDTO>;
-    public apiV1EFOnlineApiProjekteGuidGet(guid: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<EProjektDTO>>;
-    public apiV1EFOnlineApiProjekteGuidGet(guid: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<EProjektDTO>>;
-    public apiV1EFOnlineApiProjekteGuidGet(guid: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+    public apiV1EfoProjectsDevicesGuidDelete(guid: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any>;
+    public apiV1EfoProjectsDevicesGuidDelete(guid: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<any>>;
+    public apiV1EfoProjectsDevicesGuidDelete(guid: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<any>>;
+    public apiV1EfoProjectsDevicesGuidDelete(guid: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
         if (guid === null || guid === undefined) {
-            throw new Error('Required parameter guid was null or undefined when calling apiV1EFOnlineApiProjekteGuidGet.');
+            throw new Error('Required parameter guid was null or undefined when calling apiV1EfoProjectsDevicesGuidDelete.');
         }
 
         let headers = this.defaultHeaders;
@@ -379,7 +269,7 @@ export class EFOnlineApiService implements EFOnlineApiServiceInterface {
             responseType = 'text';
         }
 
-        return this.httpClient.get<EProjektDTO>(`${this.configuration.basePath}/api/v1/EFOnlineApi/projekte/${encodeURIComponent(String(guid))}`,
+        return this.httpClient.delete<any>(`${this.configuration.basePath}/api/v1/efo/projects/devices/${encodeURIComponent(String(guid))}`,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
@@ -391,15 +281,69 @@ export class EFOnlineApiService implements EFOnlineApiServiceInterface {
     }
 
     /**
-     * Erstellt ein neues Elektro-Projekt.
-     * @param eProjektDTO Das Elektro-Projekt DTO Objekt, welches die Daten des zu erstellenden Projektes enthält.
+     * Retrieves the device with the specified GUID from within the tenant specified by the identity context.
+     * @param guid The GUID of the device to retrieve.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public apiV1EFOnlineApiProjektePost(eProjektDTO?: EProjektDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<EProjektDTO>;
-    public apiV1EFOnlineApiProjektePost(eProjektDTO?: EProjektDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<EProjektDTO>>;
-    public apiV1EFOnlineApiProjektePost(eProjektDTO?: EProjektDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<EProjektDTO>>;
-    public apiV1EFOnlineApiProjektePost(eProjektDTO?: EProjektDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+    public apiV1EfoProjectsDevicesGuidGet(guid: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<EfoDeviceDTO>;
+    public apiV1EfoProjectsDevicesGuidGet(guid: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<EfoDeviceDTO>>;
+    public apiV1EfoProjectsDevicesGuidGet(guid: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<EfoDeviceDTO>>;
+    public apiV1EfoProjectsDevicesGuidGet(guid: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+        if (guid === null || guid === undefined) {
+            throw new Error('Required parameter guid was null or undefined when calling apiV1EfoProjectsDevicesGuidGet.');
+        }
+
+        let headers = this.defaultHeaders;
+
+        let credential: string | undefined;
+        // authentication (Brunner Informatik AG Cloud-Login) required
+        credential = this.configuration.lookupCredential('Brunner Informatik AG Cloud-Login');
+        if (credential) {
+            headers = headers.set('Authorization', 'Bearer ' + credential);
+        }
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.get<EfoDeviceDTO>(`${this.configuration.basePath}/api/v1/efo/projects/devices/${encodeURIComponent(String(guid))}`,
+            {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Creates a new device or updates an existing device based on it\&#39;s GUID within the tenant specified by the  identity context.                A new device is created when the &#x60;guid&#x60; Field of the data transfer object is set to the &#x60;null&#x60; vlaue, otherwise  the device with the specified GUID will be updated.
+     * @param efoDeviceDTO The device to create or update.
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public apiV1EfoProjectsDevicesPost(efoDeviceDTO?: EfoDeviceDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<EfoDeviceDTO>;
+    public apiV1EfoProjectsDevicesPost(efoDeviceDTO?: EfoDeviceDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<EfoDeviceDTO>>;
+    public apiV1EfoProjectsDevicesPost(efoDeviceDTO?: EfoDeviceDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<EfoDeviceDTO>>;
+    public apiV1EfoProjectsDevicesPost(efoDeviceDTO?: EfoDeviceDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
 
         let headers = this.defaultHeaders;
 
@@ -441,8 +385,247 @@ export class EFOnlineApiService implements EFOnlineApiServiceInterface {
             responseType = 'text';
         }
 
-        return this.httpClient.post<EProjektDTO>(`${this.configuration.basePath}/api/v1/EFOnlineApi/projekte`,
-            eProjektDTO,
+        return this.httpClient.post<EfoDeviceDTO>(`${this.configuration.basePath}/api/v1/efo/projects/devices`,
+            efoDeviceDTO,
+            {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Retrieves an optionally filtered collection of electrical projects to which the current employee has access.
+     * @param language The code of the language, in which the electrical project\&#39;s phase names should be returned.
+     * @param limit &lt;br&gt;               The maximum count of electrical projects to retrieve.                &lt;br&gt;               Must be an integer between 1 and 1024              
+     * @param skip &lt;br&gt;               The count of electrical projects to skip initially. This feature can be used for pagination.                &lt;br&gt;               Must be an integer between 0 and 2147483646.              
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public apiV1EfoProjectsGet(language?: EfoLanguageCode, limit?: number, skip?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<EfoEProjectInfoDTO>>;
+    public apiV1EfoProjectsGet(language?: EfoLanguageCode, limit?: number, skip?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<EfoEProjectInfoDTO>>>;
+    public apiV1EfoProjectsGet(language?: EfoLanguageCode, limit?: number, skip?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<EfoEProjectInfoDTO>>>;
+    public apiV1EfoProjectsGet(language?: EfoLanguageCode, limit?: number, skip?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+
+        let queryParameters = new HttpParams({encoder: this.encoder});
+        if (language !== undefined && language !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>language, 'language');
+        }
+        if (limit !== undefined && limit !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>limit, 'limit');
+        }
+        if (skip !== undefined && skip !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>skip, 'skip');
+        }
+
+        let headers = this.defaultHeaders;
+
+        let credential: string | undefined;
+        // authentication (Brunner Informatik AG Cloud-Login) required
+        credential = this.configuration.lookupCredential('Brunner Informatik AG Cloud-Login');
+        if (credential) {
+            headers = headers.set('Authorization', 'Bearer ' + credential);
+        }
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.get<Array<EfoEProjectInfoDTO>>(`${this.configuration.basePath}/api/v1/efo/projects`,
+            {
+                params: queryParameters,
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Deletes all the device from the ElektroForm electric project with the specified GUID within the tenant specified  by the identity context.
+     * @param guid The GUID of the project, which devices are deleted.
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public apiV1EfoProjectsGuidDevicesDelete(guid: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any>;
+    public apiV1EfoProjectsGuidDevicesDelete(guid: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<any>>;
+    public apiV1EfoProjectsGuidDevicesDelete(guid: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<any>>;
+    public apiV1EfoProjectsGuidDevicesDelete(guid: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+        if (guid === null || guid === undefined) {
+            throw new Error('Required parameter guid was null or undefined when calling apiV1EfoProjectsGuidDevicesDelete.');
+        }
+
+        let headers = this.defaultHeaders;
+
+        let credential: string | undefined;
+        // authentication (Brunner Informatik AG Cloud-Login) required
+        credential = this.configuration.lookupCredential('Brunner Informatik AG Cloud-Login');
+        if (credential) {
+            headers = headers.set('Authorization', 'Bearer ' + credential);
+        }
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.delete<any>(`${this.configuration.basePath}/api/v1/efo/projects/${encodeURIComponent(String(guid))}/devices`,
+            {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Retrieves the ElektroForm electric project with the specified GUID from within the tenant specified by the  identity context.
+     * @param guid The GUID of the project to retrieve.
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public apiV1EfoProjectsGuidGet(guid: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<EfoEProjectDTO>;
+    public apiV1EfoProjectsGuidGet(guid: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<EfoEProjectDTO>>;
+    public apiV1EfoProjectsGuidGet(guid: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<EfoEProjectDTO>>;
+    public apiV1EfoProjectsGuidGet(guid: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+        if (guid === null || guid === undefined) {
+            throw new Error('Required parameter guid was null or undefined when calling apiV1EfoProjectsGuidGet.');
+        }
+
+        let headers = this.defaultHeaders;
+
+        let credential: string | undefined;
+        // authentication (Brunner Informatik AG Cloud-Login) required
+        credential = this.configuration.lookupCredential('Brunner Informatik AG Cloud-Login');
+        if (credential) {
+            headers = headers.set('Authorization', 'Bearer ' + credential);
+        }
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.get<EfoEProjectDTO>(`${this.configuration.basePath}/api/v1/efo/projects/${encodeURIComponent(String(guid))}`,
+            {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Creates a new ElektroForm electric project.
+     * @param efoCreateEProjectRequest The DTO object containing the data of the electric project to create.
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public apiV1EfoProjectsPost(efoCreateEProjectRequest?: EfoCreateEProjectRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<EfoEProjectDTO>;
+    public apiV1EfoProjectsPost(efoCreateEProjectRequest?: EfoCreateEProjectRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<EfoEProjectDTO>>;
+    public apiV1EfoProjectsPost(efoCreateEProjectRequest?: EfoCreateEProjectRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<EfoEProjectDTO>>;
+    public apiV1EfoProjectsPost(efoCreateEProjectRequest?: EfoCreateEProjectRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+
+        let headers = this.defaultHeaders;
+
+        let credential: string | undefined;
+        // authentication (Brunner Informatik AG Cloud-Login) required
+        credential = this.configuration.lookupCredential('Brunner Informatik AG Cloud-Login');
+        if (credential) {
+            headers = headers.set('Authorization', 'Bearer ' + credential);
+        }
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json',
+            'text/json',
+            'application/_*+json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            headers = headers.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.post<EfoEProjectDTO>(`${this.configuration.basePath}/api/v1/efo/projects`,
+            efoCreateEProjectRequest,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,

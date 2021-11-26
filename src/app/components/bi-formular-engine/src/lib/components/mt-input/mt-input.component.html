@@ -1,3 +1,6 @@
+<div *ngIf='hasDiff()'>
+    <mt-diff-btn [comp]='comp' [sm]='sm'></mt-diff-btn>
+</div>
 <mat-form-field [style]='style' [appearance]='sm.getAppearance(comp)' [class]='getClass()' (click)='onClick()'>
     <mat-label *ngIf='label' [ngClass]='{"error-color" : getError()}'>{{label}}</mat-label>
     <span matPrefix *ngIf='comp.prefix'>{{comp.prefix}}</span>
@@ -19,8 +22,10 @@
             {{item.text}}
         </mat-option>
     </mat-select>
-    <mat-icon matSuffix *ngIf='options_icon()' class="options-icon">arrow_drop_down</mat-icon>
-    <span matSuffix *ngIf='comp.suffix' class="suffix">{{comp.suffix}}</span>
+    <span class="flex items-center" matSuffix *ngIf='options_icon() || suffix'>
+        <mat-icon *ngIf='options_icon()' class="options-icon">arrow_drop_down</mat-icon>
+        <span *ngIf='suffix' class="suffix">{{suffix}}</span>
+    </span>
     <mat-hint *ngIf='hint || getError()'>
         <div *ngIf='getError()' class="error-color">{{getError()}}</div>
         <div *ngIf='hint && !getError()'>{{hint}}</div>

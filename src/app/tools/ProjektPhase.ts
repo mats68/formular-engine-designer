@@ -1,62 +1,53 @@
-import { EAktionDTO, EAnlageDTO, EAuftragPhaseDTO, EFormularStatus, ELeistungDTO, EProjektDTO } from "../api"
-import { FormBeilageDef } from "../services"
+import { EAktionDTO, EAnlageDTO, EAuftragPhaseDTO, DokumentStatus, ELeistungDTO, EProjektDTO, AktionsDefDTO, DokumentDefDTO } from "../api"
+import { BeilageWrapper } from "../services"
 
 export const CAnlageColTitelWidth = 300
 export const CAnlageColWidth = 250
 
-export class ProjektPhase {
-    public titel: string
-    public phase: EAuftragPhaseDTO
-    public projekt: EProjektDTO
-    public empfaenger?: ProjektPhaseEmpfaenger[]
-    public anlagen?: ProjektPhaseAnlage[]
-    public expanded?: boolean
+export class ProjektPhaseWrapper {
+    public titel: string;
+    public phase: EAuftragPhaseDTO;
+    public projekt: EProjektDTO;
+    public empfaenger?: EmpfaengerWrapper[];
+    public anlagen?: AnlageWrapper[];
+    public expanded?: boolean;
     constructor() {
     }
 }
 
-export class ProjektPhaseEmpfaenger {
+export class EmpfaengerWrapper {
     public empfaenger: string
-    public dateien: ProjektPhaseDatei[]
-    constructor() {
-        this.dateien = []
-    }
+    public aktionen: AktionsWrapper[] = []
 }
 
-export class ProjektPhaseAnlage {
+export class AnlageWrapper {
     public titel: string
     public anlage: EAnlageDTO
-    public dateien: ProjektPhaseDatei[]
-    constructor() {
-        this.dateien = []
-    }
+    public aktionen: AktionsWrapper[] = []
 }
 
 export interface IUploadFile {
-    datei: ProjektPhaseDatei
+    aktionsWrapper: AktionsWrapper
     file: File
 }
 
-export class ProjektPhaseDatei {
+export class AktionsWrapper {
     // public aktion_guid: string
     public anlage_guid: string
     public projekt: EProjektDTO
     public leistung: ELeistungDTO
     public aktion: EAktionDTO
+    public aktionDef: AktionsDefDTO
     public dateititel: string
     public dateiname: string
-    public typ: ProjektPhaseDateiTyp
-    public formulartyp_guid: string
-    public status: EFormularStatus
+    public typ: AktionsTyp
+    public formularTypGuid: string
+    public status: DokumentStatus
     public sendeDatum?: Date
-    public beilagen: FormBeilageDef[]
-
-    constructor() {
-        this.beilagen = []
-    }
+    public beilageDefs: BeilageWrapper[] = []
 }
 
-export enum ProjektPhaseDateiTyp {
+export enum AktionsTyp {
     Formular = 1,
     pdf = 2,
     Formular_oder_pdf = 3,
@@ -88,16 +79,16 @@ export const ProjektPhaseFn = {
     //     }
     //     return ''
     // },
-    EmptyStatus(status: EFormularStatus): boolean {
-        return status === EFormularStatus.Undefiniert
+    EmptyStatus(status: DokumentStatus): boolean {
+        return status === DokumentStatus.Undefiniert
     },
-    gridStyleAnlage(anlage: ProjektPhaseAnlage): string {
-        const arr: string[] = anlage.dateien.map(_ => CAnlageColWidth.toString() + 'px')
+    gridStyleAnlage(anlage: AnlageWrapper): string {
+        const arr: string[] = anlage.aktionen.map(_ => CAnlageColWidth.toString() + 'px')
         arr.unshift(CAnlageColTitelWidth.toString() + 'px')
         return 'grid-template-columns: ' + arr.join(' ')
     },
-    widthStyleAnlage(anlage: ProjektPhaseAnlage): string {
-        const w = (anlage.dateien.length * CAnlageColWidth) + CAnlageColTitelWidth + 30
+    widthStyleAnlage(anlage: AnlageWrapper): string {
+        const w = (anlage.aktionen.length * CAnlageColWidth) + CAnlageColTitelWidth + 30
         return `width: ${w}px`
     }
 

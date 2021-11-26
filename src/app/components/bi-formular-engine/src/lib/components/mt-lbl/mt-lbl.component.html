@@ -1,2 +1,4 @@
-
-<span [class]='getClass()' [style]='styles("label")'><span *ngIf='comp.required' class="font-bold text-red-600"> - </span>{{label}}</span>
+<span [class]='getClass()' [style]='styles("label")'><span *ngIf='comp.required && !Value' class="font-bold text-red-600"> - </span>{{label}}</span>
+<span *ngIf='hasDiff()'>
+    <mt-diff-btn [comp]='comp' [sm]='sm'></mt-diff-btn>
+</span>

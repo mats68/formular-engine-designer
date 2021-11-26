@@ -9,7 +9,7 @@ export const DEMO_1: ISchema = {
         card_panel('Test-Panel 1', '',
             [
                 ...label_Input('Test-1', 'test-1', 20),
-                ...label_Input('Test-2', 'test-2', 50, undefined, false, true)
+                ...label_Input('Test-2', 'test-2', 50)
             ]),
 
     ],

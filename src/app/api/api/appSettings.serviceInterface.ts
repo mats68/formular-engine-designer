@@ -29,4 +29,10 @@ export interface AppSettingsServiceInterface {
      */
     apiV1AppSettingsPronovourlGet(extraHttpRequestParams?: any): Observable<string>;
 
+    /**
+     * Ruft das Environment ab, in welchem das Programm läuft (Einen der Werte: Debug / Test / Integration / Produktion).
+     * 
+     */
+    apiV1AppSettingsSystemGet(extraHttpRequestParams?: any): Observable<string>;
+
 }

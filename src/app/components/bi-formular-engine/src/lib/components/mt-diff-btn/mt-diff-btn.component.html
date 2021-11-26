@@ -1,0 +1,22 @@
+<!-- <svg width="24" height="24" viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="9" fill="#92E6FA" />
+<path d="M12,2A10,10,0,1,0,22,12,10.015,10.015,0,0,0,12,2Zm0,2a8,8,0,1,1-8,8A7.985,7.985,0,0,1,12,4ZM11,7V9h2V7Zm0,4v6h2V11Z" fill="black"/>
+</svg> -->
+<button
+  class="color-diff mr-2"
+  *ngIf='!showDiffValue'
+  mat-icon-button
+  type='button'
+  (click)='onDiffBtnClick()'>
+  <mat-icon>info</mat-icon>
+</button>
+<div *ngIf='showDiffValue' class="bg-diff p-4">
+  <div>{{titel}}</div>
+  <div class="flex items-center">
+    <div [innerHTML]='diffValue'></div>
+    <span class="flex-auto"></span>
+    <button mat-icon-button (click)='closeDiff()'>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+</div>

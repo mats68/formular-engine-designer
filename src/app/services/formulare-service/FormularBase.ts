@@ -1,5 +1,5 @@
 import { Subject } from "rxjs";
-import { EDokumentDTO, EDokumentWertDTO } from "src/app/api";
+import { DsoDTO, DsoDataDTO } from "src/app/api";
 import { EventProperty, IEventProperty } from "src/app/tools/EventProperty";
 import { Guid } from "src/app/tools/Guid";
 import { FormularFieldSet, FormularFieldSetState, IFormularFieldSet } from "./FormularFieldSet";
@@ -116,7 +116,7 @@ export interface IFormularBase
 	readonly guid: Guid;
 
 	/**
-	 * Diese Eigenschaft ruft die Formulartyp GUID dieses Formulars/dieser Formularbeilage als `Guid` Instanz ab.
+	 * Diese Eigenschaft ruft die DokumentDef GUID dieses Formulars/dieser Formularbeilage als `Guid` Instanz ab.
 	 */
 	readonly type: Guid;
 
@@ -322,7 +322,7 @@ export abstract class FormularBase implements IFormularBase
 	private readonly _guid: Guid;
 
 	/**
-	 * Dieses Feld speichert die Formulartyp-GUID dieses Formulars/dieser Formularbeilage.
+	 * Dieses Feld speichert die DokumentDef-GUID dieses Formulars/dieser Formularbeilage.
 	 */
 	private readonly _typeGuid: Guid;
 
@@ -330,7 +330,7 @@ export abstract class FormularBase implements IFormularBase
 	 * Dieses Feld speichert die Dokument-DTO Instanz, aus welcher die Werte geladen wurden und in welche die Änderungen
 	 * gespeichert werden sollen.
 	 */
-	private _document: EDokumentDTO;
+	private _dso: DsoDTO;
 
 	/**
 	 * Dieses Feld speichert ein Array von `FormularFieldSet` Instanzen, welche die aktuellen Formular-Werte und den
@@ -358,7 +358,7 @@ export abstract class FormularBase implements IFormularBase
 	protected constructor(
 		guid: string | Guid | null,
 		typeGuid: string | Guid,
-		document: EDokumentDTO,
+		dso: DsoDTO,
 		isNew: boolean = false,
 		changeNotifier: Subject<{ formular: FormularBase, value: FormularFieldSet }>,
 		state: FormularState = FormularState.Unchanged
@@ -376,7 +376,7 @@ export abstract class FormularBase implements IFormularBase
 			}
 		);
 
-		this.loadDocument(document, true);
+		this.loadDocument(dso, true);
 
 		return;
 	}
@@ -614,18 +614,18 @@ export abstract class FormularBase implements IFormularBase
 	 * Diese Methode speichert die spezifizierte Dokument DTO Instanz intern und aktualisiert alle `FormValue`
 	 * Instanzen und löst die entsprechenden Ereignisse aus.
 	 *
-	 * @param document
+	 * @param dso
 	 * 	Die zu ladende Dokument DTO Instanz.
 	 *
 	 * @param force
 	 * 	`true` um alle ungesicherten Änderungen zu verwerfen, ansonsten `false`.
 	 */
-	protected loadDocument(document: EDokumentDTO, force: boolean): void
+	protected loadDocument(dso: DsoDTO, force: boolean): void
 	{
 		const __METHOD_NAME__: string = 'FormularBase::loadDocument';
 
 		// Ablaufverfolgung: Logge den Beginn der Ausführung dieser Methode.
-		log_trace(__METHOD_NAME__, true, { instance: this, document: document, force: force });
+		log_trace(__METHOD_NAME__, true, { instance: this, document: dso, force: force });
 
 		try
 		{
@@ -642,8 +642,8 @@ export abstract class FormularBase implements IFormularBase
 
 			// Iteriere über alle Werte des spezifizierten Dokumentes. In diesem Schritt aktualisieren wir bestehende
 			// Werte und fügen neue ein.
-			if (document?.werte) {
-				for (let dtoValue of document?.werte) {
+			if (dso?.data) {
+				for (let dtoValue of dso?.data) {
 					// Konvertiere als erstes die Attribut-GUID des aktuell iterierten Dokumentwertes in eine `Guid` Instanz
 					// und speichere diese dann in einer lokalen Variable.
 					let attributGuid: Guid = asGuid(dtoValue.attribut);
@@ -702,7 +702,7 @@ export abstract class FormularBase implements IFormularBase
 
 			// Aktualisiere nun die intern gespeicherten Werte sowie das intern gespeicherte Dokument-DTO.
 			this._values = formularValues;
-			this._document = document;
+			this._dso = dso;
 
 			// Prüfe nun noch, ob dieses Formular/diese Formularbeilage als geändert markiert ist. Falls ja, setzte den
 			// Zustand zurück auf unverändert.
@@ -716,7 +716,7 @@ export abstract class FormularBase implements IFormularBase
 				`Saving formular: ${this.guid?.toString()}...`,
 				{
 					formular: this,
-					dto: this._document,
+					dto: this._dso,
 					values: this._values
 				}
 			);
@@ -758,14 +758,14 @@ export abstract class FormularBase implements IFormularBase
 			this.onSaving();
 
 			// Ersetze nun alle Werte in der DTO Instanz mit den aktuellen Werten dieser Instanz.
-			this._document.werte =
+			this._dso.data =
 				this._values.map(
 					(v: FormularFieldSet) => {
 						return {
 							attribut: v.guid.toString(),
 							index: v.index,
 							daten: v.data
-						} as EDokumentWertDTO;
+						} as DsoDataDTO;
 					}
 				);
 
@@ -774,8 +774,8 @@ export abstract class FormularBase implements IFormularBase
 				`Saving formular: ...`,
 				{
 					formular: this,
-					dto: this._document,
-					values: this._document.werte
+					dto: this._dso,
+					values: this._dso.data
 				}
 			);
 		}
@@ -982,7 +982,7 @@ export abstract class FormularBase implements IFormularBase
 	/** @inheritdoc */
 	public get type(): Guid
 	{
-		// Gib die intern gespeicherte Formulartyp-GUID zurück.
+		// Gib die intern gespeicherte DokumentDef-GUID zurück.
 		return this._typeGuid;
 	}
 

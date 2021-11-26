@@ -18,7 +18,7 @@
 <mt-checkbox *ngIf='isComp("checkbox")' [comp]='comp' [sm]='sm' [class]='comp.class'></mt-checkbox>
 <mt-checklistbox *ngIf='isComp("checklistbox")' [comp]='comp' [sm]='sm' [class]='comp.class'></mt-checklistbox>
 <mt-switch *ngIf='isComp("switch")' [comp]='comp' [sm]='sm'></mt-switch>
-<mt-date *ngIf='isComp("date")' [comp]='comp' [sm]='sm'></mt-date>
+<mt-date *ngIf='isComp("date")' [comp]='comp' [sm]='sm' [disCounter]='sm.disCounter'></mt-date>
 <mt-slider *ngIf='isComp("slider")' [comp]='comp' [sm]='sm'></mt-slider>
 
 
@@ -29,7 +29,7 @@
 <mt-icon *ngIf='isComp("icon")' [comp]='comp' [sm]='sm'></mt-icon>
 <mt-html *ngIf='isComp("html")' [comp]='comp' [sm]='sm'></mt-html>
 <mt-divider *ngIf='isComp("divider")' [comp]='comp' [sm]='sm'></mt-divider>
-<mt-div *ngIf='isComp("div")' [comp]='comp' [sm]='sm'></mt-div>
+<mt-div *ngIf='isComp("div")' [comp]='comp' [sm]='sm' [class]='comp.class'></mt-div>
 <mt-errorpanel *ngIf='isComp("errorpanel")' [comp]='comp' [sm]='sm' [Errors]='sm.Errors' [ErrorCount]='sm.Errors.length'></mt-errorpanel>
 <mt-listpanel *ngIf='isComp("listpanel")' [comp]='comp' [sm]='sm' [listitems]='comp.listitems'></mt-listpanel>
 <mt-spinner *ngIf='isComp("spinner")' [comp]='comp' [sm]='sm'></mt-spinner>

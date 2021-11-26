@@ -1,3 +1,6 @@
+<div *ngIf='hasDiff()'>
+    <mt-diff-btn [comp]='comp' [sm]='sm'></mt-diff-btn>
+</div>
 <div [style]="style" [class]='getClass()'>
     <ng-container *ngFor='let child of comp.children'>
         <mt-item [comp]='child' [sm]='sm' [class]="child.class"></mt-item>

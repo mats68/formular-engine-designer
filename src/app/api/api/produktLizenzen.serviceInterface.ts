@@ -14,6 +14,7 @@ import { HttpHeaders }                                       from '@angular/comm
 import { Observable }                                        from 'rxjs';
 
 import { ProduktLizenzDTO } from '../model/models';
+import { ProduktLizenzGutscheinDTO } from '../model/models';
 
 
 import { Configuration }                                     from '../configuration';
@@ -51,6 +52,14 @@ export interface ProduktLizenzenServiceInterface {
      * @param guid Primärer Schlüssel (Guid)  einer ProduktLizenz.
      */
     apiV1ProduktLizenzenGuidGet(guid: string, extraHttpRequestParams?: any): Observable<ProduktLizenzDTO>;
+
+    /**
+     * ProduktLizenz hinzufügen mittels einem Gutschein-Code
+     * 
+     * @param holdingguid Holding-Guid der ProduktLizenz
+     * @param gutschein Gutschein-Code
+     */
+    apiV1ProduktLizenzenGutscheinPut(holdingguid?: string, gutschein?: string, extraHttpRequestParams?: any): Observable<ProduktLizenzGutscheinDTO>;
 
     /**
      * Löscht eine ProduktLizenz

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Guid } from 'src/app/tools/Guid';
 import { BehaviorSubject, Observable, Subject, throwError } from 'rxjs';
 import { catchError, filter, first, map, timeout } from 'rxjs/operators';
-import { EFormularBeilageDTO, EFormularDokumentPoolDTO, EFormularDTO, EFormulareService } from 'src/app/api';
+import { DokumentBeilageLinkDTO, DokumentDTO, DokumenteService } from 'src/app/api';
 import { FormularFieldSet, IFormularFieldSet } from './FormularFieldSet';
 import * as Utilities from "./FormularUtils";
 import { EventProperty, IEventProperty } from 'src/app/tools/EventProperty';
@@ -81,7 +81,7 @@ export interface IFormularLoadingEvent {
 };
 
 export interface IFormularLoadingEventData {
-	formular: EFormularDTO;
+	dokument: DokumentDTO;
 	isNew: boolean;
 };
 
@@ -180,7 +180,7 @@ export class FormulareService implements IFormulareAPI
 	//#endregion
 
 	constructor(
-		private readonly _formulareService: EFormulareService,
+		private readonly _formulareService: DokumenteService,
 		private readonly _projektService: ProjektService
 	)
 	{
@@ -190,7 +190,7 @@ export class FormulareService implements IFormulareAPI
 				this.onChanged(data.formular, data.value);
 			}
 		);
-		this._projektService.registerLinkBeilage((fp: EFormularDokumentPoolDTO) => {this.onLinkBeilage(fp); });
+		this._projektService.registerLinkBeilage((fp: DokumentBeilageLinkDTO) => {this.onLinkBeilage(fp); });
 
 		setTimeout(()=>this.checkForSaveToDB(), 500);
 	}
@@ -214,29 +214,29 @@ export class FormulareService implements IFormulareAPI
 
 			// Extrahiere nun die Formular-DTO Instanz aus unserem Formular und speichere diese dann in einer lokalen
 			// Variable.
-			let sentFormDto: EFormularDTO = _.cloneDeep(formular.formularDto);
+			let sentFormDto: DokumentDTO = _.cloneDeep(formular.dokumentDTO);
 
 			// Gib eine Meldung auf der Konsole aus, dass wir das Formular mit der spezifizierten GUID auf dem Server
 			// speichern.
-			console.debug(`Saving Formular to server: ${formular.guid}`);
+			console.debug(`Saving Formular to server: ${formular.guid}`, formular);
 
 			// Sende nun die Formular-DTO Instanz, welche das gespeicherte Formular darstellt an den Server.
 			(this.formular as Formular).setUnchanged();
-			let receivedFormDTO: EFormularDTO = await this._formulareService.apiV1EFormularePost(sentFormDto).toPromise();
+			let receivedFormDTO: DokumentDTO = await this._formulareService.apiV1DokumentePost(sentFormDto).toPromise();
 
 			this.onAfterSave(this._formular);
 			(this.formular as Formular).removeIsNew();
 
 			if (!_.isEqual(receivedFormDTO, sentFormDto)) {
-				let sentData = JSON.parse(sentFormDto.dokument.werte[0].daten ?? '{}');
-				let receivedData = JSON.parse(receivedFormDTO.dokument.werte[0].daten ?? '{}');
-				// let currentData = JSON.parse(this._formular.formularDto.dokument.werte[0].daten ?? '{}');
+				let sentData = JSON.parse(sentFormDto.dso.data[0].daten ?? '{}');
+				let receivedData = JSON.parse(receivedFormDTO.dso.data[0].daten ?? '{}');
+				// let currentData = JSON.parse(this._formular.dokumentDTO.dokument.werte[0].daten ?? '{}');
 				if (!_.isEqual(sentData, receivedData)) {
 					console.error(`Received formular-data is different from sent one!`)
 				}
-				if (!_.isEqual(sentFormDto.formularDokumentPool, receivedFormDTO.formularDokumentPool)) {
-					console.error(`Received attachements are different from sent one!`)
-				}
+				// if (!_.isEqual(sentFormDto.dokumentBeilagen, receivedFormDTO.dokumentBeilagen)) {
+				// 	console.error(`Received attachements are different from sent one!`)
+				// }
 			}
 		} catch (error) {
 			console.error(error);
@@ -246,7 +246,7 @@ export class FormulareService implements IFormulareAPI
 		}
 	}
 
-	private onFormularLoad(formularDto: EFormularDTO, isNew: boolean): void
+	private onFormularLoad(formularDto: DokumentDTO, isNew: boolean): void
 	{
 		this.onBeforeLoad(formularDto, isNew);
 
@@ -263,13 +263,13 @@ export class FormulareService implements IFormulareAPI
 		return;
 	}
 
-	private onBeforeLoad(formularDto: EFormularDTO, isNew: boolean): void
+	private onBeforeLoad(formularDto: DokumentDTO, isNew: boolean): void
 	{
 		for(let callback of this._onLoading.callbacks)
 		{
 			try
 			{
-				callback({ formular: formularDto, isNew: isNew });
+				callback({ dokument: formularDto, isNew: isNew });
 			}
 			catch(error)
 			{
@@ -439,15 +439,11 @@ export class FormulareService implements IFormulareAPI
 
 	//#region Öffentliche Methoden.
 
-	async onLinkBeilage(formularPool: EFormularDokumentPoolDTO) {
-		if(formularPool.linkRemoved)
-			this.formular.removeBeilage(formularPool.formularBeilage);
-		else
-			this.formular.addBeilage(formularPool.formularBeilage);
+	async onLinkBeilage(formularPool: DokumentBeilageLinkDTO) {
 	}
 
 	public async loadFormularAsync(
-		formular: string | Guid | EFormularDTO,
+		formular: string | Guid | DokumentDTO,
 		isNew: boolean = null,
 		timeout: number = 30000
 	): Promise<void>
@@ -466,10 +462,10 @@ export class FormulareService implements IFormulareAPI
 				throw new Error('Invalid value for the `formular` parameter!');
 			}
 		}
-		// Nein, prüfe ob eine `Guid` Instanz oder ein `EFormularDTO` Instanz spezifiziert wurden.
+		// Nein, prüfe ob eine `Guid` Instanz oder ein `DokumentDTO` Instanz spezifiziert wurden.
 		else if(false == (formular instanceof Guid) && typeof(formular) !== 'object')
 		{
-			// Es wurde weder eine `Guid` Instanz noch ein `EFormularDTO` Instanz spezifiziert, wirf eine Ausnahme!
+			// Es wurde weder eine `Guid` Instanz noch ein `DokumentDTO` Instanz spezifiziert, wirf eine Ausnahme!
 			throw new Error('Invalid value for the `formular` parameter!');
 		}
 
@@ -481,7 +477,7 @@ export class FormulareService implements IFormulareAPI
 			console.debug(`Loading Formular from server: ${formular.toString()}`);
 
 			// Rufe nun das Formular vom Server ab anhand der spezifizierten GUID.
-			return this._formulareService.apiV1EFormulareGuidGet(formular.toString()).pipe(
+			return this._formulareService.apiV1DokumenteGuidGet(formular.toString()).pipe(
 				catchError(
 					(error) =>
 					{
@@ -490,13 +486,13 @@ export class FormulareService implements IFormulareAPI
 					}
 				),
 				map(
-					(formular: EFormularDTO) =>
+					(dokument: DokumentDTO) =>
 					{
 						try
 						{
 							// Wir konnten das Formular erfolgreich abrufen, speichere dieses Formular nun intern und
 							// benachrichtige dann die entsprechenden Observatoren.
-							this.onFormularLoad(formular, isNew);
+							this.onFormularLoad(dokument, isNew);
 
 							// Gib als letztes eine Meldung auf der Konsole aus, dass wir das Formular mit der spezifizierten
 							// GUID vom Server abgerufen und geladen haben.
@@ -506,7 +502,7 @@ export class FormulareService implements IFormulareAPI
 						{
 							// Es ist ein Fehler Aufgetreten, gib eine Fehlermeldung auf der Konsole aus.
 							console.error(
-								`An error occurred while loading the Formular: ${formular.toString()} from server!`,
+								`An error occurred while loading the Formular: ${dokument.toString()} from server!`,
 								error
 							);
 
@@ -519,7 +515,7 @@ export class FormulareService implements IFormulareAPI
 		}
 		else
 		{
-			// Nein, also wurde eine `EFormularDTO` Instanz spezifiziert. Gib nun eine Meldung auf der Konsole aus, dass
+			// Nein, also wurde eine `DokumentDTO` Instanz spezifiziert. Gib nun eine Meldung auf der Konsole aus, dass
 			// wir das Formular aus der DTO Instanz laden.
 			console.debug(`Loading Formular from DTO: ${formular.guid?.toUpperCase() ?? '(new)'}`, formular);
 
@@ -581,114 +577,6 @@ export class FormulareService implements IFormulareAPI
 
 		// Und nun rufe alle Event-Handler des 'nach dem Entladen' Events auf.
 		this.onAfterUnload(formular);
-	}
-
-	public async saveFormularAsync(timeout: number = 30000): Promise<void>
-	{
-		// Wartet solange, bis im Hintergrund sicher gespeichert ist
-		return new Promise((resolve) => {
-			setTimeout(()=>resolve(), 500);
-		});
-		// if(this._state$.value === FormularServiceState.Ready){
-		// 	return new Promise((resolve, reject) => {
-		// 				this._state$.subscribe((s2) => {
-		// 					if(s2 === FormularServiceState.Ready)
-		// 						resolve()
-		// 				}).unsubscribe()
-		// 				this.saveFormular();
-		// 	});
-		// }
-		// else{
-		// 	return new Promise((resolve, reject) => {
-		// 		this._state$.subscribe((s1)=>{
-		// 			if(s1 === FormularServiceState.Ready){
-		// 				this._state$.subscribe((s2) => {
-		// 					if(s2 === FormularServiceState.Ready)
-		// 						resolve()
-		// 				}).unsubscribe()
-		// 				this.saveFormular();
-		// 			}
-		// 		}).unsubscribe()
-		// 	});
-		// }
-
-		// Prüfe ob wir aktuell ein Formular geladen haben und ob das Formular überhaupt Änderungen aufweist.
-		if(this._formular == null || ( !this._formular.isNew && this._formular.state === FormularState.Unchanged))
-		{
-			// Nein, also kehre direkt zurück.
-			return;
-		}
-
-		// Rufe unsere aktuell geladene Formular Instanz ab und speichere diese dann in einer lokalen Variable.
-		let formular: Formular = this._formular;
-
-		// Rufe alle Event-Handler des 'bevor speichern' Events auf.
-		this.onBeforeSave(formular);
-
-		// Rufe nun die `save` Methode des Formulars auf, um dessen intern gespeichertes DTO Objekt zu aktualisieren.
-		formular.save();
-
-		// Extrahiere nun die Formular-DTO Instanz aus unserem Formular und speichere diese dann in einer lokalen
-		// Variable.
-		let sentFormDto: EFormularDTO = _.cloneDeep(formular.formularDto);
-
-		// Gib eine Meldung auf der Konsole aus, dass wir das Formular mit der spezifizierten GUID auf dem Server
-		// speichern.
-		console.debug(`Saving Formular to server: ${formular.guid}`);
-
-		// Sende nun die Formular-DTO Instanz, welche das gespeicherte Formular darstellt an den Server.
-		return this._formulareService.apiV1EFormularePost(sentFormDto).pipe(
-			catchError(
-				(error) =>
-				{
-					// Gib nun den originalen Fehler zurück.
-					return throwError(error);
-				}
-			),
-			map(
-				(receivedFormDTO: EFormularDTO) =>
-				{
-					try
-					{
-						if(sentFormDto.guid == undefined){
-							sentFormDto.guid = receivedFormDTO.guid;
-						}
-
-						// let diffDTO = this.objectDeepDiff(receivedFormDTO, sentFormDto);
-						if (!_.isEqual(receivedFormDTO, sentFormDto)) {
-							let sentData = JSON.parse(sentFormDto.dokument.werte[0].daten ?? '{}');
-							let receivedData = JSON.parse(receivedFormDTO.dokument.werte[0].daten ?? '{}');
-							let currentData = JSON.parse(this._formular.formularDto.dokument.werte[0].daten ?? '{}');
-							if (!_.isEqual(sentData, currentData)) {
-								console.error(`Current formular-data is different from sent one!`)
-							}
-						}
-
-
-						// Wir konnten das Formular erfolgreich speichern, speichere dieses Formular nun intern und
-						// benachrichtige dann die entsprechenden Observatoren.
-						this._formular.load(receivedFormDTO, true);
-
-						// Rufe nun alle Event-Handler des 'nach dem speichern' Events auf.
-						this.onAfterSave(this._formular);
-
-						// Und kehre zurück.
-						return;
-					}
-					catch(error)
-					{
-						// Wirf nun die originale Ausnahme erneut.
-						throw error;
-					}
-				}
-			)
-		).toPromise();		// await this.awaitReady(timeout);
-
-		// this.saveFormular();
-
-		// await this.awaitReady(timeout);
-
-		// return;
 	}
 
 	//#endregion

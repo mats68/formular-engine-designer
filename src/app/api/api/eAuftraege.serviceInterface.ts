@@ -15,7 +15,6 @@ import { Observable }                                        from 'rxjs';
 
 import { EAuftragDTO } from '../model/models';
 import { EAuftragDokumentPoolDTO } from '../model/models';
-import { EFormularDokumentPoolDTO } from '../model/models';
 
 
 import { Configuration }                                     from '../configuration';
@@ -39,21 +38,6 @@ export interface EAuftraegeServiceInterface {
      * @param eAuftragDokumentPoolDTO Daten für den DokumentPool
      */
     apiV1EAuftraegeDokumentenpoolPost(eAuftragDokumentPoolDTO?: EAuftragDokumentPoolDTO, extraHttpRequestParams?: any): Observable<EAuftragDokumentPoolDTO>;
-
-    /**
-     * Entfernen einer Formular-Beilage aus dem Dokumentenpool.
-     * 
-     * @param guidFormular Guid des Formulars
-     * @param guidFormularBeilage Guid der Formular-Beilage
-     */
-    apiV1EAuftraegeFormularpoolDelete(guidFormular?: string, guidFormularBeilage?: string, extraHttpRequestParams?: any): Observable<EFormularDokumentPoolDTO>;
-
-    /**
-     * Einfügen einer Formular-Beilage in den Dokumentenpool.
-     * 
-     * @param eFormularDokumentPoolDTO EFormularDokumentPoolDTO der Beilage
-     */
-    apiV1EAuftraegeFormularpoolPost(eFormularDokumentPoolDTO?: EFormularDokumentPoolDTO, extraHttpRequestParams?: any): Observable<EFormularDokumentPoolDTO>;
 
     /**
      * Gibt eine Liste mit Elektro-Aufträgen zurück.

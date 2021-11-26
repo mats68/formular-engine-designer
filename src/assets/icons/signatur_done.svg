@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+	<defs>
+		<style>
+			.a {
+				fill: #6AAF2C;
+			}
+			.b {
+				fill: #F8F9FA;
+			}
+		</style>
+	</defs>
+	<circle class="a" cx="16" cy="16" r="16" />
+	<path class="b" d="M6.768,14.106,0,7.337,1.909,5.428l4.86,4.846L17.043,0l1.909,1.922Z"
+		transform="translate(7 8.895)" />
+</svg>

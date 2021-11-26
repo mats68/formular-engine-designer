@@ -11,6 +11,7 @@
  */
 import { EGeraetDTO } from './eGeraetDTO';
 import { EAnlageDTO } from './eAnlageDTO';
+import { AdresseDTO } from './adresseDTO';
 
 
 /**
@@ -106,21 +107,15 @@ export interface GebaeudeDTO {
      */
     geoBreite?: string | null;
     /**
-     * Inhaber, Fremdschlüssel auf \'GeschPartner\'.
-     */
-    iD_Inhaber?: number | null;
-    /**
      * Verwaltung, Fremdschlüssel auf `GeschPartner`.
      */
     guid_Verwaltung?: string | null;
+    adresseVerwaltung?: AdresseDTO;
     /**
      * Inhaber, Fremdschlüssel auf \'GeschPartner\'.
      */
     guid_Inhaber?: string | null;
-    /**
-     * Verwaltung, Fremdschlüssel auf `GeschPartner`.
-     */
-    iD_Verwaltung?: number | null;
+    adresseInhaber?: AdresseDTO;
     /**
      * Korrespondenz an: 1 = Inahber; 2 = Verwaltung.
      */

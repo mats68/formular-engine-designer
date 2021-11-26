@@ -211,7 +211,7 @@ export class KompoDBApiService implements KompoDBApiServiceInterface {
 
     /**
      * Gibt ein Produktdetail zurück.
-     * @param typ Einer von den Werten: \&quot;inverter\&quot;, \&quot;storage\&quot;, \&quot;pv_modules\&quot;
+     * @param typ Einer von den Werten: \&quot;inverter\&quot;, \&quot;storage\&quot;, \&quot;pv_panel\&quot;
      * @param uuid Product uuid
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.

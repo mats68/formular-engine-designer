@@ -11,7 +11,7 @@ import { IComponent } from '../types';
 export class MtItemComponent implements OnInit {
   @Input() sm: SchemaManager;
   @Input() comp: IComponent;
-  
+
   constructor() { }
 
   ngOnInit(): void {
@@ -19,7 +19,7 @@ export class MtItemComponent implements OnInit {
 
   isComp(type: string): boolean {
     const hidden: boolean = this.sm.getPropValue(this.comp, 'hidden') || false
-    return !hidden && this.comp.type == type;
+    return !hidden && this.comp?.type == type;
   }
 
   dataTableData() {

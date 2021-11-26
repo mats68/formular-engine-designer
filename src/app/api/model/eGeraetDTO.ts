@@ -14,10 +14,15 @@
 export interface EGeraetDTO { 
     guidMandant: string;
     guid?: string | null;
-    idGebaeude?: number | null;
+    guidGebaeude?: string;
     typ: string;
+    /**
+     * Der eindeutige Schlüssel der Komponente sofern diese aus einer Komponentendatenbank abgerufen wurde, ansonsten  der `null` Wert.                Dieser Schlüssel muss als ordinaler Text unter Berücksichtigung der Gross-/Kleinschreibung verglichen werden.
+     */
+    komponenteID?: string | null;
     bezeichnung?: string | null;
     hersteller: string;
+    anzahl: number;
     daten?: string | null;
     creaDate?: string | null;
     modDate?: string | null;

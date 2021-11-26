@@ -164,6 +164,7 @@ export interface ELeistungDTO {
      * Geplantes Abschlussdatum dieser Elektro-Leistung.
      */
     geplantEndeDatum?: string | null;
+    index?: number | null;
     aktionen?: Array<EAktionDTO> | null;
 }
 

@@ -1,12 +1,12 @@
 import { Subject } from "rxjs";
-import { EFormularBeilageDTO } from "src/app/api";
+import { DokumentBeilageLinkDTO, DokumentDTO } from "src/app/api";
 import { Guid } from "src/app/tools/Guid";
 import { FormularBase, FormularBaseChangeNotifierType, FormularState, IFormularBase } from "./FormularBase";
 import { asGuid } from './FormularUtils';
 
 export interface IFormularBeilage extends IFormularBase
 {
-	readonly formularTyp: Guid;
+	readonly dokumentDef: Guid;
 }
 
 export class FormularBeilage extends FormularBase implements IFormularBeilage
@@ -16,22 +16,22 @@ export class FormularBeilage extends FormularBase implements IFormularBeilage
 	/**
 	 * Dieses Feld speichert das DTO Objekt, welches die Formularbeilage repräsentiert.
 	 */
-	 private _dto: EFormularBeilageDTO;
+	 private _dto: DokumentDTO;
 
 	 //#endregion
 
 	 //#region Konstruktor.
 
 	public constructor(
-		formularBeilage: EFormularBeilageDTO,
+		beilage: DokumentDTO,
 		isNew: boolean,
 		changeNotifier: Subject<FormularBaseChangeNotifierType>,
 		state: FormularState = FormularState.Unchanged
 	)
 	{
-		super(formularBeilage.guid, formularBeilage.formularTyp.guid, formularBeilage.dokument, isNew, changeNotifier);
+		super(beilage.guid, beilage.dokumentDef.guid, beilage, isNew, changeNotifier);
 
-		this._dto = formularBeilage;
+		this._dto = beilage;
 	}
 
 	//#endregion
@@ -51,7 +51,7 @@ export class FormularBeilage extends FormularBase implements IFormularBeilage
 	 * @throws {Error}
 	 * 	Die Formularbeilage hat ungesicherte Änderungen und der `force` Parameter war `false`!
 	 */
-	 public load(formularBeilage: EFormularBeilageDTO, force: boolean = false): void
+	 public load(beilage: DokumentDTO, force: boolean = false): void
 	 {
 		// Prüfe ob wir ungesicherte Änderungen haben und ob wir diese allenfalls verwerfen sollen.
 		if(this.state !== FormularState.Unchanged && force === false) {
@@ -62,10 +62,10 @@ export class FormularBeilage extends FormularBase implements IFormularBeilage
 		}
 
 		// Alles bereit, ersetze nun die intern gespeicherte DTO Instanz.
-		this._dto = formularBeilage;
+		this._dto = beilage;
 
 		// Aktualisiere nun die Formularbeilage-Werte anhand der spezifizierten DTO Instanz.
-		super.loadDocument(this._dto.dokument, force);
+		super.loadDocument(this._dto, force);
 
 		// Wir haben die Formularbeilage komplett initialisiert, kehre nun zurück.
 		return;
@@ -85,7 +85,7 @@ export class FormularBeilage extends FormularBase implements IFormularBeilage
 
 	//#endregion
 
-	public get formularTyp(): Guid {
-		return asGuid(this._dto.formularTyp.guid);
+	public get dokumentDef(): Guid {
+		return asGuid(this._dto.dokumentDef.guid);
 	}
 }

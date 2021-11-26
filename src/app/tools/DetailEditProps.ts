@@ -1,5 +1,5 @@
 import { marker } from "@ngneat/transloco-keys-manager/marker";
-import { ISchema } from "../components";
+import { ISchema } from 'src/app/components/bi-formular-engine/src/public-api';
 
 export class DetailEditProps {
 	public entity: string

@@ -9,9 +9,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { TransferKanal } from './transferKanal';
 
 
 export interface EmpfaengerDTO { 
+    transferKanal?: TransferKanal;
     guid?: string;
     kategorien?: Array<string> | null;
     stichwort?: string | null;
@@ -20,6 +22,7 @@ export interface EmpfaengerDTO {
     designUrlName?: string | null;
     aktivVon?: string | null;
     aktiv?: boolean;
+    m2HubGuid?: string;
     iaNrInst?: boolean | null;
     firma1?: string | null;
     firma2?: string | null;

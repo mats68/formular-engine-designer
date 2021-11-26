@@ -3,6 +3,18 @@ export const guid_attachment = '817f136e-58d6-4254-86ba-408fc4907814'
 
 export const SITUATIONSPLAN_form = "2f5ccbbc-db19-4ce7-a1a3-b8ac7a6435e4";
 export const FASSADENPLAN_form = "60f61104-9d07-4e92-bfae-886e625fea0b";
+export const ANTIREFLEXIONSBEHANDLUNG_FR_form = '99b5dbf9-afcd-402a-9720-91e472a744e4';
+export const BAUBESCHRIEB_DE_form = '6d718cad-013c-44e9-9964-8c5dab6c414e';
+export const DACHAUFSICHT_DE_form = '0bc9cd92-b722-49e8-903a-3824f9e1e955';
+export const EIGENEINGABE_DE_form = '6b044ad5-d5c3-4666-85fd-7d8b33c73c41';
+export const FOTO_form = '6bf443d4-7f18-4993-b215-3518523d3c89';
+export const GIEBELFASSADE_DE_form = 'caeaadac-50fb-41c3-b550-e642e690d411';
+export const GRUNDRISSPLAN_DE_form = '42291de8-58ff-428a-843f-f10780162f16';
+export const PROJEKTBESCHRIEB_DE_form = 'cdb96378-4887-442f-944d-e16969729245';
+export const SCHNITTPLAN_DE_form = 'cbf28896-dd82-43f4-b0f5-ee2d8536d593';
+export const TECHNISCHE_DATEN_DE_form = '713a0312-e66d-4900-a2f5-d1df6da16cdc';
+export const TRAUFFASSADE_DE_form = '89ee1122-bbf2-4b70-8ef5-dc11c9f61e77';
+export const DETAIL_PLAENE_DE_form = '8ac50c0a-7573-4a28-851f-41f8df2f0deb' ;
 
 export const VSE_TAG_DE_form = '0e502284-436b-4e2b-a566-177919e13dee';
 export const VSE_TAG_DE_attr = '25953436-3b89-4eff-9387-8d08e8cb3fff';
@@ -99,3 +111,42 @@ export const MELDEFORMULAR_SOLAR_VD_attr = '65b5558b-7019-435b-8fe7-11d12f29a320
 export const MELDEFORMULAR_SOLAR_SZ_form = "e0ea8cd1-a4ef-418d-b3db-e6b66fc42fc4";
 export const MELDEFORMULAR_SOLAR_SZ_attr = "c785ec2a-fd3e-4c7c-9ef1-64948973e870";
 
+export const MELDEFORMULAR_SOLAR_BS_form = "2b97d317-73d6-4762-a185-bd9e124b9c0e";
+export const MELDEFORMULAR_SOLAR_BS_attr = "72f701b3-263c-451b-8770-ee5d180992dc";
+
+export const MELDEFORMULAR_SOLAR_GE_form = "4535279b-c1a0-41ab-a42c-1669be4494b3";
+export const MELDEFORMULAR_SOLAR_GE_attr = "63db2139-1a69-4491-b3e9-0482ad57ce91";
+
+export const MELDEFORMULAR_SOLAR_GL_NORD_form = "03b8d557-c18e-4dbd-8261-56336d01593a";
+export const MELDEFORMULAR_SOLAR_GL_NORD_attr = "990af2a6-e6e3-4b5d-aa87-4f80bafda880";
+
+export const MELDEFORMULAR_SOLAR_GL_SUED_form = "b7ade21b-95af-48b7-bcef-1b8028c39cf7";
+export const MELDEFORMULAR_SOLAR_GL_SUED_attr = "00156df5-72ff-48c6-ad02-1f229887c79c";
+
+export const MELDEFORMULAR_SOLAR_LU_form = "439bcd4e-b90a-4d10-b8ec-23c272a89660";
+export const MELDEFORMULAR_SOLAR_LU_attr = "68b3a0f9-8574-4617-9a0b-b6d1a348c6ed";
+
+export const MELDEFORMULAR_SOLAR_OW_form = "c266cb6e-e242-4b55-83e2-d0cffd7737b2";
+export const MELDEFORMULAR_SOLAR_OW_attr = "36a6db48-fa8c-416c-9e3a-88db3164e0aa";
+
+export const MELDEFORMULAR_SOLAR_STD_DE_form = "7c6c137d-9a1a-431c-9ee3-9b9c9b3ecd07";
+export const MELDEFORMULAR_SOLAR_STD_DE_attr = "e9a47346-57bb-4be8-92b6-eede81b585de";
+
+export const MELDEFORMULAR_SOLAR_STD_FR_form = "facc4207-537f-4e62-89cc-ea49a7382458";
+export const MELDEFORMULAR_SOLAR_STD_FR_attr = "edbcaa77-379e-4ba3-9d1f-e82bdb442490";
+
+export const MELDEFORMULAR_SOLAR_STD_IT_form = "770043c9-eede-4bdf-a615-3f8dfc050718";
+export const MELDEFORMULAR_SOLAR_STD_IT_attr = "c8dc6686-063c-4c79-b669-e5cac59e06a5";
+
+export interface IFormDef
+{
+	formGuid: string,
+	attrGuiod: string
+}
+
+export const FORM_DEFS: { [key: string ]: IFormDef } = {
+	"MELDE_SZ": {
+		attrGuiod: "",
+		formGuid: ""
+	}
+};

@@ -41,9 +41,6 @@ export class BiFormComponent implements OnInit, OnChanges {
 				this.schemaManager.InitValues(this.values);
 			}
 		}
-		else if (this.values !== this.schemaManager.Values) {
-			this.schemaManager.InitValues(this.values);
-		}
 
 	}
 

@@ -50,6 +50,22 @@ export interface MitarbeiterServiceInterface {
     apiV1MitarbeiterApiV1MitarbeiterInvitePost(mandant?: string, employee?: string, returnUri?: string, extraHttpRequestParams?: any): Observable<{}>;
 
     /**
+     * 
+     * 
+     * @param employee 
+     * @param roleSet 
+     */
+    apiV1MitarbeiterApiV1MitarbeiterRoleSetDelete(employee?: string, roleSet?: string, extraHttpRequestParams?: any): Observable<{}>;
+
+    /**
+     * 
+     * 
+     * @param employee 
+     * @param roleSet 
+     */
+    apiV1MitarbeiterApiV1MitarbeiterRoleSetPost(employee?: string, roleSet?: string, extraHttpRequestParams?: any): Observable<{}>;
+
+    /**
      * Sucht nach Mitarbeitern in den verschiedenen Feldern (Name, Vorname, Telefon, Email usw.) mittels Suchbegriff.
      * 
      * @param text Suchbegriff, nach welchem gesucht werden soll. Der Text soll nicht leer sein.

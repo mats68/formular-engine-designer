@@ -14,6 +14,7 @@ import { HttpHeaders }                                       from '@angular/comm
 import { Observable }                                        from 'rxjs';
 
 import { AdresseDTO } from '../model/models';
+import { EAuftragDokumentPoolDTO } from '../model/models';
 
 
 import { Configuration }                                     from '../configuration';
@@ -23,6 +24,13 @@ import { Configuration }                                     from '../configurat
 export interface AdressenServiceInterface {
     defaultHeaders: HttpHeaders;
     configuration: Configuration;
+
+    /**
+     * Löscht eine Adresse.
+     * 
+     * @param guid Guid der Adresse
+     */
+    apiV1AdressenDeleteGuidDelete(guid: string, extraHttpRequestParams?: any): Observable<EAuftragDokumentPoolDTO>;
 
     /**
      * Gibt eine Elektro-Aktion zurück.

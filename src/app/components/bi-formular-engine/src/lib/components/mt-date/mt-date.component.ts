@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit, OnChanges, OnDestroy } from '@angular/core';
+import { Component, ViewChild, OnInit, OnChanges, OnDestroy, Input } from '@angular/core';
 import { MtBaseComponent } from '../../base/mt-base/mt-base.component';
 
 import { FormControl } from '@angular/forms';
@@ -7,6 +7,8 @@ import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/materia
 
 import * as moment_ from 'moment';
 const moment = moment_;
+
+const ISO_Date_Format = 'YYYY-MM-DD[T]HH:mm:ss'
 
 export const MY_FORMATS = {
   parse: {
@@ -34,54 +36,66 @@ export const MY_FORMATS = {
 })
 export class MtDateComponent extends MtBaseComponent implements OnInit, OnChanges, OnDestroy {
   date: FormControl;
+  @Input() disCounter: number;
   @ViewChild('dp') picker: any;
+
+  _DateValue: moment.Moment
+  get DateValue(): moment.Moment {
+    return this._DateValue
+  }
+
+  set DateValue(val: moment.Moment) {
+    this._DateValue = val
+    if (val && val.isValid()) {
+      this.Value = moment(val).format(ISO_Date_Format);
+    } else {
+      this.Value = ''
+    }
+  }
 
   constructor(private dateAdapter: DateAdapter<Date>) {
     super();
   }
 
   ngOnInit(): void {
+		this.sm.service.registerFormularStatusChange(this.statusChange)
     this.date = new FormControl(moment());
+    if (this.Value) {
+      this._DateValue = moment(this.Value, ISO_Date_Format)
+    }
+    this.updateDisabled();
     this.registerFocus();
   }
 
   ngOnChanges() {
     this.updateFormat();
+    this.updateDisabled();
   }
 
-  get parseDateInput(): string {
-    return this.comp.dateParseFormat || this.sm.Settings.date.parse.dateInput
-  }
 
-  get DateValue(): moment.Moment {
-    var date = moment(this.Value, this.parseDateInput)
-    return date
-  }
+  statusChange = () => {
+    this.updateDisabled()
+	}
 
-  set DateValue(val: moment.Moment) {
-    if (val && val.isValid()) {
-      this.Value = moment(val).format(this.parseDateInput);
+
+  updateDisabled() {
+    if (this.disabled) {
+      this.date?.disable()
     } else {
-      this.Value = ''
+      this.date?.enable()
     }
+
   }
 
 
   updateFormat() {
-    this.dateAdapter.setLocale(this.sm.Settings.language);
-    // Hack from here: https://github.com/angular/components/issues/8355
-    // setTimeout(() => {
-    //   const d = JSON.parse(JSON.stringify(this.picker.datepickerInput._dateFormats));
-    //   d.display.dateInput = this.sm.Settings.date.display.dateInput;
-    //   d.display.monthYearLabel = this.sm.Settings.date.display.monthYearLabel;
-    //   d.parse.dateInput = this.parseDateInput
-    //   this.picker.datepickerInput._dateFormats = d;
-    // });
-
+    const lang = this.sm?.service?.translationService?.getActiveLang() || 'de'
+    this.dateAdapter.setLocale(lang);
   }
 
   ngOnDestroy() {
     this.unregisterFocus();
+    this.sm.service.unRegisterFormularStatusChange(this.statusChange)
   }
 
 

@@ -1,5 +1,5 @@
 <div [class]="comp.classLayout">
-    <div *ngFor='let child of comp.children' [class]="child.classLayout">
-        <mt-item [comp]='child' [sm]='sm' [class]="child.class"></mt-item>
+    <div *ngFor='let child of comp.children' [class]="child?.classLayout">
+        <mt-item [comp]='child' [sm]='sm' [class]="child?.class"></mt-item>
     </div>
 </div>

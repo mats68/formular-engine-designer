@@ -13,11 +13,12 @@ import { HttpHeaders }                                       from '@angular/comm
 
 import { Observable }                                        from 'rxjs';
 
-import { AuftragsDefinitionDTO } from '../model/models';
-import { EProjectDTO } from '../model/models';
-import { EProjektDTO } from '../model/models';
-import { EProjektViewDTO } from '../model/models';
-import { IdentityContextDTO } from '../model/models';
+import { EfoCreateEProjectRequest } from '../model/models';
+import { EfoDeviceDTO } from '../model/models';
+import { EfoEProjectDTO } from '../model/models';
+import { EfoEProjectInfoDTO } from '../model/models';
+import { EfoIdentityContextDTO } from '../model/models';
+import { EfoLanguageCode } from '../model/models';
 import { ProblemDetails } from '../model/models';
 
 
@@ -30,47 +31,70 @@ export interface EFOnlineApiServiceInterface {
     configuration: Configuration;
 
     /**
-     * Gibt eine Auflistung aller gültigen Identitätskontexte des authentifizierten Benutzers zurück.
+     * Retrieves all the identity contexts that are available to the currently authenticated user.
      * 
      */
-    apiV1EFOnlineApiIdentityGet(extraHttpRequestParams?: any): Observable<Array<IdentityContextDTO>>;
+    apiV1EfoIdentityGet(extraHttpRequestParams?: any): Observable<Array<EfoIdentityContextDTO>>;
 
     /**
+     * Retireves the device with the specified type and the given component ID from the Eturnity AG component database.  It then adds the specified count of device(s) to the specified building within the tenant identified by the  identity context.
      * 
-     * 
-     * @param eProjectDTO 
+     * @param buildingGuid The GUID of the building to which the device(s) should be added.
+     * @param componentType The type of the component to add.                The following values are possible: &#x60;pv_panel&#x60;, &#x60;inverter&#x60; or &#x60;storage&#x60;.
+     * @param componentID The ID of the device within the component database.
+     * @param count The count of device(s) to add to the specified building.
      */
-    apiV1EFOnlineApiProjectPost(eProjectDTO?: EProjectDTO, extraHttpRequestParams?: any): Observable<EProjectDTO>;
+    apiV1EfoProjectsDevicesByIdPost(buildingGuid: string, componentType: string, componentID: string, count?: number, extraHttpRequestParams?: any): Observable<EfoDeviceDTO>;
 
     /**
+     * Deletes the device with the specified GUID from within the tenant specified by the identity context.
      * 
-     * 
-     * @param skip 
-     * @param limit 
-     * @param branches 
+     * @param guid The GUID of the device to delete.
      */
-    apiV1EFOnlineApiProjectTypesGet(skip?: number, limit?: number, branches?: Array<string>, extraHttpRequestParams?: any): Observable<Array<AuftragsDefinitionDTO>>;
+    apiV1EfoProjectsDevicesGuidDelete(guid: string, extraHttpRequestParams?: any): Observable<{}>;
 
     /**
-     * Ruft alle Elektro-Projekte aus dem im Identitätskontext des Benutzers spezifizierten Mandanten ab.
+     * Retrieves the device with the specified GUID from within the tenant specified by the identity context.
      * 
-     * @param limit Die maximale Anzahl der Elektro-Projekte, welche abgerufen werden sollen.
-     * @param skip Die Anzahl der Elektro-Projekte, welche übersprungen werden sollen.
+     * @param guid The GUID of the device to retrieve.
      */
-    apiV1EFOnlineApiProjekteGet(limit?: number, skip?: number, extraHttpRequestParams?: any): Observable<Array<EProjektViewDTO>>;
+    apiV1EfoProjectsDevicesGuidGet(guid: string, extraHttpRequestParams?: any): Observable<EfoDeviceDTO>;
 
     /**
-     * Gibt das Projekt mit der spezifizierten GUID aus dem im Identitätskontext des Benutzers spezifizierten Mandanten  zurück.
+     * Creates a new device or updates an existing device based on it\&#39;s GUID within the tenant specified by the  identity context.                A new device is created when the &#x60;guid&#x60; Field of the data transfer object is set to the &#x60;null&#x60; vlaue, otherwise  the device with the specified GUID will be updated.
      * 
-     * @param guid Die GUID des Projektes.
+     * @param efoDeviceDTO The device to create or update.
      */
-    apiV1EFOnlineApiProjekteGuidGet(guid: string, extraHttpRequestParams?: any): Observable<EProjektDTO>;
+    apiV1EfoProjectsDevicesPost(efoDeviceDTO?: EfoDeviceDTO, extraHttpRequestParams?: any): Observable<EfoDeviceDTO>;
 
     /**
-     * Erstellt ein neues Elektro-Projekt.
+     * Retrieves an optionally filtered collection of electrical projects to which the current employee has access.
      * 
-     * @param eProjektDTO Das Elektro-Projekt DTO Objekt, welches die Daten des zu erstellenden Projektes enthält.
+     * @param language The code of the language, in which the electrical project\&#39;s phase names should be returned.
+     * @param limit &lt;br&gt;               The maximum count of electrical projects to retrieve.                &lt;br&gt;               Must be an integer between 1 and 1024              
+     * @param skip &lt;br&gt;               The count of electrical projects to skip initially. This feature can be used for pagination.                &lt;br&gt;               Must be an integer between 0 and 2147483646.              
      */
-    apiV1EFOnlineApiProjektePost(eProjektDTO?: EProjektDTO, extraHttpRequestParams?: any): Observable<EProjektDTO>;
+    apiV1EfoProjectsGet(language?: EfoLanguageCode, limit?: number, skip?: number, extraHttpRequestParams?: any): Observable<Array<EfoEProjectInfoDTO>>;
+
+    /**
+     * Deletes all the device from the ElektroForm electric project with the specified GUID within the tenant specified  by the identity context.
+     * 
+     * @param guid The GUID of the project, which devices are deleted.
+     */
+    apiV1EfoProjectsGuidDevicesDelete(guid: string, extraHttpRequestParams?: any): Observable<{}>;
+
+    /**
+     * Retrieves the ElektroForm electric project with the specified GUID from within the tenant specified by the  identity context.
+     * 
+     * @param guid The GUID of the project to retrieve.
+     */
+    apiV1EfoProjectsGuidGet(guid: string, extraHttpRequestParams?: any): Observable<EfoEProjectDTO>;
+
+    /**
+     * Creates a new ElektroForm electric project.
+     * 
+     * @param efoCreateEProjectRequest The DTO object containing the data of the electric project to create.
+     */
+    apiV1EfoProjectsPost(efoCreateEProjectRequest?: EfoCreateEProjectRequest, extraHttpRequestParams?: any): Observable<EfoEProjectDTO>;
 
 }

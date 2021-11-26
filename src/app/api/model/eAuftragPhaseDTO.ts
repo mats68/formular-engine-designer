@@ -9,12 +9,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { FormularKategorieDTO } from './formularKategorieDTO';
+import { DokumentKatDTOApp } from './dokumentKatDTOApp';
 import { EmpfaengerKategorieDTO } from './empfaengerKategorieDTO';
 import { ELeistungDTO } from './eLeistungDTO';
 
 
 export interface EAuftragPhaseDTO { 
+    mandant?: string | null;
     guid?: string | null;
     fortschritt?: number;
     status?: number;
@@ -28,7 +29,7 @@ export interface EAuftragPhaseDTO {
     /**
      * Die Sammlung aller Formular-Kategorien, welche innerhalb dieser Auftragsphase erstellt werden können.
      */
-    formularKategorien?: Array<FormularKategorieDTO> | null;
+    dokumentKategorien?: Array<DokumentKatDTOApp> | null;
     /**
      * Alle in dieser Auftragsphase referenzierten Anlagen.
      */

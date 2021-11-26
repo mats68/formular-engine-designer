@@ -1,12 +1,16 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Form } from '@angular/forms';
+import { translate } from '@ngneat/transloco';
+import { marker } from '@ngneat/transloco-keys-manager/marker';
 import { FileUploader } from 'ng2-file-upload';
-import { EAuftragDokumentPoolDTO, EFormularDokumentPoolDTO, EFormularDTO } from 'src/app/api';
-import { EFormularBeilageDTO } from 'src/app/api/model/eFormularBeilageDTO';
-import { getDateiNamePrint } from 'src/app/services';
+import { EAuftragDokumentPoolDTO, DokumentBeilageLinkDTO, DokumentDTO } from 'src/app/api';
+import { BeilageFileDef, BeilageWrapper, DokumentTypGuids, getDateiNamePrint } from 'src/app/services';
+import { Formular } from 'src/app/services/formulare-service/Formular';
 import { IFormularSavedEvent, IFormularSavedEventData } from 'src/app/services/formulare-service/formulare-service.service';
+import { asGuid, Guid } from 'src/app/tools/Guid';
 import { MtBaseComponent } from '../../base/mt-base/mt-base.component';
 
-interface FileNameProps {
+interface FileNameInfo {
 	originalName: string
 	longName: string
 	shortName: string
@@ -21,10 +25,10 @@ export class MtFileUploaderComponent extends MtBaseComponent implements OnInit, 
 	uploaderdd: FileUploader = new FileUploader({});
 	uploader: FileUploader = new FileUploader({});
 	@ViewChild('fileInput') fileInput: any;
-	beilage: EFormularBeilageDTO
-	pool_beilage: EFormularBeilageDTO
+	beilage: DokumentDTO
+	pool_beilage: DokumentDTO
 	isAttached: boolean
-	fnp: FileNameProps
+	fileNameInfo: FileNameInfo
 
 	clr_primary = '#348e7a'
 	clr_grau = '#dde1e5'
@@ -43,40 +47,39 @@ export class MtFileUploaderComponent extends MtBaseComponent implements OnInit, 
 		const props = this.comp.fileUploaderProps
 		this.beilage = null
 		this.pool_beilage = null
-		this.fnp = null
+		this.fileNameInfo = null
 		if (!this.sm.projekt) return
-		if (!this.sm.formularDTO) return
-		const dokumentPool: EFormularDokumentPoolDTO = this.sm.formularDTO?.formularDokumentPool?.find(b => b.formularBeilage?.formularTyp.guid === props.formularTypGuid)
-		this.beilage = dokumentPool?.formularBeilage
+		if (!this.sm.dokumentDTO) return
+		this.beilage = this.sm.dokumentDTO?.beilagen?.find(b => Guid.equals(b.dokumentDef.guid, props.dokumentDefGuid))
 		if (!this.beilage) {
-			const pool_beilage_ad = this.sm.projekt?.auftrag?.dokumente?.find(d => d.eformularBeilagen_IdFormularBeilagen?.formularTyp?.guid === props.formularTypGuid)
+			const pool_beilage_ad = this.sm.projekt?.auftrag?.dokumente?.find(d => Guid.equals(d?.dokumentDef?.guid, props.dokumentDefGuid));
 			if (pool_beilage_ad) {
-				this.pool_beilage = pool_beilage_ad.eformularBeilagen_IdFormularBeilagen
+				this.pool_beilage = pool_beilage_ad
 			}
 		}
 
 
-		if (this.sm.formularDTO && this.sm.formularDTO.dokument && !props.hideLink) {
+		if (this.sm.dokumentDTO && this.sm.dokumentDTO.dso && !props.hideLink) {
 			if (props.uploadType === 'Formular') {
-				if (this.beilage && this.sm.formularDTO.dokument.originalName && this.sm.formularDTO.formularTyp) {
-					this.fnp = {
-						originalName: getDateiNamePrint(this.beilage.dokument.originalName),
-						longName: this.sm.formularDTO.formularTyp.longName,
-						shortName: this.sm.formularDTO.formularTyp.shortName,
+				if (this.beilage && this.sm.dokumentDTO.dso.originalName && this.sm.dokumentDTO.dokumentDef) {
+					this.fileNameInfo = {
+						originalName: getDateiNamePrint(this.beilage.dso.originalName),
+						longName: this.sm.dokumentDTO.dokumentDef.longName,
+						shortName: this.sm.dokumentDTO.dokumentDef.shortName,
 					}
 				}
 			} else {
-				if (this.beilage && this.beilage.dokument && this.beilage.formularTyp) {
-					this.fnp = {
-						originalName: getDateiNamePrint(this.beilage.dokument.originalName),
-						longName: this.beilage.formularTyp.longName,
+				if (this.beilage && this.beilage.dso && this.beilage.dokumentDef) {
+					this.fileNameInfo = {
+						originalName: getDateiNamePrint(this.beilage.dso.originalName),
+						longName: this.beilage.dokumentDef.longName,
 						shortName: '',
 					}
 					this.isAttached = true
 				} else if (this.pool_beilage && props.uploadType === 'Beilage') {
-					this.fnp = {
-						originalName: getDateiNamePrint(this.pool_beilage.dokument.originalName),
-						longName: this.pool_beilage.formularTyp.longName,
+					this.fileNameInfo = {
+						originalName: getDateiNamePrint(this.pool_beilage.dso.originalName),
+						longName: this.pool_beilage.dokumentDef.longName,
 						shortName: '',
 					}
 				}
@@ -104,7 +107,7 @@ export class MtFileUploaderComponent extends MtBaseComponent implements OnInit, 
 	}
 
 	async uploadFile(file: File) {
-		if (!this.sm.formularDTO) {
+		if (!this.sm.dokumentDTO) {
 			alert('Bitte zuerst Formular speichern!')
 			return
 		}
@@ -112,8 +115,8 @@ export class MtFileUploaderComponent extends MtBaseComponent implements OnInit, 
 		const seterror = (err: string) => `uploadFile: ${err} nicht definiert!`
 		const props = this.comp.fileUploaderProps
 		if (!this.sm.projekt) error = seterror('projekt')
-		if (!this.sm.formularDTO) error = seterror('formular')
-		if (!props.formularTypGuid) error = seterror('formularTypGuid')
+		if (!this.sm.dokumentDTO) error = seterror('formular')
+		if (!props.dokumentDefGuid) error = seterror('dokumentDefGuid')
 		if (!this.sm.service) error = seterror('projektService')
 		const aktion_guid = this.sm.service.GetCurAktion_Guid()
 		if (!aktion_guid) error = seterror('aktion_guid')
@@ -133,28 +136,38 @@ export class MtFileUploaderComponent extends MtBaseComponent implements OnInit, 
 			return
 		}
 		if (this.sm.service) {
+			// var stack = new Error().stack;
+			// console.assert(false, 'not implemented');
 			this.saving = true
-			let formular = this.sm.formularDTO;
-			const beilage: EFormularBeilageDTO = await this.sm.service.SavePDFAttachment(formular, props.formularTypGuid);
-			const doc = await this.sm.service.SavePDF(beilage.dokument.guid, file);
+			let dokument = this.sm.dokumentDTO;
+
+			let beilageDTO = await this.sm.service.SaveFormular(Guid.create().toString(), props.dokumentDefGuid);
+			await this.sm.service.SavePDF(beilageDTO.dso.guid, file);
+			beilageDTO = await this.sm.service.LoadFormular(beilageDTO.guid, false);
+
+			let fdp : DokumentBeilageLinkDTO = {
+				mandant: dokument.mandant,
+				guidBeilage: beilageDTO.guid,
+				guidDokument: dokument.guid
+			}
 
 			if (props.uploadType !== 'Formular') {
 				const dokumentPool: EAuftragDokumentPoolDTO = {
 					guidAuftrag: this.sm.projekt.auftrag?.guid,
-					guidBeilage: beilage.guid
+					guidBeilage: beilageDTO.guid
 				}
 				await this.sm.service.Save_Dokument_Pool(dokumentPool);
+				this.sm.projekt.auftrag.dokumente.push(beilageDTO);
 			}
 
-			const fdp : EFormularDokumentPoolDTO = this.sm.formular.addBeilage(beilage);
-			this.fnp = {
+			this.sm.formular.addBeilage(beilageDTO);
+			this.fileNameInfo = {
 				originalName: getDateiNamePrint(file.name),
-				longName: beilage.formularTyp.longName,
+				longName: beilageDTO.dokumentDef.longName,
 				shortName: '',
 			}
-
-			if(fdp)
-				this.sm.service.emitLinkBeilage(fdp);
+			setTimeout(()=>this.sm.service.emitLinkBeilage(fdp, true), 500);
+			// this.sm.service.emitReloadFormular();
 			this.saving = false;
 		}
 	}
@@ -167,48 +180,62 @@ export class MtFileUploaderComponent extends MtBaseComponent implements OnInit, 
 		const props = this.comp.fileUploaderProps
 		let guid = null
 		if (props.uploadType === 'Formular') {
-			guid = this.sm.formularDTO.dokument.guid
+			guid = this.sm.dokumentDTO.dso.guid
 		} else {
-			guid = this.beilage && this.beilage.dokument ? this.beilage.dokument.guid : null
+			guid = this.beilage && this.beilage.dso ? this.beilage.dso.guid : null
 		}
 		const aktion_guid = this.sm.service.GetCurAktion_Guid()
 		if (guid && aktion_guid) {
-			this.sm.service.curFormular = this.sm.formularDTO
-			props.router.navigate(['/pdf-viewer'], { queryParams: { guid, typ: props.formularTypGuid, guidauftrag: this.sm.projekt.auftrag?.guid, aktion: aktion_guid } });
+			// this.sm.service.CurDokument = this.sm.dokumentDTO
+			const wrapper = new BeilageWrapper();
+			wrapper.beilage = this.beilage;
+			wrapper.viewBeilage();
 		}
 	}
 
 	async changeBeilageAttached(event: any) {
-		const formular = this.sm.formularDTO;
-		if (!formular.formularDokumentPool)
-			formular.formularDokumentPool = [];
+		const formular = this.sm.dokumentDTO;
+		if (!formular.beilagen)
+			formular.beilagen = [];
 
-
-		const formularDokumentPool: EFormularDokumentPoolDTO = {
-			mandant: formular.mandant,
-			guidFormular: formular.guid,
-			guidFormularBeilagen: this.pool_beilage?.guid ? this.pool_beilage.guid : '',
-			formularBeilage: this.pool_beilage,
-			linkRemoved: !event.checked,
-		}
+		const props = this.comp.fileUploaderProps;
+		const beilageDTO = this.beilage ? this.beilage : this.sm.projekt?.auftrag?.dokumente?.find(d => Guid.equals(d?.dokumentDef?.guid, props.dokumentDefGuid));
+		if(!beilageDTO)
+			throw new Error(`Keine Beilage im Pool`);
 
 		if (event.checked) {
-			formular.formularDokumentPool.push(formularDokumentPool);
+			this.sm.formular.addBeilage(beilageDTO);
 		}
 		else {
-			formular.formularDokumentPool = formular.formularDokumentPool.filter(fdp => fdp.guidFormularBeilagen != formularDokumentPool.guidFormularBeilagen);
+			this.sm.formular.removeBeilage(beilageDTO);
 		}
 
-		this.sm.service.emitLinkBeilage(formularDokumentPool);
+		const linkDTO: DokumentBeilageLinkDTO = {
+			mandant: formular.mandant,
+			guidDokument: formular.guid,
+			guidBeilage: beilageDTO.guid,
+		}
+		this.sm.service.emitLinkBeilage(linkDTO, event.checked);
 		this.isAttached = event.checked
 	}
 
-	onLinkBeilage = (formularPool: EFormularDokumentPoolDTO) => {
+	onLinkBeilage = (linkDTO: DokumentBeilageLinkDTO, insert : boolean) => {
 		const props = this.comp.fileUploaderProps
-		const dokumentPool: EFormularDokumentPoolDTO = this.sm.formularDTO?.formularDokumentPool?.find(b => b.formularBeilage?.formularTyp.guid === props.formularTypGuid)
-		this.beilage = dokumentPool?.formularBeilage
-
+		this.beilage = this.sm.dokumentDTO?.beilagen?.find(b => Guid.equals(b.dokumentDef.guid, props.dokumentDefGuid))
 		this.isAttached = this.beilage !== undefined;
+		if (!linkDTO.guidBeilage) {
+			this.fileNameInfo = undefined;
+		}
+		else if(!this.fileNameInfo){
+			const beilage = this.beilage ? this.beilage : this.sm.projekt.auftrag.dokumente.find(d => Guid.equals(d.guid, linkDTO.guidBeilage));
+			if(beilage){
+				this.fileNameInfo = {
+					originalName: beilage.dso.originalName,
+					longName: beilage.dokumentDef.longName,
+					shortName: '',
+				}
+			}
+		}
 	}
 
 	getBackground(): string {
@@ -216,21 +243,26 @@ export class MtFileUploaderComponent extends MtBaseComponent implements OnInit, 
 	}
 
 	getVerknuepfenText(): string {
-		return this.isAttached ? 'verknüpft' : 'verknüpfen'
+		return this.isAttached ? translate(marker('formular_beilage.verknüpft')) : translate(marker('formular_beilage.verknüpfen'));
 	}
 
 	async deleteBeilage() {
 		if (this.beilage) {
-			const attached_beilage = this.sm.formularDTO.formularDokumentPool.find(pool => pool.guidFormularBeilagen === this.beilage.guid);
-			if (attached_beilage) {
+			if (this.beilage) {
 				const formulareService = this.sm.formulareService;
 				const deleter: IFormularSavedEvent = (eventData: IFormularSavedEventData) => {
 					formulareService.afterSaving.remove(deleter);
 					this.sm.service.Delete_Dokument_Pool_Beilage(this.beilage.guid, this.sm.projekt);
 				};
 				formulareService.afterSaving.add(deleter);
-				this.sm.formular.removeBeilage(attached_beilage.formularBeilage);
-				this.fnp = null;
+
+				const dokumentBeilage: DokumentBeilageLinkDTO = {
+					mandant: this.beilage.mandant,
+					guidDokument: this.sm.dokumentDTO.guid,
+					guidBeilage: this.beilage.guid,
+				}
+				this.sm.formular.removeBeilage(this.beilage);
+				this.fileNameInfo = null;
 				await this.changeBeilageAttached({ checked: false });
 			}
 			else {
