@@ -74,10 +74,9 @@ export class MtDatatableComponent extends MtBaseComponent implements OnInit, OnC
   }
 
   getCb(row: any, colDef: ColDef) {
-    const cb = (row[colDef.field] === true) ? '2611' : '2610'
-    return `<span class=''>&#x${cb}</span>`
+    return row[colDef.field] === true ? '/assets/icons/icon-toggle-check_box_checked.svg' : '/assets/icons/icon-toggle-check_box_unchecked.svg'
   }
-
+  
   getAusrichtungTitle(colDef: ColDef): string {
     const ausrichtung: Ausrichtung = colDef.ausrichtungTitle || Ausrichtung.left
     if (ausrichtung === Ausrichtung.center) {

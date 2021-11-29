@@ -31,15 +31,18 @@
 // Importiere die Angular Material Icons "Schriftart".
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
+// Importiere die innerhalb der Anwendung verwendeten Breakpoints und die entsprechenden Mixins.
+@import './breakpoints.scss';
+
 //======================================================================================================================
 // Globale Stile können im nachfolgenden Abschnitt definiert werden.
 //======================================================================================================================
 
 html, body {
-	height: 100%;
-
 	margin: 0;
 	padding: 0;
+
+	height: 100%;
 }
 
 body {
@@ -76,6 +79,10 @@ a {
 		//color: mat-color($bi-theme-secondary);
 		color: next-gen-link-color('active');
 	}
+}
+
+.floatright {
+	float:right;
 }
 
 //======================================================================================================================
@@ -170,6 +177,9 @@ body.bi-theme mat-card.mat-card {
 	// Keine abgerundeten Ecken.
 	border-radius: 0px;
 
+	// Grössenberechnung des Elementes inkl. Padding & Margins sowie Rahmen.
+	box-sizing: border-box;
+
 	padding-top: 24px;
 	padding-left: 24px;
 	padding-right: 24px;
@@ -198,6 +208,26 @@ body.bi-theme .mat-menu-panel {
 	// Keine abgerundeten Ecken.
 	border-radius: 0px;
 }
+
+//======================================================================================================================
+// Angular Material - Date Styles.
+//======================================================================================================================
+
+body.bi-theme .mat-calendar-body-cell-content.mat-calendar-body-today{
+	background-color: next-gen-primary-color(1);
+	color: white !important;
+}
+
+body.bi-theme .mat-calendar-body-cell-content.mat-focus-indicator.mat-calendar-body-selected{
+	background-color: next-gen-primary-color(1);
+	color: white !important;
+}
+
+body.bi-theme .mat-calendar-body-cell-content.mat-focus-indicator:hover{
+	background-color: next-gen-primary-color(1);
+	color: white !important;
+}
+
 
 //======================================================================================================================
 // Angular Material - Form Field Styles.
@@ -331,67 +361,67 @@ body.bi-theme .mat-form-field {
 	// Stile für Eingabefelder, welche nicht deaktiviert sind.
 	&:not(.mat-form-field-disabled) {
 		// Stile für benötigte Eingabefelder.
-		&.required {
+
+		// Wrapper-Element, welches das gesamte Eingabe-Control repräsentiert.
+		.mat-form-field-wrapper {
+			// FlexBox für das Haupteingabefeld, bestehend aus [Prefix] [Infix] und [Suffix].
+			.mat-form-field-flex {
+				// Setze die entsprechende Hintergrundfarbe.
+				// TODO: Für Präsentation deaktiviert.
+				// background-color: rgb(150, 242, 215);
+			}
+		}
+
+		// Element für den Strich unter dem Eingabefeld und dessen Ripple-Effekt.
+		.mat-form-field-underline {
+			// Setze die korrekte Farbe für den Strich.
+			background-color: next-gen-primary-color(1); //next-gen-control-color('accent');
+		}
+
+		// Stile für das Eingabeelement, wenn sich der Mauszeiger direkt über dem
+		// Element befindet.
+		&:hover {
 			// Wrapper-Element, welches das gesamte Eingabe-Control repräsentiert.
 			.mat-form-field-wrapper {
 				// FlexBox für das Haupteingabefeld, bestehend aus [Prefix] [Infix] und [Suffix].
 				.mat-form-field-flex {
 					// Setze die entsprechende Hintergrundfarbe.
-					// TODO: Für Präsentation deaktiviert.
-					// background-color: rgb(150, 242, 215);
-				}
-			}
-
-			// Element für den Strich unter dem Eingabefeld und dessen Ripple-Effekt.
-			.mat-form-field-underline {
-				// Setze die korrekte Farbe für den Strich.
-				background-color: next-gen-primary-color(1); //next-gen-control-color('accent');
-			}
-
-			// Stile für das Eingabeelement, wenn sich der Mauszeiger direkt über dem
-			// Element befindet.
-			&:hover {
-				// Wrapper-Element, welches das gesamte Eingabe-Control repräsentiert.
-				.mat-form-field-wrapper {
-					// FlexBox für das Haupteingabefeld, bestehend aus [Prefix] [Infix] und [Suffix].
-					.mat-form-field-flex {
-						// Setze die entsprechende Hintergrundfarbe.
-						background-color: next-gen-control-color('hover');
-					}
-				}
-			}
-
-			// Stile für das Eingabeelement, wenn dieses aktuell ausgewählt/fokussiert/aktiv ist.
-			&:active,
-			&:focus-within {
-				// Wrapper-Element, welches das gesamte Eingabe-Control repräsentiert.
-				.mat-form-field-wrapper {
-					// FlexBox für das Haupteingabefeld, bestehend aus [Prefix] [Infix] und [Suffix].
-					.mat-form-field-flex {
-						// Setze die entsprechende Hintergrundfarbe.
-						background-color: next-gen-control-color('focus');
-					}
-				}
-			}
-
-			&:disabled {
-				// Hautpeingabelement.
-				.mat-input-element {
-					// Definiere die Schriftfarbe als Variable.
-					$fontColor: #9CA1A7;
-
-					// Setzte die Schriftfarbe des Platzhalters.
-					@include placeholderColor($fontColor);
-
-					// Setze die eigentliche Schriftfarbe.
-					color: $fontColor;
-				}
-
-				.mat-form-field-underline {
-					background-color: #9CA1A7;
+					background-color: next-gen-control-color('hover');
 				}
 			}
 		}
+
+		// Stile für das Eingabeelement, wenn dieses aktuell ausgewählt/fokussiert/aktiv ist.
+		&:active,
+		&:focus-within {
+			// Wrapper-Element, welches das gesamte Eingabe-Control repräsentiert.
+			.mat-form-field-wrapper {
+				// FlexBox für das Haupteingabefeld, bestehend aus [Prefix] [Infix] und [Suffix].
+				.mat-form-field-flex {
+					// Setze die entsprechende Hintergrundfarbe.
+					background-color: next-gen-control-color('focus');
+				}
+			}
+		}
+
+		&:disabled {
+			// Hautpeingabelement.
+			.mat-input-element {
+				// Definiere die Schriftfarbe als Variable.
+				$fontColor: #9CA1A7;
+
+				// Setzte die Schriftfarbe des Platzhalters.
+				@include placeholderColor($fontColor);
+
+				// Setze die eigentliche Schriftfarbe.
+				color: $fontColor;
+			}
+
+			.mat-form-field-underline {
+				background-color: #9CA1A7;
+			}
+		}
+
 
 		// Stile für das Eingabeelement, wenn sich der Mauszeiger direkt über dem
 		// Element befindet.
@@ -477,8 +507,8 @@ body.bi-theme .mat-autocomplete-panel {
 }
 
 body.bi-theme .mat-select-arrow {
-	// Dropdown Icon weiter unten
-	margin-top: 12px;
+	// Dropdown Icon
+	margin-top: 4px;
 }
 
 //======================================================================================================================
@@ -1111,6 +1141,18 @@ body.bi-theme {
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 	background-size: cover;
+
+	// min-width: 600px;
+	min-width: map-get($breakpoints, 'minimum');
+	width: 100%;
+
+	// Keine horizontale Scrollbalken anzeigen im Normalfall.
+	overflow-x: hidden;
+
+	@include media("<=minimum") {
+		width: map-get($breakpoints, 'minimum');
+		overflow-x: scroll;
+	}
 }
 
 //======================================================================================================================
@@ -1170,7 +1212,21 @@ body.bi-theme {
 }
 
 .bg-gray-left {
-	background-color: #F1F3F5;
+	// background-color: #F1F3F5;
+	background-color: next-gen-layout-color(2);
+}
+
+.bg-message {
+	background-color: next-gen-primary-color(5);
+}
+
+
+.bg-diff {
+	background-color: next-gen-primary-color(6);
+}
+
+.color-diff {
+	color: next-gen-primary-color(6);
 }
 
 .gray-right {
@@ -1185,7 +1241,61 @@ body.bi-theme {
 	background-color: #FFA8A8;
 }
 
+@for $colIndex from 1 to 7
+{
+	.layout-color-#{$colIndex} {
+		color: next-gen-layout-color($colIndex);
+	}
+}
 
+@for $colIndex from 1 to 7
+{
+	.bg-layout-color-#{$colIndex} {
+		background-color: next-gen-layout-color($colIndex);
+	}
+}
+
+@for $colIndex from 1 to 7
+{
+	.primary-color-#{$colIndex} {
+		color: next-gen-primary-color($colIndex);
+	}
+}
+
+@for $colIndex from 1 to 7
+{
+	.bg-primary-color-#{$colIndex} {
+		background-color: next-gen-primary-color($colIndex);
+	}
+}
+
+@for $colIndex from 1 to 3
+{
+	.secondary-color-#{$colIndex} {
+		color: next-gen-secondary-color($colIndex);
+	}
+}
+
+@for $colIndex from 1 to 3
+{
+	.bg-secondary-color-#{$colIndex} {
+		background-color: next-gen-secondary-color($colIndex);
+	}
+}
+
+@for $colIndex from 1 to 7
+{
+	.tertiary-color-#{$colIndex} {
+		color: next-gen-tertiary-color($colIndex);
+	}
+}
+
+@for $colIndex from 1 to 7
+{
+	.bg-tertiary-color-#{$colIndex} {
+		background-color: next-gen-tertiary-color($colIndex);
+	}
+}
 
 .primary-color1 {
 	color: next-gen-primary-color(1);
@@ -1255,6 +1365,11 @@ body.bi-theme {
 	color: next-gen-tertiary-color(1);
 }
 
+.error-color {
+	color: next-gen-tertiary-color(1);
+}
+
+
 .tertiary-color2 {
 	color: next-gen-tertiary-color(2);
 }
@@ -1284,11 +1399,10 @@ body.bi-theme {
 }
 
 
-body.bi-theme .mt-checkbox-group {
+body.bi-theme .mat-radio-container {
 	&:hover{
 		background-color: next-gen-control-color('hover');
 	}
-	border-bottom: 1px solid next-gen-primary-color(1);;
 }
 
 body.bi-theme .file-uploader {
@@ -1335,6 +1449,10 @@ body.bi-theme .file-uploader {
 	fill: next-gen-secondary-color(1);
 }
 
+.fixiert-color {
+	color: next-gen-layout-color(4);
+}
+
 .whitespace-pre {
 	white-space: pre;
 }
@@ -1342,4 +1460,12 @@ body.bi-theme .file-uploader {
 .whitespace-pre-line {
 	white-space: pre-line;
 }
+
+.truncate-text {
+	white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
 

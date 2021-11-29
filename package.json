@@ -30,6 +30,7 @@
     "@ngneat/transloco-persist-lang": "^1.0.4",
     "angular-resizable-element": "^3.4.0",
     "autoprefixer": "^10.3.6",
+    "include-media": "^1.4.10",
     "lodash-es": "^4.17.21",
     "moment": "^2.29.1",
     "ng-inline-svg": "^13.0.0",

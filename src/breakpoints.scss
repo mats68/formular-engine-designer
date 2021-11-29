@@ -1,0 +1,9 @@
+@import '~include-media/dist/_include-media.scss';
+
+$breakpoints: (
+	// Absolute Minimum: 320x480px
+	minimum: 320px,
+	phone: 680px,
+	tablet: 768px,
+	desktop: 1024px
+);

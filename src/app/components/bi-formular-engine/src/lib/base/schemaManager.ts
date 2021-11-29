@@ -223,11 +223,13 @@ export class SchemaManager {
 	private readonly _context: ISchemaManagerContext;
 
 	get dokumentDTO(): DokumentDTO {
-		return this.service.CurDokument
+		// return this.service.CurDokument
+		return {} as DokumentDTO
 	}
 
 	get formularStatus(): DokumentStatus {
-		return this.dokumentDTO?.status;
+		// return this.dokumentDTO?.status;
+		return DokumentStatus.InArbeit
 	}
 
 	get formular(): Formular {

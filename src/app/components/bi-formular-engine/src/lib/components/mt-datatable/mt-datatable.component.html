@@ -33,7 +33,7 @@
 						<span *ngIf='rowind === 0 && comp.dragdrop' cdkDragHandle class="cursor-move w-btn">
 							<mat-icon color="primary" class="text-sm">drag_handle</mat-icon>
 						</span>
-						<span *ngIf="isCheckBox(coldef)" [innerHTML]='getCb(row, coldef)'></span>
+						<img *ngIf="isCheckBox(coldef)" [src]='getCb(row, coldef)' />
 						<span *ngIf='isNormalRow(coldef)'>
 							{{getCellText(row, coldef)}}
 						</span>

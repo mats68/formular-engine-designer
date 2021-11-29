@@ -66,6 +66,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { cloneDeep } from 'lodash-es';
 // import { NGXLogger } from 'ngx-logger';
 import { DokumentKatDTO } from 'src/app/api';
+import { adressen, fakeProjekt, geschStelle, mitarbeiter } from './fake';
 
 export interface INavbarItem {
 	titel: string,
@@ -790,20 +791,22 @@ export class ProjektService
 
 	private _curProjekt: EProjektDTO = null;
 	public get CurProjekt(): EProjektDTO {
-		return this._curProjekt;
-	}
-	public set CurProjekt(projekt: EProjektDTO) {
-		// try
-		// {
-		// 	throw new TypeError("Debugging reasons!");
-		// }
-		// catch(e)
-		// {
-		// 	console.log("Setting ProjekteService::CurProjekt", projekt, e);
-		// }
+		// return this._curProjekt;
+		return fakeProjekt as EProjektDTO
 
-		this._curProjekt = projekt;
 	}
+	// public set CurProjekt(projekt: EProjektDTO) {
+	// 	// try
+	// 	// {
+	// 	// 	throw new TypeError("Debugging reasons!");
+	// 	// }
+	// 	// catch(e)
+	// 	// {
+	// 	// 	console.log("Setting ProjekteService::CurProjekt", projekt, e);
+	// 	// }
+
+	// 	this._curProjekt = projekt;
+	// }
 	private _curGeschStelle: GeschStelleDTO = null
 	public async CurGeschStelle(): Promise<GeschStelleDTO> {
 		if (!this._curGeschStelle) {
@@ -1356,23 +1359,23 @@ export class ProjektService
 		}
 	}
 
-	public async LoadProjekt(guidauftrag: string) {
-		this.CurProjekt = null
-		this.CurAuftragDef = null
+	// public async LoadProjekt(guidauftrag: string) {
+	// 	this.CurProjekt = null
+	// 	this.CurAuftragDef = null
 
-		const projekt = await this.projekteService.apiV1EProjekteGuidGet(guidauftrag).pipe(
-			catchError((error) => {
-				console.error('Fehler beim Laden des Projekts', error);
-				return throwError(error);
-			}),
-		).toPromise()
-		this.CurProjekt = projekt
-		console.log('Projekt', projekt)
+	// 	const projekt = await this.projekteService.apiV1EProjekteGuidGet(guidauftrag).pipe(
+	// 		catchError((error) => {
+	// 			console.error('Fehler beim Laden des Projekts', error);
+	// 			return throwError(error);
+	// 		}),
+	// 	).toPromise()
+	// 	this.CurProjekt = projekt
+	// 	console.log('Projekt', projekt)
 
-		const auftragdef = await this.GetAuftragsDef(projekt.auftrag.guiD_AuftragDef)
-		this.CurAuftragDef = auftragdef
-		console.log('AuftragDef', auftragdef)
-	}
+	// 	const auftragdef = await this.GetAuftragsDef(projekt.auftrag.guiD_AuftragDef)
+	// 	this.CurAuftragDef = auftragdef
+	// 	console.log('AuftragDef', auftragdef)
+	// }
 
 	public async SaveAuftrag(auftrag: EAuftragDTO): Promise<EAuftragDTO> {
 		return this.auftraegeService.apiV1EAuftraegePut(auftrag).pipe(map(
@@ -1828,14 +1831,15 @@ export class ProjektService
 
 
 	private GetCurrentMitarbeiter(): Promise<MitarbeiterDTO> {
-		return this.mitarbeiterService.apiV1MitarbeiterQueryGet(this.CurIdentity.mandant, this.CurIdentity.mitarbeiter).pipe(map(
-			(data) => {
-				return data;
-			}),
-			catchError(e => {
-				console.error('Fehler beim Abfragen des Mitarbeiters', e);
-				return throwError(e);
-			})).toPromise() as Promise<MitarbeiterDTO>
+		// return this.mitarbeiterService.apiV1MitarbeiterQueryGet(this.CurIdentity.mandant, this.CurIdentity.mitarbeiter).pipe(map(
+		// 	(data) => {
+		// 		return data;
+		// 	}),
+		// 	catchError(e => {
+		// 		console.error('Fehler beim Abfragen des Mitarbeiters', e);
+		// 		return throwError(e);
+		// 	})).toPromise() as Promise<MitarbeiterDTO>
+		return new Promise(r => r(mitarbeiter as MitarbeiterDTO))
 	}
 
 	public GetMitarbeiter(maGuid: string): Promise<MitarbeiterDTO> {
@@ -1850,25 +1854,29 @@ export class ProjektService
 	}
 
 	private GetCurrentGeschStelle(): Promise<GeschStelleDTO> {
-		return this.geschStellenService.apiV1GeschStellenGuidGet(this.CurIdentity.geschaeftsstelle).pipe(map(
-			(data) => {
-				return data;
-			}),
-			catchError(e => {
-				console.error('Fehler beim Abfragen des Mitarbeiters', e);
-				return throwError(e);
-			})).toPromise() as Promise<GeschStelleDTO>
+
+		// return this.geschStellenService.apiV1GeschStellenGuidGet(this.CurIdentity.geschaeftsstelle).pipe(map(
+		// 	(data) => {
+		// 		return data;
+		// 	}),
+		// 	catchError(e => {
+		// 		console.error('Fehler beim Abfragen des Mitarbeiters', e);
+		// 		return throwError(e);
+		// 	})).toPromise() as Promise<GeschStelleDTO>
+		return new Promise(r => r(geschStelle as GeschStelleDTO))
 	}
 
 	public GetAdressse(guid: string): Promise<AdresseDTO> {
-		return this.adressenService.apiV1AdressenGuidGet(guid).pipe(map(
-			(data) => {
-				return data;
-			}),
-			catchError(e => {
-				console.error('Fehler beim Abfragen der Adresse', e);
-				return throwError(e);
-			})).toPromise() as Promise<AdresseDTO>
+		// return this.adressenService.apiV1AdressenGuidGet(guid).pipe(map(
+		// 	(data) => {
+		// 		return data;
+		// 	}),
+		// 	catchError(e => {
+		// 		console.error('Fehler beim Abfragen der Adresse', e);
+		// 		return throwError(e);
+		// 	})).toPromise() as Promise<AdresseDTO>
+
+    	return new Promise(r => r(adressen[guid] as AdresseDTO))			
 	}
 
 	public ValidateFormular(receiver: string, dokument: DokumentDTO): Promise<DokumentDTO> {

@@ -5,10 +5,10 @@
 @mixin next-gen-theme-colors($layout, $primary, $secondary, $tertiary) {
 	// Deklariere die Next-Gen Theme Variablen im 'Root'-Pseudoelement.
 	@at-root :root {
-		$primaryTextColors: map.get($primary, 'text');
-		$secondaryTextColors: map.get($secondary, 'text');
-		$tertiaryTextColors: map.get($tertiary, 'text');
-		$layoutTextColors: map.get($layout, 'text');
+		$primaryTextColors: map.get($primary, "text");
+		$secondaryTextColors: map.get($secondary, "text");
+		$tertiaryTextColors: map.get($tertiary, "text");
+		$layoutTextColors: map.get($layout, "text");
 
 		--next-gen-theme-layout-color-1: #{map.get($layout, 1)};
 		--next-gen-theme-layout-color-2: #{map.get($layout, 2)};
@@ -49,10 +49,16 @@
 		--next-gen-theme-tertiary-color-1: #{map.get($tertiary, 1)};
 		--next-gen-theme-tertiary-color-2: #{map.get($tertiary, 2)};
 		--next-gen-theme-tertiary-color-3: #{map.get($tertiary, 3)};
+		--next-gen-theme-tertiary-color-4: #{map.get($tertiary, 4)};
+		--next-gen-theme-tertiary-color-5: #{map.get($tertiary, 5)};
+		--next-gen-theme-tertiary-color-6: #{map.get($tertiary, 6)};
 
 		--next-gen-theme-tertiary-text-color-1: #{map.get($tertiaryTextColors, 1)};
 		--next-gen-theme-tertiary-text-color-2: #{map.get($tertiaryTextColors, 2)};
 		--next-gen-theme-tertiary-text-color-3: #{map.get($tertiaryTextColors, 3)};
+		--next-gen-theme-tertiary-text-color-4: #{map.get($tertiaryTextColors, 4)};
+		--next-gen-theme-tertiary-text-color-5: #{map.get($tertiaryTextColors, 5)};
+		--next-gen-theme-tertiary-text-color-6: #{map.get($tertiaryTextColors, 6)};
 	}
 }
 
@@ -61,56 +67,43 @@ $next-gen-layout-colors: (
 	// Layoutfarbe 1: Hintergrund.
 	// Class: bg-component
 	1: var(--next-gen-theme-layout-color-1),
-
 	// Layoutfarbe 2: Hintergrund Formularfelder, Buttons, etc...
 	2: var(--next-gen-theme-layout-color-2),
-
 	// Layoutfarbe 3: Hintergrund & Elementfarbe.
 	3: var(--next-gen-theme-layout-color-3),
-
 	// Layoutfarbe 4: Hintergrund & Elementfarbe.
 	4: var(--next-gen-theme-layout-color-4),
-
 	// Layoutfarbe 5: Linkfarbe Aktiv.
 	5: var(--next-gen-theme-layout-color-5),
-
 	// Layoutfarbe 6: Schriftfarbe.
 	6: var(--next-gen-theme-layout-color-6),
-
 	// Layoutfarbe 7: Hintergrund Content.
 	// CLass bg-content
 	7: var(--next-gen-theme-layout-color-7),
-
 	// Textfarben.
-	text: (
-		// Kontrastfarbe zu Layoutfarbe 1.
-		1: var(--next-gen-theme-layout-text-color-1),
-
-		// Kontrastfarbe zu Layoutfarbe 2.
-		2: var(--next-gen-theme-layout-text-color-2),
-
-		// Kontrastfarbe zu Layoutfarbe 3.
-		3: var(--next-gen-theme-layout-text-color-3),
-
-		// Kontrastfarbe zu Layoutfarbe 4.
-		4: var(--next-gen-theme-layout-text-color-4),
-
-		// Kontrastfarbe zu Layoutfarbe 5.
-		5: var(--next-gen-theme-layout-text-color-5),
-
-		// Kontrastfarbe zu Layoutfarbe 6.
-		6: var(--next-gen-theme-layout-text-color-6),
-
-		// Kontrastfarbe zu Layoutfarbe 7.
-		7: var(--next-gen-theme-layout-text-color-7),
-	),
+	text:
+		(
+			// Kontrastfarbe zu Layoutfarbe 1.
+			1: var(--next-gen-theme-layout-text-color-1),
+			// Kontrastfarbe zu Layoutfarbe 2.
+			2: var(--next-gen-theme-layout-text-color-2),
+			// Kontrastfarbe zu Layoutfarbe 3.
+			3: var(--next-gen-theme-layout-text-color-3),
+			// Kontrastfarbe zu Layoutfarbe 4.
+			4: var(--next-gen-theme-layout-text-color-4),
+			// Kontrastfarbe zu Layoutfarbe 5.
+			5: var(--next-gen-theme-layout-text-color-5),
+			// Kontrastfarbe zu Layoutfarbe 6.
+			6: var(--next-gen-theme-layout-text-color-6),
+			// Kontrastfarbe zu Layoutfarbe 7.
+			7: var(--next-gen-theme-layout-text-color-7)
+		)
 );
 
 @function next-gen-layout-color($key, $text: false) {
 	@if $text {
-		@return map.get(map-get($next-gen-layout-colors, 'text'), $key);
-	}
-	@else {
+		@return map.get(map-get($next-gen-layout-colors, "text"), $key);
+	} @else {
 		@return map.get($next-gen-layout-colors, $key);
 	}
 }
@@ -120,54 +113,43 @@ $next-gen-primary-colors: (
 	// Primärfarbe 1: Interaktion, Linkfarbe.
 	// Class: normal
 	1: var(--next-gen-theme-primary-color-1),
-
 	// Primärfarbe 2: Interaktion 2, Pressed-State.
 	// Class: pressed
 	2: var(--next-gen-theme-primary-color-2),
-
 	// Primärfarbe 3: Brand Color 1, Header.
 	// Class: brand
 	3: var(--next-gen-theme-primary-color-3),
-
 	// Primärfarbe 4: Brand Color 2, Header 2.
 	// Class: accent
 	4: var(--next-gen-theme-primary-color-4),
-
 	// Primärfarbe 5: Interaktion 3, Required Highlight.
 	// Class: required
 	5: var(--next-gen-theme-primary-color-5),
-
 	// Primärfarbe 6: Interaktion 4, Fokusfarbe.
 	// Class: focus
 	6: var(--next-gen-theme-primary-color-6),
-
 	// Textfarben.
-	text: (
-		// Kontrastfarbe zu Primärfarbe 1.
-		1: var(--next-gen-theme-primary-text-color-1),
-
-		// Kontrastfarbe zu Primärfarbe 2.
-		2: var(--next-gen-theme-primary-text-color-2),
-
-		// Kontrastfarbe zu Primärfarbe 3.
-		3: var(--next-gen-theme-primary-text-color-3),
-
-		// Kontrastfarbe zu Primärfarbe 4.
-		4: var(--next-gen-theme-primary-text-color-4),
-
-		// Kontrastfarbe zu Primärfarbe 5.
-		5: var(--next-gen-theme-primary-text-color-5),
-
-		// Kontrastfarbe zu Primärfarbe 6.
-		6: var(--next-gen-theme-primary-text-color-6),
-	),
+	text:
+		(
+			// Kontrastfarbe zu Primärfarbe 1.
+			1: var(--next-gen-theme-primary-text-color-1),
+			// Kontrastfarbe zu Primärfarbe 2.
+			2: var(--next-gen-theme-primary-text-color-2),
+			// Kontrastfarbe zu Primärfarbe 3.
+			3: var(--next-gen-theme-primary-text-color-3),
+			// Kontrastfarbe zu Primärfarbe 4.
+			4: var(--next-gen-theme-primary-text-color-4),
+			// Kontrastfarbe zu Primärfarbe 5.
+			5: var(--next-gen-theme-primary-text-color-5),
+			// Kontrastfarbe zu Primärfarbe 6.
+			6: var(--next-gen-theme-primary-text-color-6)
+		)
 );
 
 @function next-gen-primary-color($key, $text: false) {
 	@if $text {
-		@return map.get(map-get($next-gen-primary-colors, 'text'), $key);
-	}
-	@else {
+		@return map.get(map-get($next-gen-primary-colors, "text"), $key);
+	} @else {
 		@return map.get($next-gen-primary-colors, $key);
 	}
 }
@@ -176,25 +158,22 @@ $next-gen-primary-colors: (
 $next-gen-secondary-colors: (
 	// Sekundärfarbe 1: Projekte.
 	1: var(--next-gen-theme-secondary-color-1),
-
 	// Sekundärfarbe 2: Meldungen / Formulare.
 	2: var(--next-gen-theme-secondary-color-2),
-
 	// Textfarben.
-	text: (
-		// Kontrastfarbe zu Sekundärfarbe 1.
-		1: var(--next-gen-theme-secondary-text-color-1),
-
-		// Kontrastfarbe zu Sekundärfarbe 2.
-		2: var(--next-gen-theme-secondary-text-color-2),
-	),
+	text:
+		(
+			// Kontrastfarbe zu Sekundärfarbe 1.
+			1: var(--next-gen-theme-secondary-text-color-1),
+			// Kontrastfarbe zu Sekundärfarbe 2.
+			2: var(--next-gen-theme-secondary-text-color-2)
+		)
 );
 
 @function next-gen-secondary-color($key, $text: false) {
 	@if $text {
-		@return map.get(map-get($next-gen-secondary-colors, 'text'), $key);
-	}
-	@else {
+		@return map.get(map-get($next-gen-secondary-colors, "text"), $key);
+	} @else {
 		@return map.get($next-gen-secondary-colors, $key);
 	}
 }
@@ -203,29 +182,28 @@ $next-gen-secondary-colors: (
 $next-gen-tertiary-colors: (
 	// Tertiärfarbe 1 / Statusfarbe 1.
 	1: var(--next-gen-theme-tertiary-color-1),
-
 	2: var(--next-gen-theme-tertiary-color-2),
-
 	3: var(--next-gen-theme-tertiary-color-3),
-
+	4: var(--next-gen-theme-tertiary-color-4),
+	5: var(--next-gen-theme-tertiary-color-5),
+	6: var(--next-gen-theme-tertiary-color-6),
 	// Textfarben.
-	text: (
-		// Kontrastfarbe zu Tertiärfarbe 1.
-		1: var(--next-gen-theme-tertiary-text-color-1),
-
-		// Kontrastfarbe zu Tertiärfarbe 2.
-		2: var(--next-gen-theme-tertiary-text-color-2),
-
-		// Kontrastfarbe zu Tertiärfarbe 3.
-		3: var(--next-gen-theme-tertiary-text-color-3)
-	),
+	text:
+		(
+			// Kontrastfarbe zu Tertiärfarbe.
+			1: var(--next-gen-theme-tertiary-text-color-1),
+			2: var(--next-gen-theme-tertiary-text-color-2),
+			3: var(--next-gen-theme-tertiary-text-color-3),
+			4: var(--next-gen-theme-tertiary-text-color-4),
+			5: var(--next-gen-theme-tertiary-text-color-5),
+			6: var(--next-gen-theme-tertiary-text-color-6)
+		)
 );
 
 @function next-gen-tertiary-color($key, $text: false) {
 	@if $text {
-		@return map.get(map-get($next-gen-tertiary-colors, 'text'), $key);
-	}
-	@else {
+		@return map.get(map-get($next-gen-tertiary-colors, "text"), $key);
+	} @else {
 		@return map.get($next-gen-tertiary-colors, $key);
 	}
 }
@@ -234,45 +212,38 @@ $next-gen-tertiary-colors: (
 $next-gen-control-colors: (
 	// Farbe für Schaltflächen, Checkboxen und Radio Buttons im Normalzustand.
 	normal: next-gen-primary-color(1),
-
 	// Akzentfarbe für Controls.
 	accent: next-gen-primary-color(4),
-
 	// Hintergrundfarbe für Muss-Felder.
 	required: next-gen-primary-color(5),
-
 	// Farbe für Schaltflächen, Checkboxen und Radio Buttons welche gerade Betätigt werden oder fokkusiert sind.
 	pressed: next-gen-primary-color(2),
-
 	// Farbe für Schaltflächen sowie den Ripple-Effekt von Checkboxen und Radio Buttons wenn sich der Mauszeiger direkt
 	// darüber befindet.
 	hover: next-gen-primary-color(5),
-
 	// Farbe für Schaltflächen sowie den Ripple-Effekt von Checkboxen und Radio Buttons wenn diese aktuell fokussiert
 	// sind.
 	focus: next-gen-primary-color(6),
-
 	// Farbe für Schaltflächen, Checkboxen und Radio Buttons welche deaktiviert sind.
-	disabled: #AEB4BB,
-
+	disabled: #aeb4bb,
 	// Textfarben.
-	text: (
-		normal: next-gen-primary-color(1, true),
-		accent: next-gen-primary-color(4, true),
-		required: next-gen-primary-color(5, true),
-		pressed: next-gen-primary-color(2, true),
-		hover: next-gen-primary-color(5, true),
-		focus: next-gen-primary-color(6, true),
-		disabled: black,
-		link: next-gen-primary-color(1, true),
-	),
+	text:
+		(
+			normal: next-gen-primary-color(1, true),
+			accent: next-gen-primary-color(4, true),
+			required: next-gen-primary-color(5, true),
+			pressed: next-gen-primary-color(2, true),
+			hover: next-gen-primary-color(5, true),
+			focus: next-gen-primary-color(6, true),
+			disabled: black,
+			link: next-gen-primary-color(1, true),
+		)
 );
 
 @function next-gen-control-color($key, $text: false) {
 	@if $text {
-		@return map.get(map-get($next-gen-control-colors, 'text'), $key);
-	}
-	@else {
+		@return map.get(map-get($next-gen-control-colors, "text"), $key);
+	} @else {
 		@return map.get($next-gen-control-colors, $key);
 	}
 }
@@ -280,24 +251,21 @@ $next-gen-control-colors: (
 // Tabelle der Farben für Links im aktuellen Next-Gen Theme.
 $next-gen-link-colors: (
 	normal: next-gen-primary-color(1),
-
 	active: next-gen-layout-color(5),
-
 	hover: next-gen-primary-color(2),
-
 	// Textfarben.
-	text: (
-		normal: next-gen-primary-color(1, true),
-		active: next-gen-layout-color(5, true),
-		hover: next-gen-primary-color(5, true),
-	)
+	text:
+		(
+			normal: next-gen-primary-color(1, true),
+			active: next-gen-layout-color(5, true),
+			hover: next-gen-primary-color(5, true),
+		),
 );
 
 @function next-gen-link-color($key, $text: false) {
 	@if $text {
-		@return map.get(map-get($next-gen-link-colors, 'text'), $key);
-	}
-	@else {
+		@return map.get(map-get($next-gen-link-colors, "text"), $key);
+	} @else {
 		@return map.get($next-gen-link-colors, $key);
 	}
 }
@@ -405,35 +373,35 @@ $next-gen-link-colors: (
 	);
 
 	$bi-palette-ok: (
-		50 : #edf5e6,
-		100 : #d2e7c0,
-		200 : #b5d796,
-		300 : #97c76b,
-		400 : #80bb4c,
-		500 : #6aaf2c,
-		600 : #62a827,
-		700 : #579f21,
-		800 : #4d961b,
-		900 : #3c8610,
-		A100 : #d0ffb8,
-		A200 : #adff85,
-		A400 : #8bff52,
-		A700 : #7aff39,
+		50: #edf5e6,
+		100: #d2e7c0,
+		200: #b5d796,
+		300: #97c76b,
+		400: #80bb4c,
+		500: #6aaf2c,
+		600: #62a827,
+		700: #579f21,
+		800: #4d961b,
+		900: #3c8610,
+		A100: #d0ffb8,
+		A200: #adff85,
+		A400: #8bff52,
+		A700: #7aff39,
 		contrast: (
-			50 : #000000,
-			100 : #000000,
-			200 : #000000,
-			300 : #000000,
-			400 : #000000,
-			500 : #000000,
-			600 : #000000,
-			700 : #ffffff,
-			800 : #ffffff,
-			900 : #ffffff,
-			A100 : #000000,
-			A200 : #000000,
-			A400 : #000000,
-			A700 : #000000,
+			50: #000000,
+			100: #000000,
+			200: #000000,
+			300: #000000,
+			400: #000000,
+			500: #000000,
+			600: #000000,
+			700: #ffffff,
+			800: #ffffff,
+			900: #ffffff,
+			A100: #000000,
+			A200: #000000,
+			A400: #000000,
+			A700: #000000,
 		),
 	);
 

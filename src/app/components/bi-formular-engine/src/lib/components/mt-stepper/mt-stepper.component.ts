@@ -2,9 +2,9 @@ import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { Component, OnInit, Input, ViewChild, OnDestroy } from '@angular/core';
 import { set } from 'lodash-es';
 import { Subscription } from 'rxjs';
+import { IComponent } from 'src/app/components';
 
 import { MtBaseComponent } from '../../base/mt-base/mt-base.component';
-import { IComponent } from '../../base/types';
 
 @Component({
   selector: 'mt-stepper',

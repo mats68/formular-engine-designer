@@ -317,7 +317,7 @@
   "comp_project_detail_edit.label_geosystem": "Geosystem",
   "comp_project_detail_edit.label_keyword": "Stichwort",
   "comp_project_detail_edit.label_management": "Gebäude-Verwaltung",
-  "comp_project_detail_edit.label_notes": "Bemerkungen",
+  "comp_project_detail_edit.label_notes": "Auftragsbeschrieb",
   "comp_project_detail_edit.label_order_number": "Auftrag-Nr.",
   "comp_project_detail_edit.label_planned_installation_date": "Voraussichtliche Inbetriebnahme am",
   "comp_project_detail_edit.label_plot": "Parzellen-Nr.",
