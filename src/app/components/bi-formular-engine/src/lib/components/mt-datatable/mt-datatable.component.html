@@ -16,7 +16,7 @@
 	</div>
 
 	<div cdkDropList (cdkDropListDropped)="drop($event)">
-		<div *ngFor="let row of data; let ind = index" cdkDrag [cdkDragDisabled]="!comp.dragdrop" (click)="toggleExpand(ind)" class="mat-elevation-z1 mb-2">
+		<div *ngFor="let row of data; let ind = index" cdkDrag [cdkDragDisabled]="!comp.dragdrop || disabled" (click)="toggleExpand(ind)" class="mat-elevation-z1 mb-2">
 			<div [class]="'grid ' + gridClass + ' items-center gap-2 py-3 px-2 bg-gray-left'">
 				<div *ngFor="let coldef of comp.colDefs; let rowind = index" [class]="coldef.class + ' ' + coldef.classContent">
 					<span [class]="'flex ' + getAusrichtungContent(coldef)">
@@ -30,9 +30,10 @@
 						</span>
 
 						<!-- Drag-Handler -->
-						<span *ngIf='rowind === 0 && comp.dragdrop' cdkDragHandle class="cursor-move w-btn">
+						<span *ngIf='rowind === 0 && comp.dragdrop && !disabled' cdkDragHandle class="cursor-move w-btn">
 							<mat-icon color="primary" class="text-sm">drag_handle</mat-icon>
 						</span>
+						<span *ngIf='disabled' style="width: 18px;"></span>
 						<img *ngIf="isCheckBox(coldef)" [src]='getCb(row, coldef)' />
 						<span *ngIf='isNormalRow(coldef)'>
 							{{getCellText(row, coldef)}}
@@ -45,13 +46,14 @@
 				<div [class]="gridClassLastColumn + ' col-span-1'">
 					<div class="flex">
 						<!-- Buttons für Aktionen Delete, Kopieren.. -->
-						<span [matMenuTriggerFor]="menu" #actionsMenuTrigger="matMenuTrigger" class="outline-none cursor-pointer w-btn" (mousedown)="notExpand = true">
+						<span *ngIf='!disabled' [matMenuTriggerFor]="menu" #actionsMenuTrigger="matMenuTrigger" class="outline-none cursor-pointer w-btn" (mousedown)="notExpand = true">
 							<mat-icon color="primary">more_vert</mat-icon>
 						</span>
 						<mat-menu #menu="matMenu">
 							<button mat-menu-item class="text-primary" (click)="CopyRow(ind); $event.stopPropagation()">{{this.sm.translate(this.KeyCopyRecord)}}</button>
 							<button mat-menu-item class="text-primary" (click)="DeleteRow(ind); $event.stopPropagation()">{{this.sm.translate(this.KeyDeleteRecord)}}</button>
 						</mat-menu>
+						<span *ngIf='disabled' style="width: 18px;"></span>
 						<span (click)="toggleExpand(ind); $event.stopPropagation()" class="cursor-pointer w-btn">
 							<mat-icon color="primary">{{getExpandIcon(ind)}}</mat-icon>
 						</span>

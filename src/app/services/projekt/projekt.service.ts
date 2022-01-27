@@ -42,31 +42,45 @@ import {
 	EGeraetDTO,
 	TransferTyp,
 	DokumentTransferHistoryDTO,
+	DokumentDefDTOApp,
+	AktionsDefDTO,
+	EntwuerfeService,
+	EntwurfDTO,
+	ObjektTyp,
+	ProjektEntwurfDTO,
+	AdresseEntwurfDTO,
 } from 'src/app/api';
 import { ActivatedRoute, NavigationEnd, Params, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, of, throwError } from 'rxjs';
-import { catchError, map, shareReplay, tap } from 'rxjs/operators';
+import { BehaviorSubject, from, merge, Observable, ObservedValueOf, of, throwError } from 'rxjs';
+import { catchError, map, shareReplay, switchMap, tap, toArray } from 'rxjs/operators';
 import { LoadingStatus } from 'src/app/tools/DataListProps';
-import { ProjektPhaseWrapper } from 'src/app/tools';
+import { AktionsWrapper, BeilageFileDef, BeilageWrapper, ProjektBeilagen, ProjektPhaseWrapper } from 'src/app/tools';
 import * as EventEmitter from 'events';
 import { marker } from '@ngneat/transloco-keys-manager/marker';
 // import { AuthorizationService } from 'src/app/modules/auth/authorization.service';
 // import { AuthenticationService } from 'src/app/modules/auth/authentication.service';
 import { translate, TranslocoService } from '@ngneat/transloco';
 import { MatDialog } from '@angular/material/dialog';
+// import { ProfilAnbieterDialogComponent } from 'src/app/components/profil-anbieter-dialog/profil-anbieter-dialog.component';
 import { asGuid, Guid } from 'src/app/tools/Guid';
 import { SignatureRole } from './signatureRole';
+// import { DialogAllgemeinComponent } from 'src/app/components/dialog-allgemein/dialog-allgemein.component';
 import { ISchema, ISelectOptionItems, SchemaManager } from 'src/app/components/bi-formular-engine/src/public-api';
 import { ProduktLizenzGutscheinDTO } from 'src/app/api';
+// import { BeilageDialogComponent } from 'src/app/components/beilagen/beilage-dialog.component';
 import * as _ from "lodash-es";
 import * as moment from 'moment';
-// import { ProjectAnlageAnlageEditDialogComponent, ProjectDetailEditDialogComponent } from 'src/app/components';
 import { MatSnackBar } from '@angular/material/snack-bar';
+// import { geraete_schema, mapDatenToJSON, mapDatenToString } from 'src/app/schemas/schema-geraete';
 import { cloneDeep } from 'lodash-es';
 // import { NGXLogger } from 'ngx-logger';
 import { DokumentKatDTO } from 'src/app/api';
+// import { ProjektDetailEditDialogComponent } from 'src/app/components';
+import { getuid } from 'process';
+import { SendDokumentRequest } from 'src/app/api';
 import { adressen, fakeProjekt, geschStelle, mitarbeiter } from './fake';
+// import { EntwuerfeComponent } from 'src/app/pages';
 
 export interface INavbarItem {
 	titel: string,
@@ -82,6 +96,8 @@ export const EmpfaengerKategorienGuids = {
 	kanton: "8614a362-1338-4dcb-bd50-89123846924a"
 }
 
+export const PronovoGuid = '5ff8953c-f462-405f-9932-3f5439e4e3af';
+
 export interface IEmpfaengerKategorienItem {
 	titel: string
 	hasEmpfaenger?: boolean
@@ -94,25 +110,25 @@ export const EmpfaengerKategorienItems = (): { [key: string]: IEmpfaengerKategor
 	if (!_EmpfaengerKategorienItems) {
 		_EmpfaengerKategorienItems = {
 			"c92cb2d8-de94-4c0d-8a21-42ddfa7f80b8": {
-				titel: translate(marker('page_project_wizard.label_recipient_owner')),
+				titel: translate(marker('page_projekt_wizard.label_recipient_owner')),
 				items: null
 			},
 			"b053219c-6a38-47d4-9661-2e234b45fbff": {
-				titel: translate(marker('page_project_wizard.label_recipient_community')),
+				titel: translate(marker('page_projekt_wizard.label_recipient_community')),
 				hasEmpfaenger: true,
 				items: null
 			},
 			"2bf651f0-f779-4492-baf3-35b765feb351": {
-				titel: translate(marker('page_project_wizard.label_recipient_vnb')),
+				titel: translate(marker('page_projekt_wizard.label_recipient_vnb')),
 				hasEmpfaenger: true,
 				items: null
 			},
 			"22fc1591-ce09-4acb-983a-768d3f8b5e3f": {
-				titel: translate(marker('page_project_wizard.label_recipients_einmalverguetung')),
+				titel: translate(marker('page_projekt_wizard.label_recipients_einmalverguetung')),
 				items: null
 			},
 			"8614a362-1338-4dcb-bd50-89123846924a": {
-				titel: translate(marker('page_project_wizard.label_recipients_kanton')),
+				titel: translate(marker('page_projekt_wizard.label_recipients_kanton')),
 				items: null
 			}
 		}
@@ -153,11 +169,12 @@ export interface IDialogBoxData {
 	close?: () => void
 }
 
-export type IProjektAbschnitt = 'auftrag' | 'gebaude' | 'empfaenger' | 'adressen' | 'anlage'
+export type IProjektAbschnitt = 'auftrag' | 'gebaude' | 'empfaenger' | 'adressen' | 'anlage' | 'geraete'
 
 export interface IDialogBoxDataProjektAbschnitt {
 	okClicked?: boolean
 	abschnitt: IProjektAbschnitt
+	anlage?: EAnlageDTO
 	values?: any
 }
 
@@ -169,35 +186,13 @@ export const DokumentTypGuids = {
 	svg: 'CAAEF2CA-72CB-4A82-ABD1-93B4C80FEB1B',
 }
 
-export interface DokumentDef {
-	guid: string
+export interface SchemaBeilageDef {
+	guid?: string
 	titel: string
 	translateTitel?: boolean
-	reqiered?: boolean
+	required?: boolean
+	schemaKey?: number
 }
-
-export interface DokumentDefs {
-	[key: string]: DokumentDef
-}
-
-
-export const FormularTypenGuids: DokumentDefs = {
-	MF: { guid: '3aa1f096-7508-4258-8aa1-b4ca3da4e89e', titel: 'Meldeformular FR' },
-	FAS_PLAN: { guid: '60f61104-9d07-4e92-bfae-886e625fea0b', titel: 'Fassadenplan' },
-	SIT_PLAN: { guid: '2f5ccbbc-db19-4ce7-a1a3-b8ac7a6435e4', titel: 'Situationsplan' },
-	PRN_VLMT: { guid: 'ce5d2d30-8dd0-4e88-be51-f2956389fb26', titel: 'Pronovo Vollmacht' },
-	GRND_ASZ: { guid: 'b1585bec-ffce-44db-904c-ed7e02261e05', titel: 'Grundbuch Auszug' },
-	BE: { guid: '817f136e-58d6-4254-86ba-408fc4907814', titel: 'Beilage' },
-	BG: { guid: 'a4ea2ae1-43a2-4da6-acce-d4f0b77bfa48', titel: 'Baugesuch' },
-	PG: { guid: 'fd07a456-e95e-4cbb-9f1f-fe148c7aa250', titel: 'Pronovo Gesuch' },
-	TAG: { guid: '0e502284-436b-4e2b-a566-177919e13dee', titel: 'Technisches Anschlussgesuch' },
-	IA: { guid: '72faa42b-4c3b-41bb-a747-cd4e846c991e', titel: 'Installationsanzeige' },
-	MPP: { guid: '4d0159cf-f16d-4322-9e7f-3adc6f02d27f', titel: 'Mess- und Prüfprotokoll' },
-	PV: { guid: 'ec24c264-f634-41a0-9730-0b81b0115ecb', titel: 'MPP	Mess- und Prüfprotokoll Photovoltaik' },
-	SiNa: { guid: '7ec9736c-d24e-4252-b0fc-941c8a3fc028', titel: 'Sicherheitsnachweis' },
-	MS: { guid: 'e0ea8cd1-a4ef-418d-b3db-e6b66fc42fc4', titel: 'Meldeformular Solar SZ' },
-}
-
 
 type FormularStatusInterface = Record<number, string>
 export const FormularStatusText = (): FormularStatusInterface => ({
@@ -245,8 +240,8 @@ const StartseiteItem: INavbarItem = {
 }
 
 const ProjekteItem: INavbarItem = {
-	titel: marker('comp_nav_bar.label_projects'),
-	routerLink: '/projects',
+	titel: marker('comp_nav_bar.label_projekts'),
+	routerLink: '/projekt-liste',
 	icon: '/assets/icons/nav-projects.svg'
 }
 
@@ -262,11 +257,17 @@ const ProduktLizenzenItem: INavbarItem = {
 	icon: '/assets/icons/nav-lizenzen.svg'
 }
 
+const EntwuerfeItem: INavbarItem = {
+	titel: marker('comp_nav_bar.label_entwuerfe'),
+	routerLink: '/entwuerfe',
+	icon: '/assets/icons/nav-entwuerfe.svg'
+}
+
 
 export enum OriginUrl {
 	dashboard = '/dashboard',
 	verwaltung = '/bi-verwaltung',
-	projects = '/projects',
+	projekt_liste = '/projekt-liste',
 	geschaeftsstellen = '/geschaeftsstellen',
 	search = '/search',
 }
@@ -324,312 +325,15 @@ export interface PdfDokument {
 	beilage?: DokumentBeilageLinkDTO
 }
 
-export class BeilageWrapper {
-	dokumentDef: DokumentDef;
-	isAttached: boolean;
-	isSending: boolean = false;
-
-	constructor(
-		dokumentDef: DokumentDef = undefined,
-		beilage: DokumentDTO = undefined,
-	) {
-		this._projektService = ProjektService.instance;
-		this._dialog = this._projektService.dialog;
-		this.dokumentDef = dokumentDef;
-		this._beilage = beilage;
-	}
-	private _projektService: ProjektService;
-	private _dialog: MatDialog;
-
-	private _beilage: DokumentDTO;
-	public get beilage(): DokumentDTO {
-		return this._beilage;
-	}
-	public set beilage(b: DokumentDTO) {
-		this._beilage = b;
-	}
-
-	private _dokument: DokumentDTO;
-	public get dokument(): DokumentDTO {
-		// if (!this._dokument)
-		// 	this._dokument = this._projektService.findeDokumentVonBeilage(this.beilage);
-		return this._dokument;
-	}
-	public set dokument(d: DokumentDTO) {
-		this._dokument = d;
-	}
-
-	private _leistung: ELeistungDTO;
-	public get leistung(): ELeistungDTO {
-		if (!this._leistung)
-			this._leistung = this._projektService.findeLeistung(this.dokument);
-		return this._leistung;
-	}
-
-	public get empfaenger(): string {
-		return this.leistung?.empfaenger;
-	}
-
-	get titel(): string {
-		if (this.beilage && this.beilage.dso) {
-			return getDateiNamePrint(this.beilage.dso.originalName)
-		} else {
-			return this.titelTyp
-		}
-	}
-
-	get titelTyp(): string {
-		if (this.dokumentDef.translateTitel) {
-			// return this.dokumentDef.titel
-			return this._projektService.translationService.translate(this.dokumentDef.titel)
-		} else {
-			return this.dokumentDef.titel
-		}
-	}
-
-	get verknuepfenText(): string {
-
-		return this.isAttached ? translate(marker('formular_beilage.verknüpft')) : translate(marker('formular_beilage.verknüpfen'));
-	}
-
-	get beilageVerfuegbarText(): string {
-		if (this.isAttached)
-			return '';
-
-		return this.beilage ? translate(marker('formular_beilage.verfügbar')) : translate(marker('formular_beilage.nicht_verfügbar'));
-	}
-
-	get istCheckboxSichtbar(): boolean {
-		if (!this.beilage)
-			return true;
-
-		if(!this.dokument)
-			return false;
-
-		if (this.dokument.status < DokumentStatus.Gesendet)
-			return true;
-
-		if ([DokumentStatus.Undefiniert, DokumentStatus.InArbeit].indexOf(this.beilage.status) > -1) {
-			const empfaenger = this.leistung.empfaenger;
-			const th = _.last(this.beilage.transferHistory?.filter(th => Guid.equals(th.empfaenger, empfaenger) && [TransferTyp.Empfang, TransferTyp.Versand].indexOf(th.typ) > -1));
-			return !th;
-		}
-
-		return false;
-	}
-
-	get isDeletable(): boolean {
-		if (!this.beilage)
-			return false;
-
-		// Die Beilage wurde gesendet oder empfangen
-		if (this.beilage.transferHistory && this.beilage.transferHistory.filter(th => [TransferTyp.Versand, TransferTyp.Empfang].indexOf(th.typ) > -1).length > 0)
-			return false;
-
-		// Die Beilage ist mit einem Haupddokument verknüpft
-		if (this._projektService.findeDokumentVonBeilage(this.beilage))
-			return false;
-
-		return true;
-	}
-
-	get icon(): string {
-		if (this.beilage) {
-			// if (this.beilage.status == DokumentStatus.Gesendet)
-			// 	return 'check_circle_outline';
-			// else if (this.beilage.status == DokumentStatus.Importiert)
-			// 	return 'reply';
-			{
-				const th = _.last(this.beilage.transferHistory?.filter(th => Guid.equals(th.empfaenger, this.empfaenger) && [TransferTyp.Versand].indexOf(th.typ) > -1));
-				if (th)
-					return 'check_circle_outline';
-
-			}
-			{
-				const th = _.last(this.beilage.transferHistory?.filter(th => Guid.equals(th.absender, this.empfaenger) && [TransferTyp.Empfang].indexOf(th.typ) > -1));
-				if (th)
-					return 'reply';
-			}
-		}
-
-		return 'warning'
-	}
-	get iconBackgroundClass(): string {
-		// if (this.beilage?.status === DokumentStatus.Importiert)
-		// 	return 'bg-tertiary-color-5';
-		{
-			const th = _.last(this.beilage.transferHistory?.filter(th => Guid.equals(th.empfaenger, this.empfaenger) && [TransferTyp.Versand].indexOf(th.typ) > -1));
-			if (th)
-				return 'bg-tertiary-color-2';
-		}
-		{
-			const th = _.last(this.beilage?.transferHistory?.filter(th => Guid.equals(th.absender, this.empfaenger) && [TransferTyp.Empfang].indexOf(th.typ) > -1));
-			if (th)
-				return 'bg-tertiary-color-5';
-		}
-
-		return 'bg-secondary-color-2'
-	}
-
-	get iconClass(): string {
-		if (this.beilage) {
-			// if (this.beilage.status == DokumentStatus.Gesendet)
-			// 	return 'tertiary-color-2';
-			// else if (this.beilage.status == DokumentStatus.Importiert)
-			// 	return 'tertiary-color-5';
-			{
-				const th = _.last(this.beilage.transferHistory?.filter(th => Guid.equals(th.empfaenger, this.empfaenger) && [TransferTyp.Versand].indexOf(th.typ) > -1));
-				if (th)
-					return 'tertiary-color-2';
-			}
-			{
-				const th = _.last(this.beilage.transferHistory?.filter(th => Guid.equals(th.absender, this.empfaenger) && [TransferTyp.Empfang].indexOf(th.typ) > -1));
-				if (th)
-					return 'tertiary-color-5';
-			}
-		}
-
-		return 'tertiary-color-3'
-	}
-
-	sendBeilage(): boolean {
-		// var answer = window.confirm(translate(marker('comp_projekt_phase.beilage_nachsenden')));
-		// if (answer) {
-		// 	this.isSending = true;
-
-		// 	setTimeout(async () => {
-		// 		this.beilage.status = DokumentStatus.Gesendet;
-		// 		const em: EmpfaengerDTO = await this._projektService.GetEmpfaenger_Guid(this.empfaenger);
-		// 		const th: DokumentTransferHistoryDTO = {
-		// 			mandant: this.beilage.mandant,
-		// 			dokument: this.beilage.guid,
-		// 			absender: this._projektService.CurIdentity.holding,
-		// 			empfaenger: this.empfaenger,
-		// 			kanal: em.transferKanal,
-		// 			typ: TransferTyp.Versand,
-		// 			timestamp: moment.utc().toISOString(),
-		// 		};
-		// 		this.beilage.transferHistory.push(th);
-
-		// 		await this._projektService.SaveDokument(this.beilage);
-
-		// 		this.isSending = false;
-		// 	}, 2000);
-
-		// 	return true;
-		// }
-		return false;
-	}
-
-	async downloadBeilage(): Promise<void> {
-		await this._projektService.DownloadFormular(this.beilage);
-	}
-
-	async deleteBeilage(): Promise<void> {
-		await this._projektService.Delete_Dokument_Pool_Beilage(this.beilage.guid, this._projektService.CurProjekt);
-	}
-
-	// private async showDialog(bfd: BeilageFileDef): Promise<BeilageWrapper> {
-
-		// const dialogRef = this._dialog.open(BeilageDialogComponent, { width: '80vw', height: '95vh', data: bfd, });
-
-		// return new Promise((resolve) => {
-		// 	if (!bfd.readonly) {
-
-		// 		if (this._projektService.allDokumentDefs) {
-		// 			dialogRef.componentInstance.showList(this._projektService.allDokumentDefs);
-		// 		}
-		// 		else {
-		// 			dialogRef.componentInstance.loading = true;
-		// 			this._projektService.GetDocDefs()
-		// 				.then((dokumentDefs) => {
-		// 					dialogRef.componentInstance.showList(dokumentDefs);
-		// 				})
-		// 				.finally(() => {
-		// 					dialogRef.componentInstance.loading = false;
-		// 				});
-		// 		}
-		// 	}
-
-		// 	dialogRef.afterClosed().toPromise().then(async () => {
-		// 		if (bfd.okClicked && bfd.isValid() && bfd.hasChanged()) {
-		// 			const auftrag = this._projektService.CurProjekt.auftrag;
-		// 			this.beilage = await this._projektService.SavePDF_as_PoolBeilage(auftrag, bfd.file, bfd.dokumentDefGuid, bfd.beilageGuid);
-		// 		}
-		// 		return resolve(this);
-		// 	});
-		// });
-	// }
-
-	// static async newBeilage(file: File): Promise<BeilageWrapper> {
-	// 	const bfd = new BeilageFileDef
-	// 	bfd.file = file
-	// 	bfd.fileName = file.name
-	// 	const wrapper = new BeilageWrapper();
-	// 	return await wrapper.showDialog(bfd);
-	// }
-
-	editBeilage() {
-		if (this.beilage?.dso && this.beilage?.dokumentDef) {
-			const bfd = new BeilageFileDef
-			bfd.beilageGuid = this.beilage.dso.guid
-			bfd.fileName = this.beilage.dso.originalName
-			bfd.oldfileName = this.beilage.dso.originalName
-			bfd.dokumentDefGuid = this.beilage.dokumentDef.guid
-			bfd.oldDokumentDefGuid = this.beilage.dokumentDef.guid
-
-			// this.showDialog(bfd);
-		}
-	}
-
-	viewBeilage() {
-		if (this.beilage?.dso && this.beilage?.dokumentDef) {
-			const bfd = new BeilageFileDef
-			bfd.beilageGuid = this.beilage.dso.guid
-			bfd.fileName = this.beilage.dso.originalName
-			bfd.oldfileName = this.beilage.dso.originalName
-			bfd.dokumentDefGuid = this.beilage.dokumentDef.guid
-			bfd.oldDokumentDefGuid = this.beilage.dokumentDef.guid
-			bfd.readonly = true
-			// this.showDialog(bfd);
-		}
-	}
-
-}
-
-export class BeilageFileDef {
-	public beilageGuid: string;
-	public file: File;
-	public fileName: string;
-	public dokumentDefGuid: string;
-	public oldfileName: string;
-	public oldDokumentDefGuid: string;
-	public okClicked: boolean;
-	public readonly: boolean;
-	isValid(): boolean {
-		return !!this.file && !!this.dokumentDefGuid;
-	}
-	hasChanged(): boolean {
-		if (!this.file) return true;
-		if (this.fileName !== this.oldfileName) {
-			this.file = new File([this.file], this.fileName, {
-				type: this.file.type,
-				lastModified: this.file.lastModified,
-			});
-		}
-		return (this.fileName !== this.oldfileName || this.dokumentDefGuid !== this.oldDokumentDefGuid);
-	}
-}
-
 
 export const getEmpfaengerLabel = (empfaenger: EmpfaengerDTO): string => {
 	let vals: string[] = []
-	if (empfaenger.stichwort) vals.push(empfaenger.stichwort)
-	if (empfaenger.ort) vals.push(empfaenger.ort)
+	if (empfaenger?.stichwort) vals.push(empfaenger.stichwort)
+	if (empfaenger?.ort) vals.push(empfaenger.ort)
 	return vals.join(', ')
 }
 
-export const getAdressLabel = (adresse: AdresseDTO): string => {
+export const getAdressLabel = (adresse: AdresseDTO | AdresseEntwurfDTO): string => {
 	let vals: string[] = []
 	if (adresse.firma1) vals.push(adresse.firma1)
 	if (adresse.firma2) vals.push(adresse.firma2)
@@ -666,70 +370,11 @@ export const getDateiNamePrint = (originalName: string): string => {
 	if (arr.length > 0) {
 		extension = arr.pop()
 		dateiname = arr.join('.')
-		res = `${dateiname} (${extension})`
+		res = `${dateiname}`
 	} else {
 		res = originalName
 	}
 	return res
-}
-
-export const getFormularTypBeilagenDefs = (dokumentDef: DokumentDef, projekt: EProjektDTO, dokument: DokumentDTO, projektService: ProjektService): BeilageWrapper[] => {
-	const res: BeilageWrapper[] = [];
-	const projektPool: DokumentDTO[] = projekt.auftrag?.dokumente?.filter(b => Guid.equals(b?.dokumentDef?.guid, dokumentDef.guid));
-	const dokumentBeilagen: DokumentDTO[] = dokument?.beilagen?.filter(b => Guid.equals(b?.dokumentDef?.guid, dokumentDef.guid));
-
-	if (dokumentBeilagen) {
-		dokumentBeilagen.forEach(fp => {
-			const beilageDef: BeilageWrapper = new BeilageWrapper();
-			beilageDef.dokumentDef = dokumentDef;
-			beilageDef.beilage = fp;
-			beilageDef.isAttached = true;
-			beilageDef.dokument = dokument;
-			res.push(beilageDef);
-		})
-	}
-	if (projektPool) {
-		projektPool.forEach(p => {
-			const vorhanden = res.find(r => Guid.equals(r.beilage.guid, p.guid));
-			if (!vorhanden) {
-				const beilageDef: BeilageWrapper = new BeilageWrapper();
-				beilageDef.dokumentDef = dokumentDef;
-				beilageDef.beilage = p;
-				beilageDef.isAttached = false;
-				beilageDef.dokument = dokument;
-				res.push(beilageDef);
-			}
-		})
-	}
-	// Nur leere Vorgabe hinzufügen wenn keine gefunden und muss ist
-	if (res.length === 0) {
-		const beilageDef: BeilageWrapper = new BeilageWrapper();
-		beilageDef.dokumentDef = dokumentDef;
-		res.push(beilageDef);
-	}
-
-	return res;
-
-}
-export const getWeitereBeilagenDefs = (projektService: ProjektService, dokument: DokumentDTO, beilageDefs: BeilageWrapper[]): BeilageWrapper[] => {
-	const res: BeilageWrapper[] = [];
-
-	const dok: DokumentDTO = dokument;
-	if (dok) {
-		const weitereBeilagen = dok.beilagen?.filter(b => !beilageDefs.find(r => Guid.equals(r.beilage?.guid, b.guid)) && !Guid.equals(b.dokumentDef.guid, dok.dokumentDef.guid));
-		// const attachments = dok.beilagen.filter(b=> Guid.equals(b.dokumentDef.guid, guid_attachment));
-		weitereBeilagen?.forEach(wb => {
-			const bd = new BeilageWrapper();
-			bd.dokumentDef = { guid: wb.dokumentDef.guid, titel: wb.dokumentDef.longName };
-			bd.beilage = wb;
-			bd.isAttached = true;
-			bd.dokument = dok;
-
-			res.push(bd);
-		});
-	}
-
-	return res;
 }
 
 /**
@@ -795,18 +440,16 @@ export class ProjektService
 		return fakeProjekt as EProjektDTO
 
 	}
-	// public set CurProjekt(projekt: EProjektDTO) {
-	// 	// try
-	// 	// {
-	// 	// 	throw new TypeError("Debugging reasons!");
-	// 	// }
-	// 	// catch(e)
-	// 	// {
-	// 	// 	console.log("Setting ProjekteService::CurProjekt", projekt, e);
-	// 	// }
 
-	// 	this._curProjekt = projekt;
-	// }
+	private _projektBeilagen: ProjektBeilagen = null;
+	public get projektBeilagen(): ProjektBeilagen {
+		return this._projektBeilagen;
+	}
+	public set projektBeilagen(b: ProjektBeilagen) {
+		this._projektBeilagen = b;
+	}
+
+
 	private _curGeschStelle: GeschStelleDTO = null
 	public async CurGeschStelle(): Promise<GeschStelleDTO> {
 		if (!this._curGeschStelle) {
@@ -875,6 +518,7 @@ export class ProjektService
 		private readonly _activatedRoute: ActivatedRoute,
 		private snackBar: MatSnackBar,
 		private _dialog: MatDialog,
+		private entwuerfeService: EntwuerfeService,
 	) {
 		// Reagiere auf Ereignisse des Angular Router.
 		this.router.events.subscribe(
@@ -1061,16 +705,16 @@ export class ProjektService
 		this.Emitter.emit('reloadProjekt')
 	}
 
-	registerLinkBeilage(fn: (linkDTO: DokumentBeilageLinkDTO, insert: boolean) => void) {
+	registerLinkBeilage(fn: (linkDTO: DokumentBeilageLinkDTO, insert: boolean, deleted: boolean) => void) {
 		this.Emitter.on('linkBeilage', fn)
 	}
 
-	unRegisterLinkBeilage(fn: (linkDTO: DokumentBeilageLinkDTO, insert: boolean) => void) {
+	unRegisterLinkBeilage(fn: (linkDTO: DokumentBeilageLinkDTO, insert: boolean, deleted: boolean) => void) {
 		this.Emitter.removeListener('linkBeilage', fn)
 	}
 
-	emitLinkBeilage(beilageDTO: DokumentBeilageLinkDTO, insert: boolean) {
-		this.Emitter.emit('linkBeilage', beilageDTO, insert);
+	emitLinkBeilage(beilageDTO: DokumentBeilageLinkDTO, insert: boolean, deleted: boolean = false) {
+		this.Emitter.emit('linkBeilage', beilageDTO, insert, deleted);
 	}
 
 	registerReloadFormular(fn: any) {
@@ -1084,6 +728,18 @@ export class ProjektService
 	emitReloadFormular() {
 		this.Emitter.removeAllListeners('linkBeilage');
 		this.Emitter.emit('reloadFormular');
+	}
+
+	registerFormularLoadingSpinner(fn: any) {
+		this.Emitter.on('formularLoadingSpinner', fn)
+	}
+
+	unRegisterFormularLoadingSpinner(fn: any) {
+		this.Emitter.removeListener('formularLoadingSpinner', fn)
+	}
+
+	emitFormularLoadingSpinner() {
+		this.Emitter.emit('formularLoadingSpinner');
 	}
 
 	registerFormularReloaded(fn: any) {
@@ -1134,7 +790,7 @@ export class ProjektService
 		this.NotificationbarExpanded = !this.NotificationbarExpanded
 	}
 
-	getProjektTitel(projekt: EProjektDTO): string {
+	getProjektTitel(projekt: EProjektDTO | ProjektEntwurfDTO): string {
 		if (!projekt || !projekt.gebaeude) return ''
 		const g = projekt.gebaeude
 		let res = ''
@@ -1170,7 +826,7 @@ export class ProjektService
 
 	private isMainUrl(): boolean {
 		const url = this.router.url
-		return (url === OriginUrl.dashboard || url === OriginUrl.geschaeftsstellen || url === OriginUrl.projects || url === OriginUrl.verwaltung)
+		return (url === OriginUrl.dashboard || url === OriginUrl.geschaeftsstellen || url === OriginUrl.projekt_liste|| url === OriginUrl.verwaltung)
 	}
 
 	isSearchUrl(): boolean {
@@ -1354,28 +1010,56 @@ export class ProjektService
 			case 'ProduktlizenzenComponent':
 				return ProduktLizenzenItem;
 
+			case 'Entwuerfe':
+				return EntwuerfeItem;
+
 			default:
 				return null;
 		}
 	}
 
-	// public async LoadProjekt(guidauftrag: string) {
-	// 	this.CurProjekt = null
-	// 	this.CurAuftragDef = null
-
-	// 	const projekt = await this.projekteService.apiV1EProjekteGuidGet(guidauftrag).pipe(
-	// 		catchError((error) => {
-	// 			console.error('Fehler beim Laden des Projekts', error);
-	// 			return throwError(error);
-	// 		}),
-	// 	).toPromise()
-	// 	this.CurProjekt = projekt
-	// 	console.log('Projekt', projekt)
-
-	// 	const auftragdef = await this.GetAuftragsDef(projekt.auftrag.guiD_AuftragDef)
-	// 	this.CurAuftragDef = auftragdef
-	// 	console.log('AuftragDef', auftragdef)
+	// public async LoadProjektDTO(auftragGuid: string): Promise<EProjektDTO> {
+		// return await this.projekteService.apiV1EProjekteGuidGet(auftragGuid).pipe(
+		// 	catchError((error) => {
+		// 		console.error('Fehler beim Laden des Projekts', error);
+		// 		return throwError(error);
+		// 	}),
+		// ).toPromise();
 	// }
+
+	public async LoadProjekt(guidauftrag: string) {
+		// changed-designer 
+		if (!this.projektBeilagen) {
+			this.projektBeilagen = new ProjektBeilagen()
+		}
+
+		// const oldAuftrag = this.CurProjekt?.auftrag?.guid
+		// this.CurProjekt = null
+		// this.CurAuftragDef = null
+		// this.ResetCurEmpfaenger()
+		// this._curDokumentChoice$ = null
+		// if(this.projektBeilagen)
+		// 	this.projektBeilagen.beilagen = null;
+
+		// const projekt = await this.LoadProjektDTO(guidauftrag);
+		// this.CurProjekt = projekt
+		// console.log('Projekt', projekt)
+		// console.log('Empfänger', await this.GetCurEmpfaenger())
+
+
+		// if (!this.CurAuftragDef || projekt.auftrag?.guid !== oldAuftrag) {
+		// 	this.CurAuftragDef = await this.GetAuftragsDef(projekt.auftrag.guiD_AuftragDef)
+
+		// }
+		// console.log('AuftragDef', this.CurAuftragDef)
+
+		// if (!this.projektBeilagen) {
+		// 	this.projektBeilagen = new ProjektBeilagen()
+		// }
+		// await this.projektBeilagen.Init()
+		// console.log('projektBeilagen', this.projektBeilagen)
+
+	}
 
 	public async SaveAuftrag(auftrag: EAuftragDTO): Promise<EAuftragDTO> {
 		return this.auftraegeService.apiV1EAuftraegePut(auftrag).pipe(map(
@@ -1488,8 +1172,16 @@ export class ProjektService
 		return dto;
 	}
 
+	public async DeleteDokument(dto: DokumentDTO, force: boolean = false): Promise<DokumentDTO> {
+		return this.dokumenteService.apiV1DokumenteGuidDelete(dto.guid, force).toPromise();
+	}
+
+	public async DeleteAktion(aw: AktionsWrapper): Promise<void> {
+		return this.dokumenteService.apiV1DokumenteGuidDelete(aw.aktion.guid).toPromise();
+	}
+
 	public async DownloadFormular(dokument: DokumentDTO, pdfFileName?: string) {
-		this.dokumenteService.apiV1DokumentePrintPost(dokument)
+		this.dokumenteService.apiV1DokumentePrintPost(null, dokument)
 			.toPromise()
 			.then((value) => {
 				const file = window.URL.createObjectURL(value);
@@ -1757,13 +1449,15 @@ export class ProjektService
 			await this.SavePDF(beilage.dso.guid, file);
 		}
 
-		const dokumentPool: EAuftragDokumentPoolDTO = {
-			mandant: auftrag.mandant,
-			guidAuftrag: auftrag.guid,
-			guidBeilage: beilage.guid
-		}
+		if(!auftrag.dokumente?.find(d=>Guid.equals(d.guid, guidBeilage))){
+			const dokumentPool: EAuftragDokumentPoolDTO = {
+				mandant: auftrag.mandant,
+				guidAuftrag: auftrag.guid,
+				guidBeilage: beilage.guid
+			}
 
-		await this.Save_Dokument_Pool(dokumentPool);
+			await this.Save_Dokument_Pool(dokumentPool);
+		}
 
 		beilage = await this.LoadFormular(beilage.guid, true);
 
@@ -1814,19 +1508,19 @@ export class ProjektService
 	public Delete_Dokument_Pool_Beilage(beilage_guid: string, projekt: EProjektDTO): Promise<EAuftragDokumentPoolDTO> {
 		return this.auftraegeService.apiV1EAuftraegeDokumentenpoolBeilageGuidDelete(beilage_guid).pipe(map(
 			(data) => {
+				projekt.auftrag.dokumente = projekt.auftrag.dokumente.filter(b => !Guid.equals(b.guid, beilage_guid));
 				return data;
 			}),
 			catchError(e => {
-				const linked = projekt.auftrag.dokumente.filter(b => b.guid === beilage_guid)
-				if (linked.length > 0) {
-					const msg = translate(marker('comp_project_detail.msg_linked'))
+				const poolBeilage = projekt.auftrag.dokumente.filter(b => Guid.equals(b.guid, beilage_guid))
+				if (poolBeilage.length > 0) {
+					const msg = translate(marker('comp_projekt_detail.msg_linked'))
 					alert(msg)
 					return
 				}
 				console.error('Fehler beim Löschen aus dem Dokumenten-Pool', e);
 				return throwError(e);
 			})).toPromise() as Promise<EAuftragDokumentPoolDTO>
-
 	}
 
 
@@ -1893,7 +1587,12 @@ export class ProjektService
 	public SendFormular(receiver: string, dokument: DokumentDTO): Promise<DokumentDTO> {
 		console.trace(receiver)
 		console.trace(JSON.stringify(dokument))
-		return this.dokumenteService.apiV1DokumenteSendPost(receiver, dokument).pipe(map(
+		const sendDokumentRequest :  SendDokumentRequest = {
+			aktion: this.GetCurAktion(),
+			dokument: dokument,
+			empfaenger: receiver,
+		};
+		return this.dokumenteService.apiV1DokumenteSendPost(sendDokumentRequest).pipe(map(
 			(data) => {
 				return data;
 			}),
@@ -1960,9 +1659,24 @@ export class ProjektService
 			})).toPromise() as Promise<EmpfaengerDTO[]>
 	}
 
-	public GetEmpfaenger_pro_Kategorie = (kat: string): Promise<EmpfaengerDTO[]> => {
-		return this.empfaengerService.apiV1EmpfaengerKategorieGet(kat).pipe(map(
+	// public GetEmpfaenger_pro_Kategorie = (kat: string): Promise<EmpfaengerDTO[]> => {
+	// 	return this.empfaengerService.apiV1EmpfaengerKategorieGet(kat, 0, 650).pipe(map(
+	// 		(data) => {
+	// 			return data;
+	// 		}),
+	// 		catchError(e => {
+	// 			console.error('Fehler bei der Abfrage Empfänger suchen', e);
+	// 			return throwError(e);
+	// 		})).toPromise() as Promise<EmpfaengerDTO[]>
+	// }
+
+	public GetEmpfaenger_Suchen = (text: string, kat_guid?: string): Promise<EmpfaengerDTO[]> => {
+		return this.empfaengerService.apiV1EmpfaengerSuchenGet(text).pipe(map(
 			(data) => {
+				if (data && kat_guid) {
+					data = data.filter(e => Guid.equals(e.kategorie?.guid, kat_guid))
+				}
+				// console.log('suche', data)
 				return data;
 			}),
 			catchError(e => {
@@ -1971,23 +1685,52 @@ export class ProjektService
 			})).toPromise() as Promise<EmpfaengerDTO[]>
 	}
 
-	public GetEmpfaenger_Guid = (guid: string): Promise<EmpfaengerDTO> => {
+	protected InternalGetEmpfaenger_Guid(guid: string): Observable<EmpfaengerDTO> {
 		return this.empfaengerService.apiV1EmpfaengerGuidGet(guid).pipe(map(
 			(data) => {
 				return data;
 			}),
 			catchError(e => {
 				console.error('Fehler bei der Abfragen Empfänger pro Guid', e);
-				return throwError(e);
-			})).toPromise() as Promise<EmpfaengerDTO>
+				return of(null);
+			}));
+	}
+
+	public async GetEmpfaenger_Guid(guid: string): Promise<EmpfaengerDTO> {
+		const empfaenger = (await this.GetCurEmpfaenger()).find(e=>Guid.equals(e?.guid, guid));
+		if(empfaenger)
+			return empfaenger;
+		else
+			return this.InternalGetEmpfaenger_Guid(guid).toPromise() as Promise<EmpfaengerDTO>;
+	}
+
+	public async GetEmpfaenger_Leistung(leistung: ELeistungDTO): Promise<EmpfaengerDTO> {
+		if (!this.CurAuftragDef) {
+			console.error('CurAuftragDef nicht vorhanden')
+			return
+		}
+		let res: EmpfaengerDTO = null
+		let aktionsDef: AktionsDefDTO = null
+		this.CurAuftragDef.leistungsDefs.forEach(ld => {
+			ld.aktionsDefs.forEach(ad => {
+				if (Guid.equals(ad.guid,leistung.guiD_LeistungDef)) {
+					aktionsDef = ad
+				}
+			})
+		})
+		if (aktionsDef && aktionsDef.aktionsDoksDefs?.length > 0 && aktionsDef.aktionsDoksDefs[0].dokumentKat) {
+			const empfaenger = await this.GetCurEmpfaenger()
+			res = empfaenger?.find(e=>Guid.equals(e?.kategorie?.guid, aktionsDef.aktionsDoksDefs[0].dokumentKat?.empfaengerKat?.guid));
+		}
+		if (!res) {
+			console.error('Empfaenger für Leistung nicht gefunden!', leistung.id)
+		}
+		return res
 	}
 
 
 	public GetEmpfaengerVonCurLeistung = (): Promise<EmpfaengerDTO> => {
-		const leistung: ELeistungDTO = this.GetCurLeistung()
-		if (leistung) {
-			return this.GetEmpfaenger_Guid(leistung?.empfaenger)
-		}
+		return this.GetEmpfaenger_Leistung(this.GetCurLeistung())
 	}
 
 	public async GetEmpfaenger_cur_Projekt(): Promise<IEmpfaengerKategorienItem[]> {
@@ -1996,20 +1739,32 @@ export class ProjektService
 		const empfaengerKategorienItems = EmpfaengerKategorienItems()
 
 		const res: IEmpfaengerKategorienItem[] = []
-		this.CurProjekt?.auftrag?.phasen.forEach(p => p.leistungen.forEach(l => {
-			if (l.empfaenger && l.empfaengerKategorie) {
-				const item = empfaengerKategorienItems[l.empfaengerKategorie.toLowerCase()]
-				if (item && item.hasEmpfaenger) {
-					if (res.findIndex(i => i.guid === l.empfaenger) === -1) {
-						res.push({
-							titel: item.titel,
-							guid: l.empfaenger,
-							items: null,
-						})
-					}
-				}
+		const empfaenger = await this.GetCurEmpfaenger()
+		empfaenger.forEach(e => {
+			const item = empfaengerKategorienItems[e?.kategorie?.guid?.toLowerCase()]
+			if (item && item.hasEmpfaenger) {
+				res.push({
+					titel: item.titel,
+					guid: e.guid,
+					items: null,
+				})
 			}
-		}))
+		})
+
+		// this.CurProjekt?.auftrag?.phasen.forEach(p => p.leistungen.forEach(l => {
+		// 	if (l.empfaenger && l.empfaengerKategorie) {
+		// 		const item = empfaengerKategorienItems[l.empfaengerKategorie.toLowerCase()]
+		// 		if (item && item.hasEmpfaenger) {
+		// 			if (res.findIndex(i => i.guid === l.empfaenger) === -1) {
+		// 				res.push({
+		// 					titel: item.titel,
+		// 					guid: l.empfaenger,
+		// 					items: null,
+		// 				})
+		// 			}
+		// 		}
+		// 	}
+		// }))
 		for (let item of res) {
 			const empf = await this.GetEmpfaenger_Guid(item.guid)
 			item.label = getEmpfaengerLabel(empf)
@@ -2018,32 +1773,38 @@ export class ProjektService
 	}
 
 	public GetEmpfaengerKategorien_AuftragsDef(auftragsDef: AuftragsDefDTO): string[] {
-		const empf: string[] = []
+		const empf: Guid[] = []
 		auftragsDef.leistungsDefs.forEach(l => {
 			l.aktionsDefs.forEach(a => {
 				a.aktionsDoksDefs.forEach(ad => {
-					if (empf.indexOf(ad.empfaengerKat) === -1) {
-						empf.push(ad.empfaengerKat)
-					}
+					const guid = Guid.parse(ad.dokumentKat.empfaengerKat.guid)
+					if(!empf.find(g=>g.equals(guid)))
+						empf.push(guid);
 				})
 			})
 		})
-		return empf
+		return empf.map(g=>g.toString());
 	}
 
-	public GetEmpfaengerKategorien_Projekt(auftrag: EAuftragDTO): string[] {
-		const kat_guids = []
+	// public GetEmpfaengerKategorien_Projekt(auftrag: EAuftragDTO): string[] {
+	// 	let kat_guids = []
+	// 	this.GetCurEmpfaenger().then(empf => {
+	// 		kat_guids = empf.map(e => e.guid)
+	// 		return kat_guids
+	// 	})
+	// 	// const kat_guids = []
 
-		// empfängerkategorien, die im Projekt definiert sind, holen
-		auftrag?.phasen?.forEach(p => p.leistungen?.forEach(async l => {
-			const kat = l.empfaengerKategorie?.toLowerCase()
-			if (kat_guids.indexOf(kat) === -1) {
-				kat_guids.push(kat)
-			}
-		}))
+	// 	// // TODO: Empfänger nur noch im Auftrag speichern
+	// 	// // empfängerkategorien, die im Projekt definiert sind, holen
+	// 	// auftrag?.phasen?.forEach(p => p.leistungen?.forEach(async l => {
+	// 	// 	const kat = l.empfaengerKategorie?.toLowerCase()
+	// 	// 	if (kat_guids.indexOf(kat) === -1) {
+	// 	// 		kat_guids.push(kat)
+	// 	// 	}
+	// 	// }))
 
-		return kat_guids
-	}
+	// 	// return kat_guids
+	// }
 
 	public EmpfaengerKategorie2Empfaenger(empfaengerKategorie: string): string {
 		if (!this.CurProjekt) return ''
@@ -2154,25 +1915,27 @@ export class ProjektService
 			})).toPromise() as Promise<number>
 	}
 
-	public Lizenz_Decrement_Project = (): Promise<ProduktLizenzDTO> => {
-		if (!this.CurIdentity || !this.CurIdentity.holding) {
-			return Promise.resolve(null)
-		}
+	// public Lizenz_Decrement_Project = (): Promise<ProduktLizenzDTO> => {
+	// 	if (!this.CurIdentity || !this.CurIdentity.holding) {
+	// 		return Promise.resolve(null)
+	// 	}
 
-		return this.produktLizenzenService.apiV1ProduktLizenzenDecrementPut(this.CurIdentity.holding).pipe(map(
-			(data) => {
-				return data;
-			}),
-			catchError(e => {
-				console.error('Fehler beim Dekrementieren des Projektes in der Lizenz', e);
-				return throwError(e);
-			})).toPromise() as Promise<ProduktLizenzDTO>
-	}
+	// 	return this.produktLizenzenService.apiV1ProduktLizenzenDecrementPut(this.CurIdentity.holding).pipe(map(
+	// 		(data) => {
+	// 			return data;
+	// 		}),
+	// 		catchError(e => {
+	// 			console.error('Fehler beim Dekrementieren des Projektes in der Lizenz', e);
+	// 			return throwError(e);
+	// 		})).toPromise() as Promise<ProduktLizenzDTO>
+	// }
 
 
 	public geoApiStrasse = (suchtext: string): Promise<any[]> => {
 		return this.http.get(`https://api3.geo.admin.ch/rest/services/api/MapServer/find?layer=ch.swisstopo.amtliches-strassenverzeichnis&searchText=${suchtext}&searchField=label&returnGeometry=false`).pipe(map(
 			(data: any) => {
+				console.info(`Request: https://api3.geo.admin.ch/rest/services/api/MapServer/find?layer=ch.swisstopo.amtliches-strassenverzeichnis&searchText=${suchtext}&searchField=label&returnGeometry=false`)
+				console.info(`Result: `, data)
 				return data.results;
 			}),
 			catchError(e => {
@@ -2352,7 +2115,80 @@ export class ProjektService
 			})).toPromise() as Promise<AuftragsDefDTO>
 	}
 
-	public GetDocChoiceDef(auftragdef: string, empfaenger: string|string[]): Promise<DokumentChoiceDTO> {
+	private _curEmpfaenger$: Observable<EmpfaengerDTO[]> = null;
+
+	public async GetCurEmpfaenger(): Promise<EmpfaengerDTO[]> {
+		if (!this.CurProjekt) {
+			console.error('CurProjekt nicht definiert');
+			return
+		}
+
+		if (this._curEmpfaenger$ == null) {
+			const observables: Observable<EmpfaengerDTO>[] = [];
+
+			if (this.CurProjekt.auftrag.guidEmpfaengerGemeinde) {
+				observables.push(this.InternalGetEmpfaenger_Guid(this.CurProjekt.auftrag.guidEmpfaengerGemeinde))
+			}
+			if (this.CurProjekt.auftrag.guidEmpfaengerVnb) {
+				observables.push(this.InternalGetEmpfaenger_Guid(this.CurProjekt.auftrag.guidEmpfaengerVnb))
+			}
+			if (this.CurProjekt.auftrag.guidEmpfaengerPronovo) {
+				observables.push(this.InternalGetEmpfaenger_Guid(this.CurProjekt.auftrag.guidEmpfaengerPronovo))
+			}
+
+			this._curEmpfaenger$ = merge(...observables).pipe(
+				// tap(x => console.log('Before toArray:', x)),
+				toArray(),
+				// tap(x => console.log('After toArray:', x)),
+				shareReplay(1)
+			);
+		}
+
+		return this._curEmpfaenger$.toPromise();
+	}
+
+	public ResetCurEmpfaenger()  {
+		this._curEmpfaenger$ = null;
+	}
+
+	public ResetCurDocChoice()  {
+		this._curDokumentChoice$ = null;
+	}
+
+
+	private _curDokumentChoice$: Observable<DokumentChoiceDTO> = null;
+
+	public async GetCurDocChoiceDef(): Promise<DokumentChoiceDTO> {
+		if (!this.CurProjekt) {
+			console.error('CurProjekt nicht definiert');
+			return
+		}
+		if (!this.CurAuftragDef) {
+			console.error('CurAuftragDef nicht definiert');
+			return
+		}
+
+		if(this._curDokumentChoice$ == null){
+
+			// const empfaenger = await this.GetCurEmpfaenger()
+			// const empfaenger_guid = empfaenger.map(e => e.guid)
+
+			// this._curDokumentChoice = await this.GetDocChoiceDef(this.CurAuftragDef.guid, empfaenger_guid)
+
+			// const empfGuids = await (await this.GetCurEmpfaenger()).map(e => e.guid);
+			// this._curDokumentChoice$ = from(this.InternalGetDocChoiceDef(this.CurAuftragDef.guid, empfGuids)).pipe(shareReplay(1));
+
+			this._curDokumentChoice$ =
+				from(this.GetCurEmpfaenger()).pipe(
+					switchMap(x => this.InternalGetDocChoiceDef(this.CurAuftragDef.guid, x.map(e => e?.guid))),
+					shareReplay(1)
+				);
+		}
+
+		return this._curDokumentChoice$.toPromise();
+	}
+
+	protected InternalGetDocChoiceDef(auftragdef: string, empfaenger: string|string[]): Observable<DokumentChoiceDTO> {
 		// Übergib Empfänger-Arrays wie sie sind, einzelne Empfänger werden in ein Array verpackt.
 		empfaenger = <string[]>(Array.isArray(empfaenger) ? empfaenger : [ empfaenger ]);
 
@@ -2362,25 +2198,52 @@ export class ProjektService
 			}),
 			catchError(e => {
 				console.error('Fehler beim Abfragen der Doc-Choice', e);
-				return throwError(e);
-			})).toPromise() as Promise<DokumentChoiceDTO>
+				return of(null);
+			}));
 	}
 
-	private _allDokumentDefs: DokumentDefDTO[];
-	public get allDokumentDefs(): DokumentDefDTO[] {
-		return this._allDokumentDefs;
+	public GetDocChoiceDef(auftragdef: string, empfaenger: string|string[]): Promise<DokumentChoiceDTO> {
+		return this.InternalGetDocChoiceDef(auftragdef, empfaenger).toPromise();
 	}
+
+	private _dokumentDefs$: Observable<DokumentDefDTO[]> = null;
 
 	public GetDocDefs(): Promise<DokumentDefDTO[]> {
-		return this.definitionenService.apiV1DefinitionenDocDefsGet().pipe(map(
-			(data) => {
-				this._allDokumentDefs = data;
-				return data;
-			}),
-			catchError(e => {
-				console.error('Fehler beim Abfragen der Doc-Choice', e);
-				return throwError(e);
-			})).toPromise() as Promise<DokumentDefDTO[]>
+		if (this._dokumentDefs$ == null) {
+			this._dokumentDefs$ = this.definitionenService.apiV1DefinitionenDocDefsGet().pipe(
+					catchError(e => {
+						console.error('Fehler beim Abfragen der Doc-Choice', e);
+						return of(null);
+					}),
+					shareReplay(1)
+				);
+		}
+
+		return this._dokumentDefs$.toPromise();
+	}
+
+	public async getDokumentBeilageSchemaKey(dokumentGuid: string, beilageGuid: string ) : Promise<number> {
+		return await this.dokumenteService.apiV1DokumenteAttachmentsSchemakeyGet(dokumentGuid, beilageGuid).toPromise();
+	}
+
+	public async GetDokumentDefApp(guid: string): Promise<DokumentDefDTOApp> {
+		const zentralDokDefs = await this.GetDocDefs();
+		const zentralDokDef = zentralDokDefs.find(dd=>Guid.equals(dd.guid, guid));
+		if(zentralDokDef){
+			const appDokDef: DokumentDefDTOApp = {
+				guid: zentralDokDef.guid,
+				baseGUID: zentralDokDef.parent,
+				category: zentralDokDef.category.guid,
+				description: zentralDokDef.description,
+				issuer: zentralDokDef.issuer,
+				languageCode: zentralDokDef.languageCode,
+				longName: zentralDokDef.longName,
+				name: zentralDokDef.name,
+				shortName: zentralDokDef.shortName,
+			}
+			return appDokDef;
+		}
+		return undefined;
 	}
 
 	private _allDokumentKats: DokumentKatDTO[];
@@ -2413,6 +2276,10 @@ export class ProjektService
 		{
 			return Promise.resolve(this._allDokumentKats);
 		}
+	}
+
+	public GetDokKat(guid: string){
+		return this._allDokumentKats.find(dk=>Guid.equals(dk.guid, guid));
 	}
 
 	get DefLanguage(): string {
@@ -2450,16 +2317,17 @@ export class ProjektService
 			}
 		}
 
-		return this.translationService.translate(marker('page_project_detail.geraete_label'), {modell, anzahl: geraet.anzahl.toString(), hersteller: geraet.hersteller, geraet: geraet.bezeichnung}) 
+		return this.translationService.translate(marker('page_projekt_detail.geraete_label'), {modell, anzahl: geraet.anzahl.toString(), hersteller: geraet.hersteller, geraet: geraet.bezeichnung})
 	}
 
-	private edit_Project(data: IDialogBoxDataProjektAbschnitt,  height: string, cbAfterSave?: any) {
+	private edit_Project(data: IDialogBoxDataProjektAbschnitt, width: string, height: string, cbAfterSave?: any) {
 
 		// const dialogRef = this.dialog.open(
-		// 	ProjectDetailEditDialogComponent, {
+		// 	ProjektDetailEditDialogComponent, {
+		// 	width,
 		// 	height,
 		// 	maxHeight: '80vh',
-		// 	minWidth: '50vw',
+		// 	maxWidth: '90vw',
 		// 	position: {
 		// 		top: '9em',
 		// 	},
@@ -2481,121 +2349,57 @@ export class ProjektService
 		const data: IDialogBoxDataProjektAbschnitt = {
 			abschnitt: 'auftrag',
 		}
-		this.edit_Project(data, '600px', cbAfterSave)
+		this.edit_Project(data, '1200px', '550px', cbAfterSave)
 	}
 
 	public editDialogGebaeude(cbAfterSave?: any) {
 		const data: IDialogBoxDataProjektAbschnitt = {
 			abschnitt: 'gebaude',
 		}
-		this.edit_Project(data, '1000px', cbAfterSave)
+		this.edit_Project(data, '1200px', '1000px', cbAfterSave)
 	}
 
 	public editDialogAdressen(cbAfterSave?: any) {
 		const data: IDialogBoxDataProjektAbschnitt = {
 			abschnitt: 'adressen',
 		}
-		this.edit_Project(data, '1000px', cbAfterSave)
+		this.edit_Project(data, '1200px',  '1000px', cbAfterSave)
 	}
 
 	public editDialogEmpfaenger(cbAfterSave?: any) {
 		const data: IDialogBoxDataProjektAbschnitt = {
 			abschnitt: 'empfaenger',
 		}
-		this.edit_Project(data, '500px', cbAfterSave)
+		this.edit_Project(data, '1200px', '450px', cbAfterSave)
 	}
 
-	// public editDialogAnlage(cbAfterSave?: any, anlage?: EAnlageDTO) {
-	// 	const data: IDialogBoxData = {
-	// 		// abschnitt: 'anlage',
-	// 		values: anlage,
-	// 	}
+	public editDialogAnlage(cbAfterSave?: any, anlage?: EAnlageDTO) {
+		const data: IDialogBoxDataProjektAbschnitt = {
+			abschnitt: 'anlage',
+			anlage
+		}
+		this.edit_Project(data, '1200px', '640px', cbAfterSave)
 
-	// 	const dialogRef = this.dialog.open(ProjectAnlageAnlageEditDialogComponent, {
-	// 		width: '1200px',
-	// 		height: '750px',
-	// 		data: data
-	// 	});
-
-	// 	dialogRef.afterClosed().subscribe(() => {
-	// 		if (data.okClicked) {
-	// 			const msg = this._translationService.translate(
-	// 				'comp_detail_edit.gespeichert', {
-	// 				name: this._translationService.translate(marker('comp_anlage_panel.title_anlagen'))
-	// 			});
-	// 			this.snackBar.open(msg, 'OK', {
-	// 				duration: 2000,
-	// 			});
-	// 			if (cbAfterSave) {
-	// 				cbAfterSave()
-	// 			}
-	// 		}
-	// 	});
-	// }
+	}
 
 
-	// public editDialogGeraete(cbAfterSave?: any) {
-	// 	if (!this.CurProjekt) {
-	// 		console.error('CurProjekt nicht definiert!')
-	// 		return
-	// 	}
-	// 	mapDatenToJSON(this.CurProjekt.gebaeude);
-	// 	const copyGebaeude: GebaeudeDTO = cloneDeep(this.CurProjekt.gebaeude)
+	public editDialogGeraete(cbAfterSave?: any) {
+		const data: IDialogBoxDataProjektAbschnitt = {
+			abschnitt: 'geraete',
+		}
+		this.edit_Project(data, '1200px', '1000px', cbAfterSave)
+	}
 
 
-	// 	const data: IDialogBoxData = {
-	// 		// titel: marker('comp_edit_device.title_edit_devices'),
-	// 		schema: geraete_schema('geraete'),
-	// 		values: copyGebaeude,
-	// 		showOkButton: true,
-	// 		showCancelButton: true
-	// 	}
-
-	// 	this.Show_DialogBox(data, async (data: IDialogBoxData) => {
-	// 		if (data.okClicked) {
-	// 			try {
-	// 				//Geräte speichern
-	// 				if (copyGebaeude.geraete) {
-	// 					mapDatenToString(copyGebaeude);
-	// 					await this.SaveGeraete(copyGebaeude);
-	// 				}
-
-	// 				//Geräte löschen
-	// 				for (let geraet of this.CurProjekt.gebaeude.geraete) {
-	// 					const vorh = copyGebaeude.geraete.find(g => g.guid === geraet.guid)
-	// 					if (!vorh) {
-	// 						await this.DeleteGeraet(geraet.guid);
-	// 					}
-	// 				}
-	// 				const msg = this._translationService.translate(
-	// 					'comp_detail_edit.gespeichert', {
-	// 					name: this._translationService.translate('comp_project_detail_edit.title_devices')
-	// 				})
-
-	// 				this.snackBar.open(msg, 'OK', {
-	// 					duration: 2000,
-	// 				});
-	// 				if (cbAfterSave) {
-	// 					cbAfterSave()
-	// 				}
-	// 			} catch (error) {
-	// 				console.error('Fehler beim speichern der Geräte', error)
-	// 			}
-	// 		}
-	// 	})
-
-	// }
-
-
-	// public Show_DialogBox(data: IDialogBoxData, cb?: any) {
-	// 	const dialogRef = this.dialog.open(DialogAllgemeinComponent, {
-	// 		maxHeight: '90vh',
-	// 		data: data
-	// 	});
-	// 	dialogRef.afterClosed().subscribe(() => {
-	// 		if (cb) cb(data)
-	// 	});
-	// }
+	public Show_DialogBox(data: IDialogBoxData, cb?: any) {
+		// changed-designer const dialogRef = this.dialog.open(DialogAllgemeinComponent, {
+		// 	maxHeight: '90vh',
+		// 	data: data
+		// });
+		// dialogRef.afterClosed().subscribe(() => {
+		// 	if (cb) cb(data)
+		// });
+	}
 
 	public findePhase(dokument: DokumentDTO): EAuftragPhaseDTO {
 		if (!this.CurProjekt)
@@ -2669,4 +2473,65 @@ export class ProjektService
 		const dok = doks.find(d => d.beilagen?.find(b => Guid.equals(b?.guid, beilage?.guid)));
 		return dok;
 	}
+
+	public getObjektTypLabel(objektTyp: ObjektTyp) :string {
+		if (objektTyp === ObjektTyp.Projekt) {
+			return tr_key(marker('enum_entwuerfe.projekt'))
+		}
+		return ''
+	}
+
+
+	public LoadEntwurfsListe = (limit: number, skip: number): Observable<Array<EntwurfDTO>> => {
+		return this.entwuerfeService.apiV1EntwuerfeListGet(limit, skip)
+	}
+
+	public LoadEntwurf = (guid: string): Promise<EntwurfDTO> => {
+		return this.entwuerfeService.apiV1EntwuerfeEntwurfGuidGet(guid).pipe(map(
+			(data) => {
+				return data;
+			}),
+			catchError(e => {
+				console.error('Fehler beim Laden des Entwurfs', e);
+				return throwError(e);
+			})).toPromise() as Promise<EntwurfDTO>
+	}
+
+	public SaveEntwurf = (entwurfDTO: EntwurfDTO): Promise<EntwurfDTO> => {
+		return this.entwuerfeService.apiV1EntwuerfeEntwurfPost(entwurfDTO).pipe(map(
+			(data) => {
+				return data;
+			}),
+			catchError(e => {
+				console.error('Fehler beim Speichern des Entwurfs', e);
+				return throwError(e);
+			})).toPromise() as Promise<EntwurfDTO>
+	}
+
+
+	public DeleteEntwurf = (guid: string): Promise<EntwurfDTO> => {
+		return this.entwuerfeService.apiV1EntwuerfeEntwurfGuidDelete(guid).pipe(map(
+			(data) => {
+				return data;
+			}),
+			catchError(e => {
+				console.error('Fehler beim Löschen des Entwurfs', e);
+				return throwError(e);
+			})).toPromise() as Promise<EntwurfDTO>
+	}
+
+	public ErstelleProjektAusEntwurf = (entwurfDTO: EntwurfDTO): Promise<EProjektDTO> => {
+		return this.entwuerfeService.apiV1EntwuerfeProjektPost(entwurfDTO).pipe(map(
+			(data) => {
+				return data;
+			}),
+			catchError(e => {
+				console.error('Fehler beim Speichern des Projekts aus Entwurf', e);
+				return throwError(e);
+			})).toPromise() as Promise<EProjektDTO>
+	}
+
+
+
+
 }

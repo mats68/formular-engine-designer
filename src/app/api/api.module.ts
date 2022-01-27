@@ -15,6 +15,7 @@ import { EFOnlineApiService } from './api/eFOnlineApi.service';
 import { ELeistungenService } from './api/eLeistungen.service';
 import { EProjekteService } from './api/eProjekte.service';
 import { EmpfaengerService } from './api/empfaenger.service';
+import { EntwuerfeService } from './api/entwuerfe.service';
 import { GebaeudeService } from './api/gebaeude.service';
 import { GeschStellenService } from './api/geschStellen.service';
 import { HoldingsService } from './api/holdings.service';

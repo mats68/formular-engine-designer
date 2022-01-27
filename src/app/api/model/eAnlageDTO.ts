@@ -12,7 +12,7 @@
 
 
 /**
- * Diese Klasse repräsentiert ein Data-Transfer-Object für Elektro-Anlagen Entitäten.
+ * Diese Klasse repräsentiert ein Datentransferobjekt für Elektro-Anlagen Entitäten.
  */
 export interface EAnlageDTO { 
     /**

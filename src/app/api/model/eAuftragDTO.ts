@@ -15,7 +15,7 @@ import { EAuftragPhaseDTO } from './eAuftragPhaseDTO';
 
 
 /**
- * Diese Klasse repräsentiert ein Data-Transfer-Object für Elektro-Aufträge Entitäten.
+ * Diese Klasse repräsentiert ein Datentransferobjekt für Elektro-Aufträge Entitäten.
  */
 export interface EAuftragDTO { 
     /**
@@ -37,7 +37,7 @@ export interface EAuftragDTO {
     /**
      * Auftragsnummer vergeben vom Anwender.
      */
-    auftragsNr: string;
+    auftragsNr?: string | null;
     /**
      * Internes Stichwort für Ausdruck auf Formularen.
      */

@@ -190,7 +190,6 @@ export class FormulareService implements IFormulareAPI
 				this.onChanged(data.formular, data.value);
 			}
 		);
-		this._projektService.registerLinkBeilage((fp: DokumentBeilageLinkDTO) => {this.onLinkBeilage(fp); });
 
 		setTimeout(()=>this.checkForSaveToDB(), 500);
 	}
@@ -438,9 +437,6 @@ export class FormulareService implements IFormulareAPI
 	//#endregion
 
 	//#region Öffentliche Methoden.
-
-	async onLinkBeilage(formularPool: DokumentBeilageLinkDTO) {
-	}
 
 	public async loadFormularAsync(
 		formular: string | Guid | DokumentDTO,

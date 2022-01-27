@@ -12,7 +12,7 @@
 
 
 /**
- * Diese Klasse repräsentiert ein Data-Transfer-Object für Elektro-Aufträge Entitäten.
+ * Diese Klasse repräsentiert ein Datentransferobjekt für Elektro-Aufträge Entitäten.
  */
 export interface EProjektViewDTO { 
     /**
@@ -38,7 +38,7 @@ export interface EProjektViewDTO {
     /**
      * Auftragsnummer vergeben vom Anwender.
      */
-    auftragsNr: string;
+    auftragsNr?: string | null;
     /**
      * Gebäudenummer.
      */

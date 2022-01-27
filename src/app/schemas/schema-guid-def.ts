@@ -1,20 +1,19 @@
-export const guid_baugesuch = 'a4ea2ae1-43a2-4da6-acce-d4f0b77bfa48'
-export const guid_attachment = '817f136e-58d6-4254-86ba-408fc4907814'
 
+export const SCHEMA_form = 'fadd3da8-5c73-42e0-ac6e-2c237c0dcf90';
+export const BEILAGE_form = '817f136e-58d6-4254-86ba-408fc4907814'
 export const SITUATIONSPLAN_form = "2f5ccbbc-db19-4ce7-a1a3-b8ac7a6435e4";
 export const FASSADENPLAN_form = "60f61104-9d07-4e92-bfae-886e625fea0b";
-export const ANTIREFLEXIONSBEHANDLUNG_FR_form = '99b5dbf9-afcd-402a-9720-91e472a744e4';
-export const BAUBESCHRIEB_DE_form = '6d718cad-013c-44e9-9964-8c5dab6c414e';
-export const DACHAUFSICHT_DE_form = '0bc9cd92-b722-49e8-903a-3824f9e1e955';
+export const ANTIREFLEXIONSBEHANDLUNG_form = '99b5dbf9-afcd-402a-9720-91e472a744e4';
+export const BAUBESCHRIEB_form = '6d718cad-013c-44e9-9964-8c5dab6c414e';
+export const DACHAUFSICHT_form = '0bc9cd92-b722-49e8-903a-3824f9e1e955';
 export const EIGENEINGABE_DE_form = '6b044ad5-d5c3-4666-85fd-7d8b33c73c41';
 export const FOTO_form = '6bf443d4-7f18-4993-b215-3518523d3c89';
 export const GIEBELFASSADE_DE_form = 'caeaadac-50fb-41c3-b550-e642e690d411';
-export const GRUNDRISSPLAN_DE_form = '42291de8-58ff-428a-843f-f10780162f16';
-export const PROJEKTBESCHRIEB_DE_form = 'cdb96378-4887-442f-944d-e16969729245';
-export const SCHNITTPLAN_DE_form = 'cbf28896-dd82-43f4-b0f5-ee2d8536d593';
-export const TECHNISCHE_DATEN_DE_form = '713a0312-e66d-4900-a2f5-d1df6da16cdc';
+export const GRUNDRISSPLAN_form = '42291de8-58ff-428a-843f-f10780162f16';
+export const SCHNITTPLAN_form = 'cbf28896-dd82-43f4-b0f5-ee2d8536d593';
+export const TECHNISCHE_DATEN_form = '713a0312-e66d-4900-a2f5-d1df6da16cdc';
 export const TRAUFFASSADE_DE_form = '89ee1122-bbf2-4b70-8ef5-dc11c9f61e77';
-export const DETAIL_PLAENE_DE_form = '8ac50c0a-7573-4a28-851f-41f8df2f0deb' ;
+export const DETAIL_PLAENE_form = '8ac50c0a-7573-4a28-851f-41f8df2f0deb' ;
 
 export const VSE_TAG_DE_form = '0e502284-436b-4e2b-a566-177919e13dee';
 export const VSE_TAG_DE_attr = '25953436-3b89-4eff-9387-8d08e8cb3fff';
@@ -22,6 +21,9 @@ export const VSE_TAG_FR_form = 'bd9265d7-bc35-4b0d-9ea5-b0f179a429f9';
 export const VSE_TAG_FR_attr = '5750d616-4ddf-46d5-8d53-5f0538bdd359';
 export const VSE_TAG_IT_form = '115e0316-7fa8-48a4-b3b3-d228e917ad8f';
 export const VSE_TAG_IT_attr = 'e9c2ae0f-ed57-469f-8edf-de213d6ed77d';
+
+export const EBM_TAG_DE_form = 'be233f79-0c52-4e28-bbe2-7aad075d1ca3';
+export const EBM_TAG_DE_attr = 'e8313749-5199-4b4a-8727-6ce263e16f8c';
 
 export const VSE_IA18_DE_form = '72faa42b-4c3b-41bb-a747-cd4e846c991e';
 export const VSE_IA18_DE_attr = 'fe82c264-c60a-4e6d-9c16-4a13b144eaa6';
@@ -36,6 +38,13 @@ export const VSE_AB_FR_form = '6183cad4-f925-4294-88ab-9aa8b647cc0e';
 export const VSE_AB_FR_attr = '5a733e65-9c9e-4002-9ca1-dd43cff5375b';
 export const VSE_AB_IT_form = '89f08812-f2de-4bd0-9cdb-71608782835d';
 export const VSE_AB_IT_attr = 'c1c2914b-62ca-47ba-910e-a0039eecddef';
+
+export const PDIE_IA08_FR_form = '98da7a71-711f-49d0-b483-2dde56485af3';
+export const PDIE_IA08_FR_attr = '23e8e820-de82-44a1-ba43-a1646d5f095f';
+export const SIG_TA21_FR_form = 'f1f847b5-269f-49c2-89fe-119c0cc4dbd2';
+export const SIG_TA21_FR_attr = '2ed21c98-26cd-4523-bc52-2cb8812a1939';
+export const SIG_DC21_FR_form = '7c88dc64-9712-4b7b-924f-e1b661279601';
+export const SIG_DC21_FR_attr = 'c331fb1a-9b8f-40ac-9020-f59f68008a31';
 
 export const MESSPROT18_DE_form = '4d0159cf-f16d-4322-9e7f-3adc6f02d27f';
 export const MESSPROT18_DE_attr = '848a4ea2-6e69-4cd4-8fdd-705269994492';
@@ -137,6 +146,27 @@ export const MELDEFORMULAR_SOLAR_STD_FR_attr = "edbcaa77-379e-4ba3-9d1f-e82bdb44
 
 export const MELDEFORMULAR_SOLAR_STD_IT_form = "770043c9-eede-4bdf-a615-3f8dfc050718";
 export const MELDEFORMULAR_SOLAR_STD_IT_attr = "c8dc6686-063c-4c79-b669-e5cac59e06a5";
+
+export const MELDEFORMULAR_SOLAR_BE_FR_form = "0aca38c2-0205-41a2-ac1d-eca383783aa5";
+export const MELDEFORMULAR_SOLAR_BE_FR_attr = "6b2a3e28-762f-4126-86dc-fd9e83f49201";
+
+export const MELDEFORMULAR_SOLAR_FR_DE_form = "ae8f9440-5725-4961-9fd0-e45f08fbfed9";
+export const MELDEFORMULAR_SOLAR_FR_DE_attr = "669157a3-178c-4a0f-a1ad-d175521394f9";
+
+export const MELDEFORMULAR_SOLAR_GR_IT_form = "60fc41a9-810b-4c59-bc23-d3e92094c71f";
+export const MELDEFORMULAR_SOLAR_GR_IT_attr = "d89e0746-6ea3-43ee-8d87-68185311ef87";
+
+export const MELDEFORMULAR_SOLAR_VS_DE_FLACHDACH_form = "6fa0390c-f47d-4c1b-a92c-4aa0cffe7940";
+export const MELDEFORMULAR_SOLAR_VS_DE_FLACHDACH_attr = "07e79aa3-9833-4d21-af6a-84f8962ae13f";
+
+export const MELDEFORMULAR_SOLAR_VS_DE_SCHRAEGDACH_form = "9cefb276-fee5-4564-9893-3f78c7fe8807";
+export const MELDEFORMULAR_SOLAR_VS_DE_SCHRAEGDACH_attr = "5ddd1a80-6569-4732-93b7-89e8d4773ecf";
+
+export const MELDEFORMULAR_SOLAR_VS_FR_FLACHDACH_form = "0ee9bfe2-8c9e-4fc0-8e1d-f81715d8640e";
+export const MELDEFORMULAR_SOLAR_VS_FR_FLACHDACH_attr = "1afe3d81-6489-4199-82ab-dfa712b48ef2";
+
+export const MELDEFORMULAR_SOLAR_VS_FR_SCHRAEGDACH_form = "48d81de3-de72-43bf-91a2-22f31ca000fa";
+export const MELDEFORMULAR_SOLAR_VS_FR_SCHRAEGDACH_attr = "1e2be0bc-0191-4010-a159-0f69fb6a31c9";
 
 export interface IFormDef
 {

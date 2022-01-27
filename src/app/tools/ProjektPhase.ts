@@ -1,5 +1,5 @@
-import { EAktionDTO, EAnlageDTO, EAuftragPhaseDTO, DokumentStatus, ELeistungDTO, EProjektDTO, AktionsDefDTO, DokumentDefDTO } from "../api"
-import { BeilageWrapper } from "../services"
+import { EAktionDTO, EAnlageDTO, EAuftragPhaseDTO, DokumentStatus, ELeistungDTO, EProjektDTO, AktionsDefDTO, DokumentDefDTO, EmpfaengerKatDTO } from "../api"
+import { BeilageWrapper } from "./Beilage";
 
 export const CAnlageColTitelWidth = 300
 export const CAnlageColWidth = 250
@@ -16,7 +16,7 @@ export class ProjektPhaseWrapper {
 }
 
 export class EmpfaengerWrapper {
-    public empfaenger: string
+    public empfaengerKat: EmpfaengerKatDTO
     public aktionen: AktionsWrapper[] = []
 }
 
@@ -41,7 +41,7 @@ export class AktionsWrapper {
     public dateititel: string
     public dateiname: string
     public typ: AktionsTyp
-    public formularTypGuid: string
+    public aktionsDefGuid: string
     public status: DokumentStatus
     public sendeDatum?: Date
     public beilageDefs: BeilageWrapper[] = []
@@ -97,3 +97,32 @@ export const ProjektPhaseFn = {
 }
 
 
+export enum Key { Enter = 0x0D, Ctrl = 0x11, Shift = 0x10 }
+export class KeyPressing {
+	static _keyPresseds = [];
+	static _init() {
+		document.addEventListener('keydown', (e) => {
+			const keyCode = e.keyCode;
+			if (KeyPressing._keyPresseds.includes(keyCode) == false) {
+				KeyPressing._keyPresseds.push(keyCode)
+			}
+		})
+		document.addEventListener('keyup', (e) => {
+			const keyCode = e.keyCode;
+			if (KeyPressing._keyPresseds.includes(keyCode) == true) {
+				const index = KeyPressing._keyPresseds.indexOf(keyCode);
+				if (index !== -1) {
+					KeyPressing._keyPresseds.splice(index, 1);
+				}
+			}
+		})
+	}
+	static isKeyPressed(keyCode): boolean {
+		return KeyPressing._keyPresseds.includes(keyCode)
+	}
+
+	static areSpecialKeysPressed(): boolean {
+		return KeyPressing.isKeyPressed(Key.Shift) && KeyPressing.isKeyPressed(Key.Ctrl);
+	}
+}
+KeyPressing._init();

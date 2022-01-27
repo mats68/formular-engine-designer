@@ -12,7 +12,7 @@
 
 
 /**
- * Diese Klasse repräsentiert ein Data-Transfer-Object für Elektro-Aufträge Doumentenpool Entitäten.
+ * Diese Klasse repräsentiert ein Datentransferobjekt für Elektro-Aufträge Dokumentenpool Entitäten.
  */
 export interface DokumentBeilageLinkDTO { 
     /**
@@ -27,5 +27,9 @@ export interface DokumentBeilageLinkDTO {
      * Guid der Beilage.
      */
     guidBeilage?: string;
+    /**
+     * Der Key aus der Schema Beilagen-Definition
+     */
+    schemaKey?: number | null;
 }
 

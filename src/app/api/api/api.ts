@@ -37,6 +37,9 @@ export * from './eProjekte.serviceInterface'
 export * from './empfaenger.service';
 import { EmpfaengerService } from './empfaenger.service';
 export * from './empfaenger.serviceInterface'
+export * from './entwuerfe.service';
+import { EntwuerfeService } from './entwuerfe.service';
+export * from './entwuerfe.serviceInterface'
 export * from './gebaeude.service';
 import { GebaeudeService } from './gebaeude.service';
 export * from './gebaeude.serviceInterface'
@@ -67,4 +70,4 @@ export * from './produktLizenzen.serviceInterface'
 export * from './registrierung.service';
 import { RegistrierungService } from './registrierung.service';
 export * from './registrierung.serviceInterface'
-export const APIS = [AdressenService, AngularKonfigurationService, AppSettingsService, DefinitionenService, DokumenteService, DsoService, EAktionenService, EAnlagenService, EAuftraegeService, EFOnlineApiService, ELeistungenService, EProjekteService, EmpfaengerService, GebaeudeService, GeschStellenService, HoldingsService, KompoDBApiService, M2HubService, MitarbeiterService, PermissionsService, PostleitzahlenService, ProduktLizenzenService, RegistrierungService];
+export const APIS = [AdressenService, AngularKonfigurationService, AppSettingsService, DefinitionenService, DokumenteService, DsoService, EAktionenService, EAnlagenService, EAuftraegeService, EFOnlineApiService, ELeistungenService, EProjekteService, EmpfaengerService, EntwuerfeService, GebaeudeService, GeschStellenService, HoldingsService, KompoDBApiService, M2HubService, MitarbeiterService, PermissionsService, PostleitzahlenService, ProduktLizenzenService, RegistrierungService];

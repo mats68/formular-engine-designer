@@ -71,6 +71,7 @@ import { MtFileVierwerComponent } from './components/mt-file-viewer/mt-file-view
 import { MtItemOrTextComponent } from './base/mt-item-or-text/mt-item-or-text.component';
 import { BiFormComponent } from './base/bi-form/bi-form.component';
 import { MatFormFieldDefaultOptions, MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
+import { InlineSVGModule } from 'ng-inline-svg';
 
 @NgModule({
   declarations: [
@@ -151,8 +152,9 @@ import { MatFormFieldDefaultOptions, MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@ang
     MatTooltipModule,
     OverlayModule,
     FileUploadModule,
+	 InlineSVGModule,
     ReactiveFormsModule.withConfig({warnOnNgModelWithFormControl: 'never'})
-  ],
+	],
   exports: [
     BiFormComponent,
   ],

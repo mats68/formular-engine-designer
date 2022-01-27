@@ -120,6 +120,8 @@ a {
 body.bi-theme .mat-dialog-container {
 	border-radius: 0px;
 	background-color: #F1F3F5;
+	overflow: hidden;
+	padding: 0px;
 }
 
 //======================================================================================================================
@@ -499,6 +501,11 @@ body.bi-theme .mat-form-field.is-textarea {
 body.bi-theme .mat-select-panel {
 	// Keine abgerundeten Ecken.
 	border-radius: 0px;
+}
+
+.mat-select-disabled .mat-select-value {
+	// select disabled Textfarbe ist schwarz.
+    color: black;
 }
 
 body.bi-theme .mat-autocomplete-panel {
@@ -1468,4 +1475,16 @@ body.bi-theme .file-uploader {
 }
 
 
+/* remove arrows/spinners from input type number */
 
+// Chrome, Safari, Edge, Opera 
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+// Firefox 
+input[type=number] {
+  -moz-appearance: textfield;
+}

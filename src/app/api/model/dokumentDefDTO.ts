@@ -9,22 +9,59 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { DokumentKatDTO } from './dokumentKatDTO';
 
 
+/**
+ * Diese Klasse repräsentiert ein Datentransferobjekt für Dokumentdefinitionen.
+ */
 export interface DokumentDefDTO { 
+    /**
+     * Die eindeutige <see cref=\"P:BrunnerInformatik.NextGen.App.ViewModel.DokumentDefDTO.Guid\">GUID</see> dieser Dokumentdefinition.
+     */
     guid?: string;
+    /**
+     * Die Sparte, zu welcher das Dokument gehört.
+     */
     branch?: string | null;
     parent?: string;
-    category?: string;
+    category?: DokumentKatDTO;
+    /**
+     * Die `Legacy` Dokument-Kategorie, zu welchem diese Dokumentdefinition gehört sofern vorhanden.
+     */
     legacyCategory?: string | null;
+    /**
+     * Eindeutiger Name der Dokumentdefinition bzw. des Dokumentes.
+     */
     name?: string | null;
+    /**
+     * Der Kurzname/Anzeigename des Dokumentes.
+     */
     shortName?: string | null;
+    /**
+     * Der lange bzw. vollständige Name des Dokumentes.
+     */
     longName?: string | null;
+    /**
+     * Der Name des Herausgebers dieser Dokumentdefinition.
+     */
     issuer?: string | null;
+    /**
+     * Der optionale vollständige Name des Dokumentes, wie er vom Herausgeber spezifiziert wurde.
+     */
     nameByIssuer?: string | null;
+    /**
+     * Eine optionale Beschreibung für diese Dokumentdefinition.
+     */
     description?: string | null;
+    /**
+     * Der IETF BCP 47 Sprachcode, welcher die Sprache des Dokumentes spezifiziert.
+     */
     languageCode?: string | null;
-    _Version?: number;
+    /**
+     * Dies Version dieses Dokumentes.
+     */
+    version?: number;
     formScheaURL?: string | null;
 }
 

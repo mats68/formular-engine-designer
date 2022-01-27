@@ -1,13 +1,14 @@
 import { ISchema, IComponent, SchemaManager } from 'src/app/components/bi-formular-engine/src/public-api';
 import { DokumentBeilageLinkDTO, DokumentStatus, IdentityContextDTO } from '../api/model/models';
-import { inputGroup, inputGroupCL, label, w_full, card_panel, card_hint_panel, switch_hint_panel, checkBoxGroup, hasAllRequired, getBeilage, senden_panel, antwort_meldefomrulare_panel, textZusammensetzen, withPrecision, erstelleUnterschriftspanel, unterschriften_panel, formatiereDatum, erstelleSendenPanel, erstelleAntwortSchnipsel, abrufeKontaktstruktur, KontaktArt, abfuelleKontaktFelder } from './schema-utils';
+import { inputGroup, inputGroupCL, label, w_full, card_panel, card_hint_panel, switch_hint_panel, checkBoxGroup, hasAllRequired, getBeilage, senden_panel, antwort_meldefomrulare_panel, textZusammensetzen, withPrecision, erstelleUnterschriftspanel, unterschriften_panel, formatiereDatum, erstelleSendenPanel, erstelleAntwortSchnipsel, abrufeKontaktstruktur, KontaktArt, abfuelleKontaktFelder, SetzePvDaten } from './schema-utils';
 import * as moment from 'moment';
 import { marker } from '@ngneat/transloco-keys-manager/marker';
-import { GRUNDRISSPLAN_DE_form, MELDEFORMULAR_SOLAR_BE_DE_attr, MELDEFORMULAR_SOLAR_BE_DE_form, SITUATIONSPLAN_form } from './schema-guid-def';
+import { GRUNDRISSPLAN_form, MELDEFORMULAR_SOLAR_BE_DE_attr, MELDEFORMULAR_SOLAR_BE_DE_form, SITUATIONSPLAN_form } from './schema-guid-def';
 import { SignatureRole } from '../services/projekt/signatureRole';
 import { SignaturDef } from '../services';
-// import { getStepLinkDataStandard } from '.';
+import { getStepLinkDataStandard } from '.';
 import { Guid } from '../tools/Guid';
+import { ProjektBeilagen } from '../tools';
 
 const FORMULAR_TYP_MELDEFORMULAR_SOLAR_BE_DE = "MELDEFORMULAR_SOLAR_BE_DE";
 const FORMULAR_TYP_SITUATIONSPLAN = "SITUATIONSPLAN";
@@ -158,7 +159,7 @@ const MELDEFORMULAR_SOLAR_BE_DE_Adressen: IComponent = card_panel('Adressen / Ge
                { type: 'label', field: 'I_KONZESS', },
                { type: 'label', label: 'Adresse', classLayout: ' text-xs mt-2', },
                inputGroupCL('mr-2', [
-                  { type: 'label', field: 'I_NAME1', classLayout: '', },
+                  { type: 'label', field: 'I_NAME1', },
                   { type: 'label', field: 'I_NAME2', },
                ]),
                inputGroupCL('mr-2', [
@@ -194,10 +195,8 @@ const MELDEFORMULAR_SOLAR_BE_DE_Adressen: IComponent = card_panel('Adressen / Ge
             children: [
                { type: 'label', label: 'Eigentümer', classLayout: 'text-xs font-bold', },
                { type: 'spinner', name: 'eigent_spinner', classLayout: ' mt-2' },
-               inputGroupCL('mr-2', [
-                  { type: 'label', field: 'U_NAME1', },
-                  { type: 'label', field: 'U_NAME2', },
-               ]),
+               { type: 'label', field: 'U_NAME1', },
+               { type: 'label', field: 'U_NAME2', },
                { type: 'label', field: 'U_ADRESSE1', },
                { type: 'label', field: 'U_ADRESSE2', },
                inputGroupCL('mr-2', [
@@ -215,10 +214,8 @@ const MELDEFORMULAR_SOLAR_BE_DE_Adressen: IComponent = card_panel('Adressen / Ge
             children: [
                { type: 'label', label: 'Auftraggeber', classLayout: 'text-xs font-bold', },
                { type: 'spinner', name: 'auftraggeber_spinner', classLayout: ' mt-2' },
-               inputGroupCL('mr-2', [
-                  { type: 'label', field: 'GES_NAME1', },
-                  { type: 'label', field: 'GES_NAME2', },
-               ]),
+               { type: 'label', field: 'GES_NAME1', },
+               { type: 'label', field: 'GES_NAME2', },
                { type: 'label', field: 'GES_ADRESSE1', },
                { type: 'label', field: 'GES_ADRESSE2', },
                inputGroupCL('mr-2', [
@@ -270,7 +267,7 @@ const MELDEFORMULAR_SOLAR_BE_DE_Adressen: IComponent = card_panel('Adressen / Ge
             type: 'input',
             dataType: 'int',
             field: 'I_PLZ',
-            max: 4,
+            max: 9999,
          },
          {
             type: 'input',
@@ -324,7 +321,7 @@ const MELDEFORMULAR_SOLAR_BE_DE_Adressen: IComponent = card_panel('Adressen / Ge
             type: 'input',
             dataType: 'int',
             field: 'U_PLZ',
-            max: 4,
+            max: 9999,
          },
          {
             type: 'input',
@@ -372,7 +369,7 @@ const MELDEFORMULAR_SOLAR_BE_DE_Adressen: IComponent = card_panel('Adressen / Ge
             type: 'input',
             dataType: 'int',
             field: 'GES_PLZ',
-            max: 4,
+            max: 9999,
          },
          {
             type: 'input',
@@ -462,7 +459,7 @@ export const MELDEFORMULAR_SOLAR_BE_DE: ISchema = {
    attribut: MELDEFORMULAR_SOLAR_BE_DE_attr,
    beilagen: [
       { guid: SITUATIONSPLAN_form, titel: 'Situationsplan' },
-      { guid: GRUNDRISSPLAN_DE_form, titel: 'Grundrissplan / Dachschnitt' },
+      { guid: GRUNDRISSPLAN_form, titel: 'Grundrissplan / Dachschnitt' },
    ],
    steps: [
       { step: 1, titel: 'Ausfüllen', status: DokumentStatus.InArbeit, target: MELDEFORMULAR_SOLAR_BE_DE_AnlageStandort.name },
@@ -487,16 +484,20 @@ export const MELDEFORMULAR_SOLAR_BE_DE: ISchema = {
 
       // Mit tag = 100 wird sichergestellt, das die nur 1x aufgerufen wird
       if (sm.Schema.tag !== 100) {
-         sm.Schema.children.push(await MELDEFORMULAR_SOLAR_BE_DE_Unterschriften(sm));
-         sm.Schema.children.push(await MELDEFORMULAR_SOLAR_BE_DE_Senden(sm));
-         sm.Schema.children.push(await MELDEFORMULAR_SOLAR_BE_DE_Antwort(sm));
+         sm.appendChild(sm.Schema, await ProjektBeilagen.instance.beilagenPanel(sm));
+         sm.appendChild(sm.Schema, await MELDEFORMULAR_SOLAR_BE_DE_Unterschriften(sm));
+         sm.appendChild(sm.Schema, await MELDEFORMULAR_SOLAR_BE_DE_Senden(sm));
+         sm.appendChild(sm.Schema, await MELDEFORMULAR_SOLAR_BE_DE_Antwort(sm));
          sm.Schema.tag = 100
       }
 
       try {
 
          if (sm.formularStatus === DokumentStatus.Undefiniert)
+         {
             sm.saveStatus(DokumentStatus.InArbeit);
+            SetzePvDaten(sm, 'PV_ABSORBERFLAECHE', 'PV_GESAMTLEISTUNG', '', 'PV_ANLAGE');
+         }
          else if (sm.formularStatus >= DokumentStatus.SigniertGesperrt)
             sm.DisableAll();
 
@@ -504,22 +505,22 @@ export const MELDEFORMULAR_SOLAR_BE_DE: ISchema = {
 
             sm.getCompByName('sachb_spinner').loading = true;
             sm.getCompByName('einreicher_spinner').loading = true;
-   
+
             const gs = await abrufeKontaktstruktur(sm, KontaktArt.Solateur);
             abfuelleKontaktFelder(sm, gs, "I_", true, true);
-   
+
             sm.getCompByName('sachb_spinner').loading = false;
             sm.getCompByName('einreicher_spinner').loading = false;
 
             if (sm.projekt.gebaeude?.guid_Inhaber) {
                sm.getCompByName('eigent_spinner').loading = true;
-   
+
                const gs = await abrufeKontaktstruktur(sm, KontaktArt.Eigentuemer);
                abfuelleKontaktFelder(sm, gs, "U_");
-   
-               sm.getCompByName('eigent_spinner').loading = false; 
+
+               sm.getCompByName('eigent_spinner').loading = false;
             }
-           
+
             if (sm.projekt.auftrag?.guidAuftraggeber) {
                sm.getCompByName('auftraggeber_spinner').loading = true;
 
@@ -557,30 +558,7 @@ export const MELDEFORMULAR_SOLAR_BE_DE: ISchema = {
                   sm.projekt.auftrag?.datumInbetrieb,
                ]
             )
-
-            let flaeche = 0;
-            let leistung = 0;
-            let pvJa = false;
-            sm.projekt.gebaeude?.geraete?.filter(g => g.typ === 'pv_panel').forEach(g => {
-               let data = JSON.parse(g.daten);
-               if (g.anzahl && data.area_m2)
-                  flaeche += g.anzahl * data.area_m2;
-               if (g.anzahl && data.peak_power_w)
-                  leistung += g.anzahl * data.peak_power_w;
-
-               pvJa = true;
-            });
-            if (flaeche)
-               sm.setValue('PV_ABSORBERFLAECHE', withPrecision(flaeche));
-            if (leistung)
-               sm.setValue('PV_GESAMTLEISTUNG', withPrecision(leistung / 1000));
-            if (pvJa)
-               sm.setValue('PV_ANLAGE', true);
          }
-
-         onLinkBeilageFn = onLinkBeilage(sm)
-         service.registerLinkBeilage(onLinkBeilageFn);
-
 
          // if (!sm.Values.FormStatus)
          //    this.setStatus(sm, sm.Values.FormStatus);
@@ -614,25 +592,3 @@ export const MELDEFORMULAR_SOLAR_BE_DE: ISchema = {
       console.log('Called from schema onAfterReload: ', formular)
    },
 }
-
-const onLinkBeilage = (sm: SchemaManager) => async (formularPool: DokumentBeilageLinkDTO) => {
-   const antwortBeilage = getBeilage(sm, MELDEFORMULAR_SOLAR_BE_DE_form);
-   // if (formularPool?.formularBeilage === antwortBeilage) {
-   // 	sm.setValue('MELDEFORMULAR_ANTWORT_HOCHGELADEN', new Date().toDateString());
-   // }
-   // else {
-   // 	// Wenn gelöscht, alle beteiligten Felder leeren
-   // 	sm.setValues([
-   // 		'MELDEFORMULAR_ANTWORT',
-   // 		'MELDEFORMULAR_BEWILLIGT',
-   // 		'MELDEFORMULAR_ABGELEHNT',
-   // 		'MELDEFORMULAR_ANTWORT_HOCHGELADEN',
-   // 	], [
-   // 		undefined,
-   // 		undefined,
-   // 		undefined,
-   // 		undefined,
-   // 	]);
-   // }
-}
-let onLinkBeilageFn: { (formularPool: DokumentBeilageLinkDTO): void };

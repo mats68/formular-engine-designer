@@ -6,12 +6,13 @@ import { marker } from '@ngneat/transloco-keys-manager/marker';
 import * as moment from 'moment';
 import { Button } from 'protractor';
 import { Ausrichtung, ColDef, IComponent, ISchema, SchemaManager } from 'src/app/components';
-// import { istStringLeer, rueckmeldung_vnb } from '.';
+// import { istStringLeer, rueckmeldung_vnb, VSE_TAG_DE } from '.';
 import { AngularKonfigurationService, ApiModule, DokumentStatus, EProjektDTO } from '../api';
-import { FormularTypenGuids, ProjektService, SignaturDef } from '../services';
+import { ProjektService, SignaturDef } from '../services';
 import { SignatureRole } from '../services/projekt/signatureRole';
+import { ProjektBeilagen } from '../tools';
 import { Guid } from '../tools/Guid';
-import { VSE_IA18_DE_form } from './schema-guid-def';
+import { BEILAGE_form, SCHEMA_form, SITUATIONSPLAN_form, VSE_IA18_DE_form, VSE_TAG_DE_form } from './schema-guid-def';
 import { inputGroup, label, schemaClassLayout, w_full, cb_single, card_panel, inputGroupCL, multiple_checkboxes_with_cust, checkBoxGroup, textZusammensetzen, unterschriften_panel, senden_panel_m2, formatiereDatum, isNumber, kuerzeStockwerk, nimmNaechstesWort, erstelleSendenPanel, erstelleAntwortSchnipsel, abrufeKontaktstruktur, KontaktArt, abfuelleKontaktFelder, tableHeaderTextRotate, tableHeaderText, card_edit_panel } from './schema-utils';
 
 // const project:ProjectDTO
@@ -257,10 +258,8 @@ const VSE_IA18_DE2_FrKontakteVSE: IComponent = card_edit_panel('Adressen / Gesch
 				children: [
 					{ type: 'label', label: 'Eigentümer', classLayout: 'text-xs font-bold', },
 					{ type: 'spinner', name: 'eigent_spinner', classLayout: ' mt-2' },
-					inputGroupCL('mr-2', [
-						{ type: 'label', field: 'U_NAME1', },
-						{ type: 'label', field: 'U_NAME2', },
-					]),
+					{ type: 'label', field: 'U_NAME1', },
+					{ type: 'label', field: 'U_NAME2', },
 					{ type: 'label', field: 'U_ADRESSE1', },
 					{ type: 'label', field: 'U_ADRESSE2', },
 					inputGroupCL('mr-2', [
@@ -335,14 +334,10 @@ const VSE_IA18_DE2_FrKontakteVSE: IComponent = card_edit_panel('Adressen / Gesch
 		children: [
 			{ type: 'label', label: 'Verwaltung', classLayout: 'text-xs font-bold', },
 			{ type: 'spinner', name: 'verw_spinner', classLayout: 'mt-2' },
-			inputGroupCL('mr-2', [
-				{ type: 'label', field: 'GES_NAME1', },
-				{ type: 'label', field: 'GES_NAME2', },
-			]),
-			inputGroupCL('mr-2', [
-				{ type: 'label', field: 'GES_ADR1', },
-				{ type: 'label', field: 'GES_ADR2', },
-			]),
+			{ type: 'label', field: 'GES_NAME1', },
+			{ type: 'label', field: 'GES_NAME2', },
+			{ type: 'label', field: 'GES_ADR1', },
+			{ type: 'label', field: 'GES_ADR2', },
 			inputGroupCL('mr-2', [
 				{ type: 'label', field: 'GES_PLZ', },
 				{ type: 'label', field: 'GES_ORT', },
@@ -394,7 +389,7 @@ const VSE_IA18_DE2_FrKontakteVSE: IComponent = card_edit_panel('Adressen / Gesch
 						type: 'input',
 						dataType: 'int',
 						field: 'GES_PLZ',
-						max: 4,
+						max: 9999,
 					},
 					{
 						type: 'input',
@@ -620,12 +615,12 @@ const VSE_IA18_DE4_FrInstallationVSE_IA18: IComponent = card_panel('Netzanschlus
 				dataType: 'string',
 			},
 			cb_single('HAK integriert', 'ANSCH_HAKINT', false),
-			label('(H)AK-Nr'),
+			label('Erforderlicher AS-Überstromunterbrecher'),
 			{
 				type: 'input',
-				field: 'ANSCH_HAKNR',
-				max: 20,
-				dataType: 'string',
+				field: 'ANSCH_AS_ERF',
+				dataType: 'int',
+				suffix: 'A'
 			},
 			label('max. Netzbezugsleistung'),
 			{
@@ -930,7 +925,7 @@ const VSE_IA18_DE6_FrTarifapparateVSE_18: IComponent =
 						max: 30,
 						dataType: 'string',
 					},
-					label('Sich. [A]'),
+					label('Sicherung'),
 					{
 						type: 'input',
 						field: 'SICH_IN',
@@ -1125,16 +1120,18 @@ const VSE_IA18_DE_RueckmeldungVNB: IComponent = card_panel('Netzbetreiberin', id
 
 export const VSE_IA18_DE: ISchema = {
 	type: 'panel',
-	name: 'FrObjektStandortVSE_18',
+	name: 'VSE_IA18_DE',
 	guid: VSE_IA18_DE_form,
 	attribut: 'fe82c264-c60a-4e6d-9c16-4a13b144eaa6',
 	label: 'Installations-Anzeige',
 	iconText: 'IA',
 	classLayout: "w-fulls",
 	beilagen: [
-		FormularTypenGuids.SIT_PLAN,
-		FormularTypenGuids.BE,
-		FormularTypenGuids.TAG,
+		{ guid: SCHEMA_form, titel: 'Schema'},
+		{ guid: SITUATIONSPLAN_form, titel: 'Situationsplan' },
+		{ guid: BEILAGE_form, schemaKey: 1, titel: 'Disposition Hauptverteilung' },
+		{ guid: BEILAGE_form, schemaKey: 2, titel: 'Zustimmung Endverbraucher/Erzeuger Steuerung durch VNB' },
+		// { guid: BEILAGE_form, schemaKey: 3, titel: 'Beilage' },
 	],
 	steps: [
 		{ step: 1, titel: 'Ausfüllen', status: DokumentStatus.InArbeit, target: VSE_IA18_DE3_FrInstallationsbeschriebVSE_18.name },
@@ -1161,9 +1158,10 @@ export const VSE_IA18_DE: ISchema = {
 
 		// Mit tag = 100 wird sichergestellt, das die nur 1x aufgerufen wird
 		if (sm.Schema.tag !== 100) {
-			sm.Schema.children.push(await VSE_IA18_DE_Unterschriften(sm));
-			sm.Schema.children.push(await VSE_IA18_DE_Senden(sm));
-			sm.Schema.children.push(await VSE_IA18_DE_Rueckmeldung(sm));
+         sm.appendChild(sm.Schema, await ProjektBeilagen.instance.beilagenPanel(sm));
+			sm.appendChild(sm.Schema, await VSE_IA18_DE_Unterschriften(sm));
+			sm.appendChild(sm.Schema, await VSE_IA18_DE_Senden(sm));
+			sm.appendChild(sm.Schema, await VSE_IA18_DE_Rueckmeldung(sm));
 			sm.Schema.tag = 100
 		}
 

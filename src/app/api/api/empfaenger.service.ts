@@ -142,20 +142,33 @@ export class EmpfaengerService implements EmpfaengerServiceInterface {
     }
 
     /**
-     * Gibt alle Empfänger zurück für die spezifizierte Empfängerkategorie.
-     * @param kat Guid der Empfängerkategorie.
+     * Gibt alle Empfänger zurück, welche der spezifizierten Empfängerkategorie angehören.
+     * @param kategorie Die GUID der Empfängerkategorie.
+     * @param skip Die Anzahl der Empfänger, welche im Resultat übersprungen werden sollen.
+     * @param limit Die Anzahl der abzurufenden Empfänger.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public apiV1EmpfaengerKategorieGet(kat?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<EmpfaengerDTO>>;
-    public apiV1EmpfaengerKategorieGet(kat?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<EmpfaengerDTO>>>;
-    public apiV1EmpfaengerKategorieGet(kat?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<EmpfaengerDTO>>>;
-    public apiV1EmpfaengerKategorieGet(kat?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+    public apiV1EmpfaengerKategorieGet(kategorie: string, skip?: number, limit?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<EmpfaengerDTO>>;
+    public apiV1EmpfaengerKategorieGet(kategorie: string, skip?: number, limit?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<EmpfaengerDTO>>>;
+    public apiV1EmpfaengerKategorieGet(kategorie: string, skip?: number, limit?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<EmpfaengerDTO>>>;
+    public apiV1EmpfaengerKategorieGet(kategorie: string, skip?: number, limit?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+        if (kategorie === null || kategorie === undefined) {
+            throw new Error('Required parameter kategorie was null or undefined when calling apiV1EmpfaengerKategorieGet.');
+        }
 
         let queryParameters = new HttpParams({encoder: this.encoder});
-        if (kat !== undefined && kat !== null) {
+        if (kategorie !== undefined && kategorie !== null) {
           queryParameters = this.addToHttpParams(queryParameters,
-            <any>kat, 'kat');
+            <any>kategorie, 'kategorie');
+        }
+        if (skip !== undefined && skip !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>skip, 'skip');
+        }
+        if (limit !== undefined && limit !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>limit, 'limit');
         }
 
         let headers = this.defaultHeaders;
@@ -258,20 +271,25 @@ export class EmpfaengerService implements EmpfaengerServiceInterface {
     }
 
     /**
-     * Sucht nach Empfängern in den verschiedenen Feldern (Werk, Firma, Adresse, Stichwort, Email usw.) mittels Suchbegriff.
-     * @param text Suchbegriff, nach welchem gesucht werden soll. Der Text soll nicht leer sein.
+     * Sucht nach Empfängern in den verschiedenen Feldern (Werk, Firma, Adresse, Stichwort, Email usw.) mittels  Suchbegriff.
+     * @param searchTerms Suchbegriffe, nach welchen gesucht werden soll. Der Text soll nicht leer sein.
+     * @param limit Die Anzahl der Suchresultate, welche abgerufen werden sollen.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public apiV1EmpfaengerSuchenGet(text?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<EmpfaengerDTO>>;
-    public apiV1EmpfaengerSuchenGet(text?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<EmpfaengerDTO>>>;
-    public apiV1EmpfaengerSuchenGet(text?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<EmpfaengerDTO>>>;
-    public apiV1EmpfaengerSuchenGet(text?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+    public apiV1EmpfaengerSuchenGet(searchTerms?: string, limit?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<EmpfaengerDTO>>;
+    public apiV1EmpfaengerSuchenGet(searchTerms?: string, limit?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<EmpfaengerDTO>>>;
+    public apiV1EmpfaengerSuchenGet(searchTerms?: string, limit?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<EmpfaengerDTO>>>;
+    public apiV1EmpfaengerSuchenGet(searchTerms?: string, limit?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
 
         let queryParameters = new HttpParams({encoder: this.encoder});
-        if (text !== undefined && text !== null) {
+        if (searchTerms !== undefined && searchTerms !== null) {
           queryParameters = this.addToHttpParams(queryParameters,
-            <any>text, 'text');
+            <any>searchTerms, 'searchTerms');
+        }
+        if (limit !== undefined && limit !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>limit, 'limit');
         }
 
         let headers = this.defaultHeaders;

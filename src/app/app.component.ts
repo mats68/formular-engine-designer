@@ -34,6 +34,7 @@ export class AppComponent {
 			}
 		);
     _SchemaManager = this._schemaManagerProvider.createSchemaManager();
+    _projektService.LoadProjekt('')
 
 	}
 
@@ -51,16 +52,22 @@ export class AppComponent {
         type: 'select',
         width: '300px',
         options() {
-          return Object.values(schemas).map(s => s.label as string)
+          const res: string[] = []
+          Object.values(schemas).forEach(s => {
+            if (s.hasOwnProperty('label')) {
+              res.push(s['label'])
+            }
+          })
+          return res
         },
         field: 'cs',
         label: '',
-        onChange (_, __, value) {
-          console.log(value)
-          const s = Object.values(schemas).find(s => s.label === value)
+        onChange (sm, __, value) {
+          // console.log(value)
+          const s = Object.values(schemas).find(s => sm.getPropValue(s as ISchema, 'label') === value)
           if (s) {
-            _schema = s
-            _SchemaManager.InitSchema(s)
+            _schema = s as ISchema
+            _SchemaManager.InitSchema(_schema)
             _SchemaManager.Schema.whiteBackground = true
             initLabels(_SchemaManager)
             initInputWidths(_SchemaManager)

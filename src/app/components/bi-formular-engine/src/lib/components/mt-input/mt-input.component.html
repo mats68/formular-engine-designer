@@ -4,7 +4,8 @@
 <mat-form-field [style]='style' [appearance]='sm.getAppearance(comp)' [class]='getClass()' (click)='onClick()'>
     <mat-label *ngIf='label' [ngClass]='{"error-color" : getError()}'>{{label}}</mat-label>
     <span matPrefix *ngIf='comp.prefix'>{{comp.prefix}}</span>
-    <input *ngIf='Typ === inpTyp.normal' matInput #name [(ngModel)]='Value' (blur)='onBlur()' [id]='comp.id' [type]='comp.inputType' [minlength]='comp.min' [maxlength]='comp.max' [autofocus]='comp.autofocus' [disabled]='disabled' />
+    <input *ngIf='Typ === inpTyp.normal && comp.dataType !== "int"' matInput #name [(ngModel)]='Value' (blur)='onBlur()' [id]='comp.id' [minlength]='comp.min' [maxlength]='comp.max' [autofocus]='comp.autofocus' [disabled]='disabled' />
+    <input *ngIf='Typ === inpTyp.normal && comp.dataType === "int"' matInput #name [(ngModel)]='Value' (blur)='onBlur()' [id]='comp.id' type='number' [min]='comp.min' [max]='comp.max' [autofocus]='comp.autofocus' [disabled]='disabled' />
     <input *ngIf='Typ === inpTyp.autocomplete' [matAutocomplete]="auto" matInput #name [(ngModel)]='Value' (ngModelChange)='Filter(Value)' (blur)='onBlur()' [minlength]='comp.min' [maxlength]='comp.max' [autofocus]='comp.autofocus'
         [disabled]='disabled' />
     <mat-chip-list *ngIf='Typ === inpTyp.chips' #chipList>

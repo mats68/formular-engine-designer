@@ -12,7 +12,7 @@
 
 
 /**
- * Diese Klasse repräsentiert ein Data-Transfer-Object für eine Dokumenttyp Entität der Elektro-Sparte.
+ * Diese Klasse repräsentiert ein Datentransferobjekt für eine Dokumenttyp Entität der Elektro-Sparte.
  */
 export interface DsoDefDTO { 
     /**

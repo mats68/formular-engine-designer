@@ -9,14 +9,33 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { DokumentKatDTO } from './dokumentKatDTO';
 
 
+/**
+ * Diese Klasse repräsentiert ein Datentransferobjekt für Aktionsdokumentdefinitionen.
+ */
 export interface AktionsDoksDefDTO { 
-    guid?: string;
-    aktionsDef?: string;
-    dokumentKat?: string;
-    empfaengerKat?: string;
+    /**
+     * Die eindeutige GUID dieser Aktionsdokumentdefinition.
+     */
+    guid: string;
+    /**
+     * Die optionale Sparte des Aktionsdokumentes welches durch diese Definition definiert wird.
+     */
+    sparte?: string | null;
+    /**
+     * Die Sequenz-Nummer für die Sortierreihenfolge.
+     */
     sequenzNr?: number;
+    /**
+     * Ein Indikator der Anzeigt, ob diese Aktionsdokumentdefinition aktuell aktiviert ist oder nicht.
+     */
     aktiv?: boolean;
+    /**
+     * Die GUID der Aktionsdefinition zu welcher diese Aktionsdokumentdefinition gehört.
+     */
+    aktionsDef: string;
+    dokumentKat: DokumentKatDTO;
 }
 

@@ -19,6 +19,7 @@ import { Observable }                                        from 'rxjs';
 
 import { DokumentBeilageLinkDTO } from '../model/models';
 import { DokumentDTO } from '../model/models';
+import { SendDokumentRequest } from '../model/models';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
@@ -93,13 +94,14 @@ export class DokumenteService implements DokumenteServiceInterface {
      * @param mandant GUID des Mandanten.
      * @param guidDokument GuId des Formulars.
      * @param guidBeilage Guid der Beilage.
+     * @param schemaKey Der Key aus der Schema Beilagen-Definition
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public apiV1DokumenteAttachmentsDelete(mandant?: string, guidDokument?: string, guidBeilage?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any>;
-    public apiV1DokumenteAttachmentsDelete(mandant?: string, guidDokument?: string, guidBeilage?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<any>>;
-    public apiV1DokumenteAttachmentsDelete(mandant?: string, guidDokument?: string, guidBeilage?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<any>>;
-    public apiV1DokumenteAttachmentsDelete(mandant?: string, guidDokument?: string, guidBeilage?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+    public apiV1DokumenteAttachmentsDelete(mandant?: string, guidDokument?: string, guidBeilage?: string, schemaKey?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any>;
+    public apiV1DokumenteAttachmentsDelete(mandant?: string, guidDokument?: string, guidBeilage?: string, schemaKey?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<any>>;
+    public apiV1DokumenteAttachmentsDelete(mandant?: string, guidDokument?: string, guidBeilage?: string, schemaKey?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<any>>;
+    public apiV1DokumenteAttachmentsDelete(mandant?: string, guidDokument?: string, guidBeilage?: string, schemaKey?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
 
         let queryParameters = new HttpParams({encoder: this.encoder});
         if (mandant !== undefined && mandant !== null) {
@@ -113,6 +115,10 @@ export class DokumenteService implements DokumenteServiceInterface {
         if (guidBeilage !== undefined && guidBeilage !== null) {
           queryParameters = this.addToHttpParams(queryParameters,
             <any>guidBeilage, 'GuidBeilage');
+        }
+        if (schemaKey !== undefined && schemaKey !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>schemaKey, 'SchemaKey');
         }
 
         let headers = this.defaultHeaders;
@@ -414,18 +420,88 @@ export class DokumenteService implements DokumenteServiceInterface {
     }
 
     /**
-     * Löscht ein Dokument.
-     * TODO: Nur mit Status xyz möglich!
-     * @param guid Die GUID des zu löschenden Formulars.
+     * Findet den SchemaKey einer Beilage
+     * @param dokumentGuid 
+     * @param beilageGuid 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public apiV1DokumenteGuidDelete(guid: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any>;
-    public apiV1DokumenteGuidDelete(guid: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<any>>;
-    public apiV1DokumenteGuidDelete(guid: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<any>>;
-    public apiV1DokumenteGuidDelete(guid: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+    public apiV1DokumenteAttachmentsSchemakeyGet(dokumentGuid?: string, beilageGuid?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<number>;
+    public apiV1DokumenteAttachmentsSchemakeyGet(dokumentGuid?: string, beilageGuid?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<number>>;
+    public apiV1DokumenteAttachmentsSchemakeyGet(dokumentGuid?: string, beilageGuid?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<number>>;
+    public apiV1DokumenteAttachmentsSchemakeyGet(dokumentGuid?: string, beilageGuid?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+
+        let queryParameters = new HttpParams({encoder: this.encoder});
+        if (dokumentGuid !== undefined && dokumentGuid !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>dokumentGuid, 'dokumentGuid');
+        }
+        if (beilageGuid !== undefined && beilageGuid !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>beilageGuid, 'beilageGuid');
+        }
+
+        let headers = this.defaultHeaders;
+
+        let credential: string | undefined;
+        // authentication (Brunner Informatik AG Cloud-Login) required
+        credential = this.configuration.lookupCredential('Brunner Informatik AG Cloud-Login');
+        if (credential) {
+            headers = headers.set('Authorization', 'Bearer ' + credential);
+        }
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.get<number>(`${this.configuration.basePath}/api/v1/Dokumente/attachments/schemakey`,
+            {
+                params: queryParameters,
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Löscht ein Dokument.
+     * TODO: Nur mit Status xyz möglich!
+     * @param guid Die GUID des zu löschenden Formulars.
+     * @param force 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public apiV1DokumenteGuidDelete(guid: string, force?: boolean, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any>;
+    public apiV1DokumenteGuidDelete(guid: string, force?: boolean, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<any>>;
+    public apiV1DokumenteGuidDelete(guid: string, force?: boolean, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<any>>;
+    public apiV1DokumenteGuidDelete(guid: string, force?: boolean, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
         if (guid === null || guid === undefined) {
             throw new Error('Required parameter guid was null or undefined when calling apiV1DokumenteGuidDelete.');
+        }
+
+        let queryParameters = new HttpParams({encoder: this.encoder});
+        if (force !== undefined && force !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>force, 'force');
         }
 
         let headers = this.defaultHeaders;
@@ -459,6 +535,7 @@ export class DokumenteService implements DokumenteServiceInterface {
 
         return this.httpClient.delete<any>(`${this.configuration.basePath}/api/v1/Dokumente/${encodeURIComponent(String(guid))}`,
             {
+                params: queryParameters,
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
@@ -587,14 +664,21 @@ export class DokumenteService implements DokumenteServiceInterface {
 
     /**
      * Druckt ein Dokument aus der Elektro-Sparte aus.
+     * @param empfaenger GUID des empfängers an den das Dokument gesendet wird
      * @param dokumentDTO Das Dokument DTO Objekt welches das gespeicherte und zu druckende Dokument referenziert, oder eine komplettes  Dokument DTO Objekt mit den zu druckenden Daten.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public apiV1DokumentePrintPost(dokumentDTO?: DokumentDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'application/json' | 'application/json+prolbem' | 'text/plain'}): Observable<Blob>;
-    public apiV1DokumentePrintPost(dokumentDTO?: DokumentDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'application/json' | 'application/json+prolbem' | 'text/plain'}): Observable<HttpResponse<Blob>>;
-    public apiV1DokumentePrintPost(dokumentDTO?: DokumentDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'application/json' | 'application/json+prolbem' | 'text/plain'}): Observable<HttpEvent<Blob>>;
-    public apiV1DokumentePrintPost(dokumentDTO?: DokumentDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf' | 'application/json' | 'application/json+prolbem' | 'text/plain'}): Observable<any> {
+    public apiV1DokumentePrintPost(empfaenger?: string, dokumentDTO?: DokumentDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'application/json' | 'application/json+prolbem' | 'text/plain'}): Observable<Blob>;
+    public apiV1DokumentePrintPost(empfaenger?: string, dokumentDTO?: DokumentDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'application/json' | 'application/json+prolbem' | 'text/plain'}): Observable<HttpResponse<Blob>>;
+    public apiV1DokumentePrintPost(empfaenger?: string, dokumentDTO?: DokumentDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'application/json' | 'application/json+prolbem' | 'text/plain'}): Observable<HttpEvent<Blob>>;
+    public apiV1DokumentePrintPost(empfaenger?: string, dokumentDTO?: DokumentDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf' | 'application/json' | 'application/json+prolbem' | 'text/plain'}): Observable<any> {
+
+        let queryParameters = new HttpParams({encoder: this.encoder});
+        if (empfaenger !== undefined && empfaenger !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>empfaenger, 'empfaenger');
+        }
 
         let headers = this.defaultHeaders;
 
@@ -635,6 +719,7 @@ export class DokumenteService implements DokumenteServiceInterface {
         return this.httpClient.post(`${this.configuration.basePath}/api/v1/Dokumente/print`,
             dokumentDTO,
             {
+                params: queryParameters,
                 responseType: "blob",
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
@@ -646,21 +731,14 @@ export class DokumenteService implements DokumenteServiceInterface {
 
     /**
      * Sendet ein Dokument an den angegebenen Empfänger
-     * @param receiver Die Guid des konkreten Empfängers.
-     * @param dokumentDTO Das Dokument DTO Objekt welches das gespeicherte und zu sendende Dokument referenziert, oder eine komplettes  Dokument DTO Objekt mit den zu sendenden Daten.
+     * @param sendDokumentRequest Ein &#x60;SendDokumentRequest&#x60; Objekt, welches die Elektro-Aktion, dass eigentliche zu sendende Dokument sowie einen  optionalen konkreten Empfänger anhand dessen GUID spezifiziert.  Das Dokument DTO Objekt welches das gespeicherte und zu sendende Dokument referenziert, oder eine komplettes  Dokument DTO Objekt mit den zu sendenden Daten.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public apiV1DokumenteSendPost(receiver?: string, dokumentDTO?: DokumentDTO, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<DokumentDTO>;
-    public apiV1DokumenteSendPost(receiver?: string, dokumentDTO?: DokumentDTO, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<DokumentDTO>>;
-    public apiV1DokumenteSendPost(receiver?: string, dokumentDTO?: DokumentDTO, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<DokumentDTO>>;
-    public apiV1DokumenteSendPost(receiver?: string, dokumentDTO?: DokumentDTO, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
-
-        let queryParameters = new HttpParams({encoder: this.encoder});
-        if (receiver !== undefined && receiver !== null) {
-          queryParameters = this.addToHttpParams(queryParameters,
-            <any>receiver, 'receiver');
-        }
+    public apiV1DokumenteSendPost(sendDokumentRequest?: SendDokumentRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<DokumentDTO>;
+    public apiV1DokumenteSendPost(sendDokumentRequest?: SendDokumentRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<DokumentDTO>>;
+    public apiV1DokumenteSendPost(sendDokumentRequest?: SendDokumentRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<DokumentDTO>>;
+    public apiV1DokumenteSendPost(sendDokumentRequest?: SendDokumentRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
 
         let headers = this.defaultHeaders;
 
@@ -703,9 +781,8 @@ export class DokumenteService implements DokumenteServiceInterface {
         }
 
         return this.httpClient.post<DokumentDTO>(`${this.configuration.basePath}/api/v1/Dokumente/send`,
-            dokumentDTO,
+            sendDokumentRequest,
             {
-                params: queryParameters,
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,

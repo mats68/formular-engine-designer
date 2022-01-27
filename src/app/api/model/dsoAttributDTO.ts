@@ -12,7 +12,7 @@
 
 
 /**
- * Diese Klasse repräsentiert ein Data-Transfer-Object eines Dokumentattributes für Dokumente aus der Elektro Sparte.
+ * Diese Klasse repräsentiert ein Datentransferobjekt eines Dokumentattributes für Dokumente aus der Elektro Sparte.
  */
 export interface DsoAttributDTO { 
     /**

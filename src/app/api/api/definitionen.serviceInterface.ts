@@ -33,16 +33,16 @@ export interface DefinitionenServiceInterface {
      * 
      * @param guids 
      */
-    apiV1DefinitionenDocCatsGet(guids?: Array<string>, extraHttpRequestParams?: any): Observable<Array<DokumentKatDTO>>;
+    apiV1DefinitionenDocCatsGet(guids: Array<string>, extraHttpRequestParams?: any): Observable<Array<DokumentKatDTO>>;
 
     /**
      * 
      * 
      * @param sparten 
-     * @param page 
+     * @param skip 
      * @param limit 
      */
-    apiV1DefinitionenDocCatsListGet(sparten?: Array<string>, page?: number, limit?: number, extraHttpRequestParams?: any): Observable<Array<DokumentKatDTO>>;
+    apiV1DefinitionenDocCatsListGet(sparten?: Array<string>, skip?: number, limit?: number, extraHttpRequestParams?: any): Observable<Array<DokumentKatDTO>>;
 
     /**
      * 
@@ -55,8 +55,11 @@ export interface DefinitionenServiceInterface {
     /**
      * 
      * 
+     * @param sparten 
+     * @param skip 
+     * @param limit 
      */
-    apiV1DefinitionenDocDefsGet(extraHttpRequestParams?: any): Observable<Array<DokumentDefDTO>>;
+    apiV1DefinitionenDocDefsGet(sparten?: Array<string>, skip?: number, limit?: number, extraHttpRequestParams?: any): Observable<Array<DokumentDefDTO>>;
 
     /**
      * 

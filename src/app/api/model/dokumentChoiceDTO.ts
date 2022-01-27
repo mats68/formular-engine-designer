@@ -14,9 +14,18 @@ import { AuftragsDefDTO } from './auftragsDefDTO';
 import { DokumentDefDTO } from './dokumentDefDTO';
 
 
+/**
+ * Diese Klasse repräsentiert ein Datentransferobjekt für Dokument Choices.
+ */
 export interface DokumentChoiceDTO { 
     projektDef?: AuftragsDefDTO;
+    /**
+     * Eine Dictionary-Instanz, welche die GUID der Empfänger und die entsprechenden `EmpfaengerDTO` Instanzen  beinhaltet.
+     */
     empfaenger?: { [key: string]: EmpfaengerDTO; } | null;
+    /**
+     * Eine Dictionary-Instanz, welche die GUID der Empfänger und eine Liste der konkreten Dokumentdefinitionen der zu  erstellenden Dokumenten enthält.
+     */
     dokumentDefs?: { [key: string]: Array<DokumentDefDTO>; } | null;
 }
 

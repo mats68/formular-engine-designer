@@ -1,11 +1,12 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, ViewChild } from '@angular/core';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
-import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 
 import { MtBaseComponent } from '../../base/mt-base/mt-base.component';
 import { IValueType, SchemaManager } from '../../base/schemaManager';
 import { IMaskOptions } from '../../base/types';
+import { Subscription } from 'rxjs';
 
 enum InpTyp {
   normal,
@@ -29,9 +30,12 @@ export class MtInputComponent extends MtBaseComponent implements OnInit, OnDestr
   maskOptions: IMaskOptions;
   inpTyp = InpTyp;
   Typ: InpTyp;
+	@ViewChild(MatAutocompleteTrigger) autocomplete: MatAutocompleteTrigger;
+  subscriptionAutocompleteClose: Subscription;
 
   ngOnInit(): void {
     this.registerFocus();
+    this.registerAutocompleteClose();
 
     this.Typ = InpTyp.normal;
     if (this.isSelect) {
@@ -119,12 +123,28 @@ export class MtInputComponent extends MtBaseComponent implements OnInit, OnDestr
 
   ngOnDestroy() {
     this.unregisterFocus();
+    this.unregisterCloseAutocomplete()
   }
 
   options_icon(): boolean {
     return this.comp.type === 'input' && typeof this.comp.options !== 'undefined'
 
   }
+
+  registerAutocompleteClose() {
+    this.subscriptionAutocompleteClose = this.sm.OnAutocompleteClose.subscribe({
+      next: (comp) => {
+        if (comp === this.comp) {
+          this.autocomplete.closePanel()
+        }
+      }
+    });
+  }
+
+  unregisterCloseAutocomplete() {
+    this.subscriptionAutocompleteClose.unsubscribe();
+  }
+
 
 
 

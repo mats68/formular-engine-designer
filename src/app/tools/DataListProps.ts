@@ -16,6 +16,12 @@ export enum LoadingStatus {
 	AllLoaded = 3
 }
 
+export interface MenuItem {
+	textFn: (data: any) => string;
+	clickFn: (data: any) => void;
+	disableFn: (data: any) => boolean;
+}
+
 export class DataListProps {
 	private _data: any[] = []
 	public error: string = '';
@@ -24,6 +30,11 @@ export class DataListProps {
 	public clickRowFn: (data: any) => any;
 	public skip: number = 0;
 	public NewItemButtonFn: any;
+	public showDelete: boolean;
+	public deleteRowFn: (data: any) => any;
+	public deleteText: string = marker('comp_data_list.delete_record')
+	public titleMenuItems: MenuItem[] = [];
+	public rowMenuItems: MenuItem[] = [];
 
 	public loadingStatus: LoadingStatus = LoadingStatus.Loaded;
 
@@ -44,7 +55,7 @@ export class DataListProps {
 		public canLoadMore: boolean = false,
 		public canLoadAll: boolean = false,
 		public limit: number = 0,
-		public NewItemButtonText: string = '',
+		public NewItemButtonText: string = ''
 	)
 	{
 		this.initStyleInaktiv()
@@ -92,4 +103,40 @@ export class DataListProps {
 		this.skip = 0
 		this.loadMoreRows()
 	}
+
+	// neues Laden, z.B. nach dem Löschen
+	reloadRows(anzahlRows: number) {
+		this.skip = 0
+		const oldLimit = this.limit
+		const loadingStatus = this.loadingStatus
+		this.limit = anzahlRows
+		if (this.limit <= 0) {
+			this.limit = 1
+		}
+		this.loadingStatus = LoadingStatus.Loading
+		if (this.loadingFn) {
+			this.loadingFn().pipe(
+				catchError(e => {
+					this.error = `Fehler bei Abfrage: ${this.titel}`
+					this.data = []
+					console.error(this.error, e);
+					this.loadingStatus = LoadingStatus.Loaded
+					return throwError(e);
+				})
+			).subscribe(
+				(data: any[] | any) => {
+					if (!Array.isArray(data)) data = [data]
+					if (!this.data) this.data = []
+					this.data = data
+					this.skip = data.length
+					this.limit = oldLimit
+     				this.loadingStatus = loadingStatus
+					if (this.loadedCallback) {
+						this.loadedCallback()
+					}
+				}
+			)
+		}
+	}
+
 }

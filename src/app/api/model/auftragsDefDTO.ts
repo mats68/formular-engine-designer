@@ -13,12 +13,30 @@ import { LeistungsDefDTO } from './leistungsDefDTO';
 import { MultiLangText } from './multiLangText';
 
 
+/**
+ * Diese Klasse repräsentiert ein Datentransferobjekt für Auftragsdefinitionen.
+ */
 export interface AuftragsDefDTO { 
-    guid?: string;
+    /**
+     * Die eindeutige GUID dieser Auftragsdefinition.
+     */
+    guid: string;
+    /**
+     * Die Sparte des Auftrags, welcher durch diese Definition definiert wird.
+     */
     sparte?: string | null;
+    /**
+     * Die Sequenz-Nummer für die Sortierreihenfolge.
+     */
     sequenzNr?: number;
-    bezeichnung?: MultiLangText;
+    /**
+     * Ein Indikator der Anzeigt, ob diese Auftragsdefinition aktuell aktiviert ist oder nicht.
+     */
     aktiv?: boolean;
+    bezeichnung?: MultiLangText;
+    /**
+     * Die in diesem Auftrag enthaltenen Leistungen bzw. die entsprechenden Leistungsdefinitionen.
+     */
     leistungsDefs?: Array<LeistungsDefDTO> | null;
 }
 

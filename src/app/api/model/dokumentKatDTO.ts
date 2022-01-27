@@ -9,15 +9,36 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { EmpfaengerKatDTO } from './empfaengerKatDTO';
 import { MultiLangText } from './multiLangText';
 
 
+/**
+ * Diese Klasse repräsentiert ein Datentransferobjekt für Dokumentkategorien.
+ */
 export interface DokumentKatDTO { 
-    guid?: string;
-    sparte?: string | null;
-    empfaengerKategorie?: string;
+    /**
+     * Die eindeutige GUID dieser Dokumentkategorie.
+     */
+    guid: string;
+    /**
+     * Die Sparte dieser Dokumentkategorie.
+     */
+    sparte?: string;
+    empfaengerKat?: EmpfaengerKatDTO;
     kuerzel?: MultiLangText;
     bezeichnung?: MultiLangText;
+    /**
+     * Der Legacy-Typ dieser Dokumentkategorie, sofern vorhanden.
+     */
     legacyTyp?: string | null;
+    /**
+     * Ein Indikator der anzeigt, ob diese Dokumentkategorie eine Beilage repräsentiert oder nicht.
+     */
+    istBeilage?: boolean;
+    /**
+     * Eine Sequenz-Nummer, welche die Sortierreihenfolge innerhalb gleicher Empfängerkategorien regelt.
+     */
+    sequenzNummer?: number;
 }
 

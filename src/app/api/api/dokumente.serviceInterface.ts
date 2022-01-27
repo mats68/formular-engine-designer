@@ -15,6 +15,7 @@ import { Observable }                                        from 'rxjs';
 
 import { DokumentBeilageLinkDTO } from '../model/models';
 import { DokumentDTO } from '../model/models';
+import { SendDokumentRequest } from '../model/models';
 
 
 import { Configuration }                                     from '../configuration';
@@ -31,8 +32,9 @@ export interface DokumenteServiceInterface {
      * @param mandant GUID des Mandanten.
      * @param guidDokument GuId des Formulars.
      * @param guidBeilage Guid der Beilage.
+     * @param schemaKey Der Key aus der Schema Beilagen-Definition
      */
-    apiV1DokumenteAttachmentsDelete(mandant?: string, guidDokument?: string, guidBeilage?: string, extraHttpRequestParams?: any): Observable<{}>;
+    apiV1DokumenteAttachmentsDelete(mandant?: string, guidDokument?: string, guidBeilage?: string, schemaKey?: number, extraHttpRequestParams?: any): Observable<{}>;
 
     /**
      * Löscht eine Dokumentbeilage.
@@ -67,11 +69,20 @@ export interface DokumenteServiceInterface {
     apiV1DokumenteAttachmentsPost(dokumentBeilageLinkDTO?: DokumentBeilageLinkDTO, extraHttpRequestParams?: any): Observable<{}>;
 
     /**
+     * Findet den SchemaKey einer Beilage
+     * 
+     * @param dokumentGuid 
+     * @param beilageGuid 
+     */
+    apiV1DokumenteAttachmentsSchemakeyGet(dokumentGuid?: string, beilageGuid?: string, extraHttpRequestParams?: any): Observable<number>;
+
+    /**
      * Löscht ein Dokument.
      * TODO: Nur mit Status xyz möglich!
      * @param guid Die GUID des zu löschenden Formulars.
+     * @param force 
      */
-    apiV1DokumenteGuidDelete(guid: string, extraHttpRequestParams?: any): Observable<{}>;
+    apiV1DokumenteGuidDelete(guid: string, force?: boolean, extraHttpRequestParams?: any): Observable<{}>;
 
     /**
      * Ruft ein Dokument aus der Elektro-Sparte ab.
@@ -90,17 +101,17 @@ export interface DokumenteServiceInterface {
     /**
      * Druckt ein Dokument aus der Elektro-Sparte aus.
      * 
+     * @param empfaenger GUID des empfängers an den das Dokument gesendet wird
      * @param dokumentDTO Das Dokument DTO Objekt welches das gespeicherte und zu druckende Dokument referenziert, oder eine komplettes  Dokument DTO Objekt mit den zu druckenden Daten.
      */
-    apiV1DokumentePrintPost(dokumentDTO?: DokumentDTO, extraHttpRequestParams?: any): Observable<Blob>;
+    apiV1DokumentePrintPost(empfaenger?: string, dokumentDTO?: DokumentDTO, extraHttpRequestParams?: any): Observable<Blob>;
 
     /**
      * Sendet ein Dokument an den angegebenen Empfänger
      * 
-     * @param receiver Die Guid des konkreten Empfängers.
-     * @param dokumentDTO Das Dokument DTO Objekt welches das gespeicherte und zu sendende Dokument referenziert, oder eine komplettes  Dokument DTO Objekt mit den zu sendenden Daten.
+     * @param sendDokumentRequest Ein &#x60;SendDokumentRequest&#x60; Objekt, welches die Elektro-Aktion, dass eigentliche zu sendende Dokument sowie einen  optionalen konkreten Empfänger anhand dessen GUID spezifiziert.  Das Dokument DTO Objekt welches das gespeicherte und zu sendende Dokument referenziert, oder eine komplettes  Dokument DTO Objekt mit den zu sendenden Daten.
      */
-    apiV1DokumenteSendPost(receiver?: string, dokumentDTO?: DokumentDTO, extraHttpRequestParams?: any): Observable<DokumentDTO>;
+    apiV1DokumenteSendPost(sendDokumentRequest?: SendDokumentRequest, extraHttpRequestParams?: any): Observable<DokumentDTO>;
 
     /**
      * Überprüft, ob das Dokument zu versendet werden kann.

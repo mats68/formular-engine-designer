@@ -12,7 +12,7 @@
 
 
 /**
- * Diese Klasse repräsentiert ein Data-Transfer-Object für Elektro-Aufträge Doumentenpool Entitäten.
+ * Diese Klasse repräsentiert ein Datentransferobjekt für Elektro-Aufträge Doumentenpool Entitäten.
  */
 export interface EAuftragDokumentPoolDTO { 
     /**

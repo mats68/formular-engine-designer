@@ -11,9 +11,21 @@
  */
 
 
+/**
+ * Dieses Objekt kapselt einen Namen/Bezeichner/Text, der in eine oder mehrere der folgenden Sprachen übersetzt ist:  Detusch, Frazösisch und/oder Italienisch.
+ */
 export interface MultiLangText { 
+    /**
+     * Der Text auf deutsch sofern verfügbar, ansonsten `null`.
+     */
     german?: string | null;
+    /**
+     * Der Text auf französisch sofern verfügbar, ansonsten `null`.
+     */
     french?: string | null;
+    /**
+     * Der Text auf italienisch sofern verfügbar, ansonsten `null`.
+     */
     italian?: string | null;
 }
 

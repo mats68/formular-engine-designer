@@ -13,7 +13,7 @@ import { EAktionDTO } from './eAktionDTO';
 
 
 /**
- * Diese Klasse repräsentiert ein Data-Transfer-Object für Elektro-Leistungen Entitäten.
+ * Diese Klasse repräsentiert ein Datentransferobjekt für Elektro-Leistungen Entitäten.
  */
 export interface ELeistungDTO { 
     /**
@@ -44,14 +44,6 @@ export interface ELeistungDTO {
      * Die Elektro-Anlage auf welche sich diese Leistung bezieht.
      */
     anlage?: string;
-    /**
-     * Die GUID der Empfängerkategorie.
-     */
-    empfaengerKategorie?: string;
-    /**
-     * Die GUID des Empfängers dieser Leistung.
-     */
-    empfaenger?: string;
     /**
      * Elektro-Leistungsnummer.
      */

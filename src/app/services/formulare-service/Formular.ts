@@ -7,7 +7,6 @@ import { FormularBase, FormularBaseChangeNotifierType, FormularState, IFormularB
 import { FormularBeilage, IFormularBeilage } from "./FormularBeilage";
 import { asGuid } from './FormularUtils';
 import * as _ from "lodash-es";
-// import { sign } from "crypto";
 
 export interface IFormular extends IFormularBase {
 	readonly dokumentDef: Guid;

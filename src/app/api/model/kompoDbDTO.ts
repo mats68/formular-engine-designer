@@ -12,7 +12,7 @@
 
 
 /**
- * Diese Klasse repräsentiert ein Data-Transfer-Object der Komponenten-Datenbank.
+ * Diese Klasse repräsentiert ein Datentransferobjekt der Komponenten-Datenbank.
  */
 export interface KompoDbDTO { 
     /**

@@ -1,6 +1,6 @@
 <mat-expansion-panel [class]="getClass('exp-panel','panel')" [style]='style' [expanded]='comp.expanded' [disabled]='disabled'
 	(afterExpand)='afterExpand()' (afterCollapse)='afterCollapse()' [id]='comp.name'>
-	<div #name tabindex="1"></div>
+	<div #name [tabindex]="tabIndex"></div>
 	<mat-expansion-panel-header class='exp-header'>
 		<mat-panel-title [style]='styles("header")'>
 			<div class="flex items-center mb-4 mt-4">

@@ -1,7 +1,7 @@
 <div *ngIf='hasDiff()'>
     <mt-diff-btn [comp]='comp' [sm]='sm'></mt-diff-btn>
 </div>
-<div [style]='style' [class]="getClass(undefined, 'panel')" [id]='comp.name' tabindex="1">
+<div [style]='style' [class]="getClass(undefined, 'panel')" [id]='comp.name' [tabindex]="tabIndex">
 	<mt-container [comp]='comp' [sm]='sm' [class]="comp.class"></mt-container>
 </div>
 <mat-hint *ngIf='hint || getError()'>

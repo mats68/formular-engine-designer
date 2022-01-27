@@ -12,7 +12,7 @@
 
 
 /**
- * Diese Klasse repräsentiert ein Data-Transfer-Object einer Adresse.
+ * Diese Klasse repräsentiert ein Datentransferobjekt einer Adresse.
  */
 export interface AdresseDTO { 
     /**

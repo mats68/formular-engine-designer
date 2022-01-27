@@ -15,7 +15,7 @@ import { AdresseDTO } from './adresseDTO';
 
 
 /**
- * Diese Klasse repräsentiert ein Data-Transfer-Object für Gebäude Entitäten.
+ * Diese Klasse repräsentiert ein Datentransferobjekt für Gebäude Entitäten.
  */
 export interface GebaeudeDTO { 
     /**

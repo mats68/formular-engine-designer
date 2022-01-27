@@ -13,7 +13,7 @@ import { DokumentDTO } from './dokumentDTO';
 
 
 /**
- * Diese Klasse repräsentiert ein Data-Transfer-Object für Elektro-Aktionen Entitäten.
+ * Diese Klasse repräsentiert ein Datentransferobjekt für Elektro-Aktionen Entitäten.
  */
 export interface EAktionDTO { 
     /**

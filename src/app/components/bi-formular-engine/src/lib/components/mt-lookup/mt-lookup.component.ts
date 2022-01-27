@@ -67,14 +67,14 @@ export class MtLookupComponent extends MtBaseComponent implements OnInit, OnDest
           this.comp.lookup_fn(this.sm, this.comp, newText).then((data: any) => {
             this.itemsdata = data
             if (this.comp.lookup_cb) {
-              const items = this.comp.lookup_cb(this.sm, this.comp, text, this.old_suchtext, this.itemsdata) 
+              const items = this.comp.lookup_cb(this.sm, this.comp, text, this.old_suchtext, this.itemsdata)
               if (items) {
                 this.loading = false
                 this.items$ = of(items)
                 return
               }
             }
-  
+
             this.items$ = of(data)
             this.loading = false
           }).catch(err => {
@@ -108,7 +108,7 @@ export class MtLookupComponent extends MtBaseComponent implements OnInit, OnDest
   }
 
   getPlaceholder(): string {
-    
+
     return this.placeholder || this.sm.translate(marker('comp_input.suchtext'))
   }
 

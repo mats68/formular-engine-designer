@@ -1,23 +1,15 @@
-import { IComponent, IComponentBoolFunction, IComponentProps, IComponentString, IComponentStringFunction, ISelectOptionItemsFunction, SchemaManager } from 'src/app/components/bi-formular-engine/src/public-api';
-// import { adress_suche_fn, adress_suche_panel } from './panel-adress-suche';
-import { FormularStatusText, IProjektAbschnitt, SignaturDef } from '../services';
+import { IComponent, IComponentBoolFunction, IComponentProps, IComponentString, IComponentStringFunction, ISchema, ISelectOptionItemsFunction, SchemaManager } from 'src/app/components/bi-formular-engine/src/public-api';
+import { FormularStatusText, IProjektAbschnitt, ProjektService, SignaturDef } from '../services';
 import { Router } from '@angular/router';
-import { EAktionDTO, DokumentBeilageLinkDTO, DokumentDTO, DokumentStatus, EProjektDTO, IdentityContextDTO, DokumentTransferHistoryDTO, DokumentTransferKanal, TransferTyp, ApiModule, SignaturDTO, EmpfaengerDTO, TransferKanal, EGeraetDTO } from '../api';
+import { EAktionDTO, DokumentDTO, DokumentStatus, IdentityContextDTO, DokumentTransferHistoryDTO, TransferTyp, SignaturDTO, EmpfaengerDTO, EmpfaengerTransferKanal, EProjektDTO } from '../api';
 import { DomSanitizer } from '@angular/platform-browser';
 import { marker } from '@ngneat/transloco-keys-manager/marker';
-import { asGuid, Guid } from '../tools/Guid';
-// import { timeStamp } from 'console';
-import { Timestamp } from 'rxjs/internal/operators/timestamp';
+import { Guid } from '../tools/Guid';
 import * as moment from 'moment';
 import { SignatureRole } from '../services/projekt/signatureRole';
-import { BehaviorSubject } from 'rxjs';
-// import { Rollen } from '@next-gen/berechtigungen';
-import { Component } from '@angular/core';
-import { NULL_EXPR } from '@angular/compiler/src/output/output_ast';
-import { S } from '@angular/cdk/keycodes';
-// import { Schema } from 'inspector';
-import { setMaxListeners } from 'process';
-
+import { cloneDeep } from 'lodash-es';
+import * as schemas from 'src/app/schemas';
+import { ProjektBeilagen } from '../tools';
 export const w_full = '100%'
 const date_width = '20ch'
 
@@ -34,23 +26,23 @@ export const initLabels = (sm: SchemaManager) => {
 	})
 }
 
-export const initInputWidths = (sm: SchemaManager) => {
+export const initInputWidths = (sm: SchemaManager, maxWdith: number = 20) => {
 	sm.traverseSchema(comp => {
-		setInputWidth(comp)
+		setInputWidth(comp, maxWdith)
 	})
 }
 
 
-export const setInputWidth = (comp: IComponent) => {
+export const setInputWidth = (comp: IComponent, maxWdith: number = 20) => {
 	if (comp.type === 'date') {
 		comp.width = date_width
 	} else if (comp.type === 'input' || comp.type === 'select' || comp.type === 'lookup') {
 		if(comp.dataType === 'int')
 		{
-			// Wenn noch kein max oder width gesetzt wird, dann bei INT-Feldern immer 6-Zeichen verwenden
-			if(!comp.width && !comp.max)
+			if(!comp.width)
 			{
-				comp.max = 6;
+			  // Wenn noch kein width gesetzt ist, Länge für maxint setzen
+			  comp.width = '15ch'
 			}
 		}
 		else if(comp.dataType === 'float')
@@ -64,7 +56,7 @@ export const setInputWidth = (comp: IComponent) => {
 
 		if (!comp.width && comp.max) {
 			let max = comp.max
-			if (max > 20) {
+			if (max > maxWdith) {
 				comp.width = w_full
 			} else {
 				if (comp.prefix) max = max + comp.prefix.length
@@ -121,12 +113,12 @@ export const label_tr = (key_tr: string, full?: boolean, zus_class?: string, noM
 }
 
 
-export const label = (text: string | IComponentString, full?: boolean, zus_class?: string, noMargin?: boolean, props?: IComponentProps): IComponent => {
+export const label = (text: string | IComponentString, full?: boolean, zus_class?: string, noMargin?: boolean, props?: IComponentProps, zus_class_layout?: string): IComponent => {
 	const p: IComponentProps = props || {}
 	return {
 		type: 'label',
 		//   classLayout: 'col-start-1 ' + (!noMargin ? 'mt-4 ' : '') + (full ? 'col-span-2 ' : ''),
-		classLayout: 'col-start-1 col-label-class-layout' + (full ? ' col-span-2 ' : ''),
+		classLayout: 'col-start-1 col-label-class-layout' + (full ? ' col-span-2 ' : '') + zus_class_layout,
 		class: 'whitespace-pre-line ' + zus_class,
 		label: text,
 		...p,
@@ -208,7 +200,7 @@ export const labelhtml = (text: string, full: boolean = false): IComponent => {
 	}
 }
 
-export const options_tr = (keys: string[], values?: number[]): ISelectOptionItemsFunction => {
+export const options_tr = (keys: string[], values?: number[] | string[]): ISelectOptionItemsFunction => {
 	if (values) {
 		return (sm) => {
 			return keys.map((key, ind) => {
@@ -256,6 +248,7 @@ export const card_hint_edit_panel = (label: string | IComponentStringFunction | 
 		children: [
 			{
 				type: 'panel',
+				noTabIndex: true,
 				classLayout: schemaClassLayout,
 				class: 'col-span-2',
 				children
@@ -267,7 +260,18 @@ export const card_hint_edit_panel = (label: string | IComponentStringFunction | 
 		card.color = 'primary';
 		card.onClick = (sm) => {
 			if(editProjektAbschnitt === 'adressen'){
-				sm.service.editDialogAdressen(() => sm.Schema.initFormular(sm));
+				sm.service.editDialogAdressen(() => {
+					const spinner = sm.getCompByName('spinner_eigentuemer')
+					if (spinner) {
+						spinner.loading = true
+					}
+					sm.service.LoadProjekt(sm.service.CurProjekt?.auftrag?.guid).then(() => {
+						sm.Schema.initFormular(sm)
+						if (spinner) {
+							spinner.loading = false
+						}
+					})
+				});
 			}
 			else if(editProjektAbschnitt === 'auftrag'){
 				sm.service.editDialogAuftrag(() => sm.Schema.initFormular(sm));
@@ -276,11 +280,11 @@ export const card_hint_edit_panel = (label: string | IComponentStringFunction | 
 				sm.service.editDialogGebaeude(() => sm.Schema.initFormular(sm));
 			}
 			else if(editProjektAbschnitt === 'empfaenger'){
-				sm.service.editDialogEmpfaenger(() => sm.Schema.initFormular(sm));
+				sm.service.LoadProjekt(sm.service.CurProjekt?.auftrag?.guid).then(() => sm.Schema.initFormular(sm))
 			}
 			else if(editProjektAbschnitt === 'anlage'){
 				const anlage = sm.service.GetAnlage(sm.projekt, sm.dokumentDTO?.guid);
-				// sm.service.editDialogAnlage(() => sm.Schema.initFormular(sm), anlage);
+				sm.service.editDialogAnlage(() => sm.Schema.initFormular(sm), anlage);
 			}
 		};
 	}
@@ -304,6 +308,7 @@ export const card_hint_expansionspanel = (label: string | IComponentStringFuncti
 		children: [
 			{
 				type: 'panel',
+				noTabIndex: true,
 				classLayout: schemaClassLayout,
 				class: 'col-span-2',
 				children
@@ -315,6 +320,7 @@ export const card_hint_expansionspanel = (label: string | IComponentStringFuncti
 export const normal_panel = (name: string, children: IComponent[], hidden?: any, addClassLayout?: string): IComponent => {
 	return {
 		type: 'panel',
+		noTabIndex: true,
 		name: name,
 		class: 'col-start-1 col-span-2',
 		classLayout: 'col-start-1 col-span-2 ' + schemaClassLayout + (addClassLayout ? ` ${addClassLayout}` : ''),
@@ -340,6 +346,7 @@ export const switch_hint_panel = (label: string, name, field: string, defaultVal
 		children: [
 			{
 				type: 'panel',
+				noTabIndex: true,
 				classLayout: schemaClassLayout,
 				class: 'col-span-2',
 				children
@@ -352,19 +359,19 @@ export const switch_hint_panel = (label: string, name, field: string, defaultVal
 
 // Korrektes Senden-Panel verwenden
 export const erstelleSendenPanel = async (sm: SchemaManager, name): Promise<IComponent> => {
-	let transferKanal = TransferKanal.Undefiniert as TransferKanal;
+	let transferKanal = EmpfaengerTransferKanal.Undefiniert as EmpfaengerTransferKanal;
 	let empf = sm.Schema.empfaenger;
 	if(empf) {
 		transferKanal = empf.transferKanal;
 	}
 
 	switch (transferKanal) {
-		case TransferKanal.M20: {
+		case EmpfaengerTransferKanal.M20: {
 			return senden_panel_m2(sm, name);
 			break;
 		}
-		case TransferKanal.EMail:
-		case TransferKanal.Papier:
+		case EmpfaengerTransferKanal.EMail:
+		case EmpfaengerTransferKanal.Papier:
 		default: {
 			return senden_panel(sm, name, empf);
 			break;
@@ -454,7 +461,7 @@ export const senden_panel = (sm: SchemaManager, name, empfaenger:EmpfaengerDTO):
 				}
 				return def;
 			},
-			onClick(sm, comp) {
+			async onClick(sm, comp) {
 				// Bei Versand (Papier) wird ein "Versand"-Eintrag gesetzt jedoch kein Empfänger geschrieben
 				const th: DokumentTransferHistoryDTO = {
 					mandant: sm.dokumentDTO.mandant,
@@ -462,12 +469,27 @@ export const senden_panel = (sm: SchemaManager, name, empfaenger:EmpfaengerDTO):
 					typ: TransferTyp.Versand,
 					kanal: sm.dokumentDTO.antwortKanal,
 					absender: sm.service.CurIdentity.holding,
-					empfaenger: null,
+					empfaenger: sm.Schema.empfaenger?.guid,
 					timestamp: moment.utc().toISOString(),
 				}
+
+				sm.dokumentDTO.beilagen?.forEach(async beilage=>{
+					const th_beilage = cloneDeep(th) as DokumentTransferHistoryDTO;
+					th_beilage.dokument = beilage.guid;
+					if (!beilage.transferHistory)
+						beilage.transferHistory = [];
+					beilage.transferHistory.push(th_beilage);
+					await sm.service.SaveDokument(beilage);
+				});
+
 				sm.formular.addTransferHistory(th);
 				sm.saveStatus(DokumentStatus.Gesendet);
 				gesendetLabelErstellen(sm);
+				sm.service.emitFormularLoadingSpinner();
+				await sm.service.LoadProjekt(sm.service.CurProjekt.auftrag.guid);
+				await ProjektBeilagen.instance.Init();
+				sm.Schema.defaultAbschnitt = name;
+				sm.service.emitReloadFormular();
 			},
 			onChange(sm, comp) {
 				if (istSigniert(sm) && !istGesendet(sm))
@@ -512,10 +534,17 @@ export const senden_panel_m2 = (sm: SchemaManager, name): IComponent => {
 							sm.getCompByName('senden_spinner').loading = true;
 							let phase = sm.projekt.auftrag.phasen.find(ph => ph.leistungen.find(l => l.aktionen.find(a => Guid.equals(a.dokument?.guid, sm.dokumentDTO.guid))))
 							let leistung = phase?.leistungen.find(l => l.aktionen.find(a => Guid.equals(a.dokument?.guid, sm.dokumentDTO.guid)));
-
-							await sm.service.SendFormular(leistung.empfaenger, sm.dokumentDTO);
+							const empfaenger = await sm.service.GetEmpfaenger_Leistung(leistung)
+							if (empfaenger) {
+								await sm.service.SendFormular(await empfaenger.guid, sm.dokumentDTO);
+							}
 							await sm.saveStatus(DokumentStatus.Gesendet);
 							gesendetLabelErstellen(sm);
+							sm.service.emitFormularLoadingSpinner();
+							await sm.service.LoadProjekt(sm.service.CurProjekt.auftrag.guid);
+							await ProjektBeilagen.instance.Init();
+							sm.Schema.defaultAbschnitt = name;
+							sm.service.emitReloadFormular();
 						}
 						catch (e) {
 							alert(JSON.stringify(e));
@@ -561,7 +590,7 @@ export const gesendetLabelErstellen = (sm: SchemaManager): IComponent => {
 	if(letztesSenden)
 	{
 		let letztesSendenMoment: moment.Moment = moment.unix(letztesSenden);
-		let lblText = sm.translate(marker('panel_senden.text_formular_gesendet')) + letztesSendenMoment.format('DD.MM.YYYY') + ')';
+		let lblText = `(${sm.translate(marker('panel_senden.text_formular_gesendet'), {datum: letztesSendenMoment.format('DD.MM.YYYY HH:mm')})})`;
 
 		let labelGesendet = sm.getCompByName('LbGesendet');
 		if(labelGesendet)
@@ -724,7 +753,7 @@ export const unterschrifts_panel_klein = async (sm: SchemaManager, name: string,
 }
 
 // Sämtliche Unterschriftspanels eines Formulars erstellen
-export const erstelleUnterschriftspanel = async (sm: SchemaManager, signaturDefs: SignaturDef[], mitOrt: boolean, transferKanal: TransferKanal): Promise<IComponent> => {
+export const erstelleUnterschriftspanel = async (sm: SchemaManager, signaturDefs: SignaturDef[], mitOrt: boolean, transferKanal: EmpfaengerTransferKanal): Promise<IComponent> => {
 	let ret = { type:'div', children: [], classLayout: 'col-span-3',  style: 'display: grid; grid-template-columns: 25% 25% 25% 25%;' } as IComponent;
 	let anz = 1;
 	for(let sign of signaturDefs)
@@ -737,12 +766,12 @@ export const erstelleUnterschriftspanel = async (sm: SchemaManager, signaturDefs
 		// switch(transferKanal)
 		// {
 		// 	// Hier sind noch die komischen Werte welche noch korrigiert werden
-		// 	case TransferKanal.M20: {
+		// 	case EmpfaengerTransferKanal.M20: {
 		// 		panel = await unterschrifts_panel_klein(sm ,name, sign, mitOrt, anz);
 		// 		break;
 		// 	}
-		// 	case TransferKanal.EMail:
-		// 	case TransferKanal.Papier:
+		// 	case EmpfaengerTransferKanal.EMail:
+		// 	case EmpfaengerTransferKanal.Papier:
 		// 	default:
 		// 	{
 		// 		panel = await unterschrifts_panel_gross(sm ,name, sign, mitOrt);	// Aktuell immer Papier verwenden, wenn nicht mit M2-GUID
@@ -794,7 +823,7 @@ export const unterschrift_status = async (sm: SchemaManager, signaturDef: Signat
 
 // Panel für sämtliche unterschriften eines Formulars
 export const unterschriften_panel = async (sm:SchemaManager, name: string, hint: string, signaturen: SignaturDef[], mitOrt: boolean = true): Promise<IComponent> => {
-	let transferKanal = TransferKanal.Undefiniert as TransferKanal;
+	let transferKanal = EmpfaengerTransferKanal.Undefiniert as EmpfaengerTransferKanal;
 	let empf = await sm.Schema.empfaenger;
 	if(empf)
 		transferKanal = empf.transferKanal;
@@ -818,6 +847,7 @@ export const unterschriften_panel = async (sm:SchemaManager, name: string, hint:
 			children: [
 				{
 					type: 'panel', classLayout: 'bg-layout-color-2 pl-2 pt-2 pr-2 pb-1.5 flex',
+     				noTabIndex: true,
 					// type: 'panel', classLayout: 'bg-layout-color-2 pl-2 pt-2 pr-2 pb-1.5 flex flex-wrap items-center content-center',
 					children: [
 						{ type: 'icon', icon: 'error_outline', classLayout: 'm-0 p-0 ', },//primary-color-6
@@ -1046,13 +1076,13 @@ const istNachUnterschriftGedruckt = (sm: SchemaManager): boolean => {
 
 // Antwort Schnipsel erstellen
 export const erstelleAntwortSchnipsel = async (sm:SchemaManager, antwortSpez:IComponent, name, form_guid:string): Promise<IComponent> => {
-	let transferKanal = TransferKanal.Undefiniert as TransferKanal;
+	let transferKanal = EmpfaengerTransferKanal.Undefiniert as EmpfaengerTransferKanal;
 	let empf = sm.Schema.empfaenger;
 	if(empf)
 		transferKanal = empf.transferKanal;
 
 	switch (transferKanal) {
-		case TransferKanal.M20: {
+		case EmpfaengerTransferKanal.M20: {
 			if (sm.formularStatus >= DokumentStatus.Bewilligt && antwortSpez) {
 				return antwortSpez;
 			}
@@ -1060,8 +1090,8 @@ export const erstelleAntwortSchnipsel = async (sm:SchemaManager, antwortSpez:ICo
 				return card_panel(antwortSpez ? antwortSpez.label.toString() : 'Netzbetreiberin', antwortSpez ? antwortSpez.name : 'PlaceholderId', [], true);
 			}
 		}
-		case TransferKanal.EMail:
-		case TransferKanal.Papier:
+		case EmpfaengerTransferKanal.EMail:
+		case EmpfaengerTransferKanal.Papier:
 		default:
 			{
 				return antwort_meldefomrulare_panel(sm, name, form_guid);
@@ -1076,8 +1106,9 @@ enum DatumRueckgabeArt {
 }
 
 // Datum/Zeit formatieren je nachdem wie es zurückgegben werden soll
-export function formatiereDatum(datetime: string, rueckgabeArt: DatumRueckgabeArt = 0) {
-	let momentDT = moment.parseZone(datetime, moment.ISO_8601, true);
+export function formatiereDatum(datetime: string, rueckgabeArt: DatumRueckgabeArt = DatumRueckgabeArt.DB) {
+	// nicht parseZone verwenden um korrekten, lokalen Zeitsttempel für die Anzeige zu erhalten
+	const momentDT = moment(datetime);
 	switch(rueckgabeArt)
 	{
 		case DatumRueckgabeArt.DB:{
@@ -1106,6 +1137,7 @@ export interface adresseDef {
 	adresse2: string,
 	plz: string,
 	ort: string,
+	land: string,
 	telnr_d: string,
 	telnr_g: string,
 	telnr_p: string,
@@ -1132,6 +1164,7 @@ export const abrufeKontaktstruktur = async (sm:SchemaManager, kontaktArt:Kontakt
 		adresse2: '',
 		plz: '',
 		ort: '',
+		land: '',
 		telnr_d: '',
 		telnr_g: '',
 		telnr_p: '',
@@ -1152,6 +1185,7 @@ export const abrufeKontaktstruktur = async (sm:SchemaManager, kontaktArt:Kontakt
 			adressenDefinition.adresse2 = gs.adrzusatz;
 			adressenDefinition.plz = gs.plz;
 			adressenDefinition.ort = gs.ort;
+			adressenDefinition.land = gs.landKennz;
 			adressenDefinition.telnr_g = gs.telefonG;
 			const ma = await sm.service.CurMitarbeiter() ;
 			adressenDefinition.telnr_sachb = ma.telefonD;
@@ -1170,6 +1204,7 @@ export const abrufeKontaktstruktur = async (sm:SchemaManager, kontaktArt:Kontakt
 				adressenDefinition.adresse2 = e.adresse2;
 				adressenDefinition.plz = e.plz;
 				adressenDefinition.ort = e.ort;
+				adressenDefinition.land = e.landKennz;
 				adressenDefinition.telnr_d = e.telefonD; !istStringLeer(e.telefonD) ? e.telefonD : (!istStringLeer(e.telefonG) ? e.telefonG : e.telefonP);
 				adressenDefinition.telnr_g = e.telefonG;
 				adressenDefinition.telnr_p = e.telefonP;
@@ -1189,6 +1224,7 @@ export const abrufeKontaktstruktur = async (sm:SchemaManager, kontaktArt:Kontakt
 				adressenDefinition.adresse2 = v.adresse2;
 				adressenDefinition.plz = v.plz;
 				adressenDefinition.ort = v.ort;
+				adressenDefinition.land = v.landKennz;
 				adressenDefinition.telnr_d = v.telefonD;
 				adressenDefinition.telnr_g = v.telefonG;
 				adressenDefinition.telnr_p = v.telefonP;
@@ -1208,6 +1244,7 @@ export const abrufeKontaktstruktur = async (sm:SchemaManager, kontaktArt:Kontakt
 				adressenDefinition.adresse2 = a.adresse2;
 				adressenDefinition.plz = a.plz;
 				adressenDefinition.ort = a.ort;
+				adressenDefinition.land = a.landKennz;
 				adressenDefinition.telnr_d = a.telefonD;
 				adressenDefinition.telnr_g = a.telefonG;
 				adressenDefinition.telnr_p = a.telefonP;
@@ -1357,42 +1394,64 @@ export const nimmTelefonArtWert = (adressStruktur: adresseDef, telArt:TelefonArt
 
 /**
  * Die Felder des Formulars mit den PV Gerätedaten befüllen
- * @param sm: 				SchemaManager
- * @param feldNameFlaeche:	Feldname für das Feld in dem die Fläche der PV-Anlage gespeichert wird
- * @param feldNameLeistung:	Feldname für das Feld in dem die Leistung der PV-Anlage gespeichert wird (Leistung in KW)
- * @param feldNameFabTyp:	Feldname für das Feld in dem Fabrikat/Typ der PV-Anlage gespeichert wird
- * @param feldNamePvAnlage:	Feldname für das Feld in gespeichert wird, ob ein PV-Gerät angegeben wurde
+ * @param sm: 					SchemaManager
+ * @param feldNameFlaeche:		Feldname für das Feld in dem die Fläche der PV-Anlage gespeichert wird
+ * @param feldNameLeistung:		Feldname für das Feld in dem die Leistung der PV-Anlage gespeichert wird (Leistung in KW)
+ * @param feldNameFabTyp:		Feldname für das Feld in dem Fabrikat/Typ der PV-Anlage gespeichert wird
+ * @param feldNamePvAnlage:		Feldname für das Feld in gespeichert wird, ob ein PV-Gerät angegeben wurde
+ * @param feldNameAnzModule:	Feldname für das Feld in gespeichert wird, wieviele PV-Geräte angegeben wurden
+ * @param feldnameHersteller:	Feldname für das Feld Hersteller der PV-Anlage gespeichert wird
+ * @param feldnameTyp:			Feldname für das Feld Typ der PV-Anlage gespeichert wurde
  */
-export const SetzePvDaten = (sm: SchemaManager, feldNameFlaeche: string, feldNameLeistung: string, feldNameFabTyp: string, feldNamePvAnlage: string ): void => {
+export const SetzePvDaten = (sm: SchemaManager, feldNameFlaeche: string, feldNameLeistung: string, feldNameFabTyp: string, feldNamePvAnlage: string, feldNameAnzModule: string = '', feldnameHersteller: string = '', feldnameTyp: string = ''): void => {
 	let flaeche = 0;
 	let leistung = 0;
+	let anzahl = 0;
 	let fabrikatTyp = '';
+	let fabrikat = '';
+	let typ = '';
 	let pvJa = false;
 	sm.projekt.gebaeude?.geraete?.filter(g => g.typ === 'pv_panel').forEach(g => {
 		let data = JSON.parse(g.daten);
 		if (g.anzahl && data.area_m2)
-		   flaeche += g.anzahl * data.area_m2;
+			flaeche += g.anzahl * data.area_m2;
 		if (g.anzahl && data.peak_power_w)
-		   leistung += g.anzahl * data.peak_power_w;
+			leistung += g.anzahl * data.peak_power_w;
 		if (g.hersteller || g.bezeichnung) {
-		   if (g.hersteller && g.bezeichnung)
-			  fabrikatTyp = textZusammensetzen(g.hersteller, " / ", g.bezeichnung);
-		   else if (g.hersteller)
-			  fabrikatTyp = g.hersteller;
-		   else if (g.bezeichnung)
-			  fabrikatTyp = g.bezeichnung;
+			if (g.hersteller && g.bezeichnung) {
+				fabrikatTyp = textZusammensetzen(g.hersteller, " / ", g.bezeichnung);
+				fabrikat = g.hersteller;
+				typ = g.bezeichnung;
+			}
+			else if (g.hersteller) {
+				fabrikatTyp = g.hersteller;
+				fabrikat = g.hersteller;
+			}
+			else if (g.bezeichnung)
+			{
+				fabrikatTyp = g.bezeichnung;
+				typ = g.bezeichnung;
+			}
 		}
+		if (g.anzahl)
+			anzahl = g.anzahl;
 		pvJa = true;
 	});
 
-	if (flaeche && !istStringLeer(feldNameFlaeche))
+	if (flaeche != 0 && !istStringLeer(feldNameFlaeche))
 		sm.setValue(feldNameFlaeche, withPrecision(flaeche));
- 	if (leistung && !istStringLeer(feldNameLeistung))
+	if (leistung != 0 && !istStringLeer(feldNameLeistung))
 		sm.setValue(feldNameLeistung, withPrecision(leistung / 1000));
- 	if (fabrikatTyp !== '' && !istStringLeer(feldNameFabTyp))
+	if (fabrikatTyp !== '' && !istStringLeer(feldNameFabTyp))
 		sm.setValue(feldNameFabTyp, fabrikatTyp);
- 	if (pvJa && !istStringLeer(feldNamePvAnlage))
+	if (pvJa && !istStringLeer(feldNamePvAnlage))
 		sm.setValue(feldNamePvAnlage, true);
+	if (anzahl != 0 && !istStringLeer(feldNameAnzModule))
+		sm.setValue(feldNameAnzModule, anzahl);
+	if (fabrikat !== '' && !istStringLeer(feldnameHersteller))
+		sm.setValue(feldnameHersteller, fabrikat);
+	if (typ !== '' && !istStringLeer(feldnameTyp))
+		sm.setValue(feldnameTyp, typ);
 }
 
 
@@ -1459,6 +1518,7 @@ export const inputGroupCL = (classLayout: string, children: IComponent[]): IComp
 	children.forEach(c => c.classLayout = `${c.classLayout} ${classLayout}`);
 	return {
 		type: 'panel',
+		noTabIndex: true,
 		classLayout: 'col-start-2 col-span-1 flex flex-wrap items-center',
 		children
 	}
@@ -1468,6 +1528,7 @@ export const flexGroup = (classLayout: string, children: IComponent[]): ICompone
 	children.forEach(c => c.classLayout = `${c.classLayout} ${classLayout}`);
 	return {
 		type: 'panel',
+		noTabIndex: true,
 		classLayout: 'flex flex-wrap items-center',
 		children
 	}
@@ -1564,7 +1625,7 @@ export const multiple_checkboxes_with_cust = (fields: string[], labels: string[]
 				const pn = sm.getCompByField(panel_field)
 				const ok = validate_checkBoxGroup(sm, pn)
 				if (!ok) {
-					return sm.translate(marker('page_project_wizard.error_input_required'))
+					return sm.translate(marker('page_projekt_wizard.error_input_required'))
 				}
 			}
 
@@ -1616,7 +1677,7 @@ export const multiple_checkboxes_with_cust = (fields: string[], labels: string[]
 						},
 						validate(sm, comp, value) {
 							if (required && sm.Values[last_cb.field] && SchemaManager.hasNoValue(value)) {
-								return sm.translate(marker('page_project_wizard.error_input_required'))
+								return sm.translate(marker('page_projekt_wizard.error_input_required'))
 							}
 							return ''
 						},
@@ -1632,6 +1693,7 @@ export const multiple_checkboxes_with_cust = (fields: string[], labels: string[]
 	}
 	return {
 		type: 'panel',
+		noTabIndex: true,
 		classLayout: 'col-start-2 col-span-1 flex flex-wrap items-center',
 		field: panel_field,
 		required,
@@ -1654,6 +1716,7 @@ export const single_checkbox_with_cust = (field: string, label: string, field_in
 		},
 		{
 			type: 'panel',
+			noTabIndex: true,
 			classLayout: 'col-start-2 col-span-1 flex flex-wrap items-center',
 			hidden(sm) {
 				return !sm.Values[field]
@@ -1741,7 +1804,7 @@ export const getStepLinkDataStandard = (sm: SchemaManager, step: any): any => {
 export const hasAllRequired = (sm: SchemaManager): boolean => {
 	for(let i in sm.Schema.beilagen){
 		const beilage = sm.Schema.beilagen[i];
-		if(beilage.reqiered && !hasBeilage(sm, beilage.guid))
+		if(beilage.required && !hasBeilage(sm, beilage.guid))
 			return false;
 	}
 
@@ -1840,3 +1903,61 @@ export const checkBoxTextHTML = (checked: boolean) :string => {
 	return `&#x${cb}`
 
 }
+
+//
+export const getSchemaFromDokDef = async (dokumentDefGuid: string): Promise<ISchema> => {
+	/**
+	 * Prüft ob eine DokumentDef mit dieser Guid im Zentral exisitiert und sucht das
+	 *
+	 * @param dokumentDefGuid Guid der Dokument-Definition
+	 * @returns Ein Promise mit der gefundenen Schema-Instanz uder undefined.
+	 */
+	const projektService = ProjektService.instance;
+	if(!projektService)
+		throw new Error(`ProjektService nicht bereit`)
+	const dokDef = (await projektService.GetDocDefs()).find(dd => Guid.equals(dd.guid, dokumentDefGuid));
+	if (!dokDef)
+		throw new Error(`DokumentDef für Guid: '${dokumentDefGuid}' nicht definiert!`)
+
+	const schema = Object.values(schemas).find(s => typeof s === 'object' && Guid.equals(s['guid'], dokDef.guid)) as ISchema;
+	return schema;
+}
+
+export const getSchemaFromDokKat = async (dokumentKatGuid: string, projekt: EProjektDTO): Promise<ISchema> => {
+    /**
+     * Sucht mit der Angabe der Dokument-Kategorie das passende Schema für dieses Projekt
+	  * Falls kein passendes für die Projekt-Sprache gefunden wird, wird das erste genommen
+     *
+     * @param dokumentKatGuid Guid der Dokument-Kategorie
+     * @param projekt das Projekt, in dessen Kontext das Schema ermittelt werden soll
+     * @returns Ein Promise mit der gefundenen Schema-Instanz uder undefined.
+     */
+	const projektService = ProjektService.instance;
+	if(!projektService)
+		throw new Error(`ProjektService nicht bereit`)
+
+	const dokKat = projektService.GetDokKat(dokumentKatGuid);
+	if (!dokKat)
+		throw new Error(`DokumentKat für Guid: '${dokumentKatGuid}' nicht definiert !`)
+
+	const projektEmpfaenger: EmpfaengerDTO[] = await projektService.GetCurEmpfaenger();
+	const empfaenger = projektEmpfaenger.find(e => Guid.equals(e?.kategorie.guid, dokKat.empfaengerKat.guid));
+	if (!empfaenger)
+		throw new Error(`Empfänger für Guid: '${dokKat.empfaengerKat.guid}' nicht im Projekt gefunden!`)
+
+	const docChoice = await projektService.GetCurDocChoiceDef();
+	const dokumentDefs = docChoice.dokumentDefs[empfaenger?.guid];
+	// nach dokeumentDef in Projektsprache suchen
+	let dokumentDef = dokumentDefs?.find(dd =>
+		Guid.equals(dokKat?.guid, dd.category.guid) && dd.languageCode.indexOf(projekt.auftrag.sprache) === 0
+	)
+	// wenn nicht gefunden, das erste nehmen
+	if(!dokumentDef)
+		dokumentDef = dokumentDefs?.find(dd => Guid.equals(dokKat?.guid, dd.category.guid));
+
+	if (!dokumentDef)
+		throw new Error(`Keine DokumentDef für DokumentKat: '${dokKat.bezeichnung.german} (${dokKat.guid})' in DokumentChoice!`)
+
+	return getSchemaFromDokDef(dokumentDef?.guid);
+}
+

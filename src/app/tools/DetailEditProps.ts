@@ -1,5 +1,6 @@
 import { marker } from "@ngneat/transloco-keys-manager/marker";
-import { ISchema } from 'src/app/components/bi-formular-engine/src/public-api';
+import { ISchema } from "../components";
+import { ProjektService } from "../services";
 
 export class DetailEditProps {
 	public entity: string
@@ -12,6 +13,11 @@ export class DetailEditProps {
 	public loadingText: string = ''
 	public loadingDBUpdate: boolean = false
 	public loadingDBUpdateText: string =  ''
+	private _projektService: ProjektService;
+
+	constructor() {
+		this._projektService = ProjektService.instance;		
+	}
 
 
 	get values(): any {
@@ -42,30 +48,30 @@ export class DetailEditProps {
 	}
 
 	handleInsertMessage = (): string => {
-		return this.handleMessage(`${this.entity} wurde eingefügt.`)
+		return this.handleMessage(this._projektService.translationService.translate(marker('comp_detail_edit.entity_eingefuegt'), {entity: this.entity}))
 	}
 
     handleUpdateMessage = (): string => {
-		return this.handleMessage(`${this.entity} wurde geändert.`)
+		return this.handleMessage(this._projektService.translationService.translate(marker('comp_detail_edit.entity_gespeichert'), {entity: this.entity}))
 	}
 
 	handleDeleteMessage = (): string => {
-		return this.handleMessage(`${this.entity} wurde gelöscht.`)
+		return this.handleMessage(this._projektService.translationService.translate(marker('comp_detail_edit.entity_geloescht'), {entity: this.entity}))
 	}
 
     handleAbfrageError = (e: any): string => {
-		return this.handleError(`Fehler bei Abfrage: ${this.entity}`, e)
+		return this.handleError(this._projektService.translationService.translate(marker('comp_detail_edit.entity_error_abfrage'), {entity: this.entity}), e)
     }
 
 	handleInsertError = (e: any): string => {
-		return this.handleError(`Fehler beim Einfügen: ${this.entity}`, e)
+		return this.handleError(this._projektService.translationService.translate(marker('comp_detail_edit.entity_error_insert'), {entity: this.entity}), e)
 	}
 
 	handleUpdateError = (e: any): string => {
-		return this.handleError(`Fehler beim Ändern: ${this.entity}`, e)
+		return this.handleError(this._projektService.translationService.translate(marker('comp_detail_edit.entity_error_update'), {entity: this.entity}), e)
 	}
 
 	handleDeleteError = (e: any): string => {
-		return this.handleError(`Fehler beim Löschen: ${this.entity}`, e)
+		return this.handleError(this._projektService.translationService.translate(marker('comp_detail_edit.entity_error_delete'), {entity: this.entity}), e)
 	}
 }

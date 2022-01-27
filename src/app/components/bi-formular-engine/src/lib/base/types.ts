@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { EAktionDTO, DokumentDTO, EProjektDTO, EmpfaengerDTO } from 'src/app/api';
-import { FormularStatusSteps, DokumentDef, ProjektService, SignaturDef } from 'src/app/services';
+import { FormularStatusSteps, SchemaBeilageDef, ProjektService, SignaturDef } from 'src/app/services';
 import { SchemaManager } from './schemaManager';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MtFileVierwerComponent } from '../components/mt-file-viewer/mt-file-viewer.component';
@@ -22,10 +22,12 @@ export type IFileUploaderDocumentType = 'pdf' | 'png' | 'jpg' | 'jpeg' | 'svg' |
 
 export interface IFileUploaderProps {
 	dokumentDefGuid: string
-	uploadType: IFileUploaderType
-	hideLink?: boolean
+	uploadType?: IFileUploaderType
+	uploadOnly?: boolean
 	router?: Router
 	documentTypes: IFileUploaderDocumentType[]
+	onBeforeLinkBeilage?: IBeforeLinkBeilage,
+
 }
 
 export interface IFileViewerProps {
@@ -39,6 +41,7 @@ export interface IFileViewerProps {
 export interface IStepperProps {
 	selectedIndex?: number
 	completed?: boolean
+	validateSteps?: boolean
 	selectionChange?: IComponentStepperSelectionChangeFunction
 }
 
@@ -52,12 +55,14 @@ export type IComponentVoidFunction = (sm?: SchemaManager, comp?: IComponent, val
 export type IComponentUploadFunction = (sm: SchemaManager, comp: IComponent, file: File) => void;
 export type IValidateFunction = (sm: SchemaManager, comp: IComponent, value?: any) => string | string[] | undefined;
 export type ISchemaVoidFunction = (sm: SchemaManager) => void;
+export type ISchemaBeforeSaveFunction = (sm: SchemaManager) => void;
 export type ISchemaAfterSavefFunction = (sm: SchemaManager, dokument: DokumentDTO) => void;
 export type ISchemaStatusFunction = (sm: SchemaManager, status: any) => void;
 export type ISchemaFormularStatusFunction = (status: number, text: string, translate: boolean) => void;
 export type ISelectOptionItemsFunction = (sm: SchemaManager, comp: IComponent, value?: any) => ISelectOptionItems | string[];
 export type IComponentStepperSelectionChangeFunction = (sm: SchemaManager, comp: IComponent, index: number) => void;
 export type IComponentOnGetClassFunction = (sm: SchemaManager, comp: IComponent, defaultClass?: string, className?: string) => string;
+export type IBeforeLinkBeilage = (sm: SchemaManager, dokument: DokumentDTO) => void;
 
 export type ISummaryFunction = (sm: SchemaManager, comp: IComponent, value?: any, arrayInd?: number) => any;
 
@@ -87,11 +92,12 @@ export interface ISchemaProps {
 	pdfTemplate?: string,
 	pdfFileName?: any,
 	steps?: FormularStatusSteps[]
-	beilagen?: DokumentDef[];
+	beilagen?: SchemaBeilageDef[];
 	signaturen?: SignaturDef[];
 	initFormular?: ISchemaVoidFunction;
 	uninitFormular?: ISchemaVoidFunction;
 	onAfterSave?: ISchemaAfterSavefFunction;
+	onBeforeSave?: ISchemaBeforeSaveFunction;
 	onAfterReload?: ISchemaAfterSavefFunction;
 	setStatus?: ISchemaStatusFunction;
 	onSubmit?: ISchemaVoidFunction;
@@ -121,6 +127,7 @@ export const SchemaKeys: KeysEnum<ISchemaProps> = {
 	initFormular: true,
 	uninitFormular: true,
 	onAfterSave: true,
+	onBeforeSave: true,
 	onAfterReload: true,
 	setStatus: true,
 	onSubmit: true,
@@ -192,6 +199,7 @@ export interface IComponentProps {
 	onAfterCopyRow?: IComponentVoidFunction,
 	colDefs?: ColDef[]
 	hideAddBtn?: boolean,
+	hideAbschnitte?: boolean,
 	addRowLabel?: string | IComponentStringFunction | IComponentString,
 	gridClass?: string,
 	gridClassLastColumn?: string
@@ -241,6 +249,8 @@ export interface IComponentProps {
 	modelValues?: any,
 	src?: string,
 	istAbschnitt?: boolean,
+	defaultAbschnitt?: string,
+	noTabIndex?: boolean,
 	diff?: IDiffProps,
 }
 
@@ -291,6 +301,7 @@ export const ComponentKeys: KeysEnum<IComponent> = {
 	onAfterCopyRow: true,
 	colDefs: true,
 	hideAddBtn: true,
+	hideAbschnitte: true,
 	addRowLabel: true,
 	gridClass: true,
 	gridClassLastColumn: true,
@@ -340,6 +351,8 @@ export const ComponentKeys: KeysEnum<IComponent> = {
 	modelValues: true,
 	src: true,
 	istAbschnitt: true,
+	defaultAbschnitt: true,
+	noTabIndex: true,
 	diff: true,
 };
 

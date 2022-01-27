@@ -1,6 +1,6 @@
 import { Component, OnInit, OnChanges, Input, SimpleChanges } from '@angular/core';
 import { marker } from '@ngneat/transloco-keys-manager/marker';
-import { hasAllRequired } from 'src/app/schemas/schema-utils';
+import { hasAllRequired } from 'src/app/schemas';
 import { MtBaseComponent } from '../../base/mt-base/mt-base.component';
 import { SchemaManager, IError } from '../../base/schemaManager';
 import { IComponent } from '../../base/types';
@@ -19,6 +19,7 @@ export class MtErrorpanelComponent extends MtBaseComponent implements OnInit, On
 	}
 
 	ngOnChanges(): void {
+		
 		this.ErrorAbschnitte = this.sm.getErrorAbschnitte()
 
 	}
@@ -42,6 +43,10 @@ export class MtErrorpanelComponent extends MtBaseComponent implements OnInit, On
 	}
 
 	getText(): string {
+		const lb = this.sm.getPropValue(this.comp, 'label');
+		if(lb)
+			return lb;
+
 		return this.hasError() ? this.sm.translate(marker('comp_errorpanel.text_nok')) : this.sm.translate(marker('comp_errorpanel.text_ok'))
 	}
 
@@ -52,5 +57,16 @@ export class MtErrorpanelComponent extends MtBaseComponent implements OnInit, On
 
 	clickError(comp: IComponent) {
 		this.sm.ScrollToParentAbschnitt(comp)
+	}
+
+	hasVisibleChildren(comp: IComponent): boolean {
+		if(!comp?.children)
+			return false;
+
+		for (let child of comp.children) {
+			if(!this.sm.getPropValue(child, 'hidden'))
+				return true;
+		}
+		return false;
 	}
 }

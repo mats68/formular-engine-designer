@@ -97,10 +97,13 @@ export class DefinitionenService implements DefinitionenServiceInterface {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public apiV1DefinitionenDocCatsGet(guids?: Array<string>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<DokumentKatDTO>>;
-    public apiV1DefinitionenDocCatsGet(guids?: Array<string>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<DokumentKatDTO>>>;
-    public apiV1DefinitionenDocCatsGet(guids?: Array<string>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<DokumentKatDTO>>>;
-    public apiV1DefinitionenDocCatsGet(guids?: Array<string>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+    public apiV1DefinitionenDocCatsGet(guids: Array<string>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<DokumentKatDTO>>;
+    public apiV1DefinitionenDocCatsGet(guids: Array<string>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<DokumentKatDTO>>>;
+    public apiV1DefinitionenDocCatsGet(guids: Array<string>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<DokumentKatDTO>>>;
+    public apiV1DefinitionenDocCatsGet(guids: Array<string>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+        if (guids === null || guids === undefined) {
+            throw new Error('Required parameter guids was null or undefined when calling apiV1DefinitionenDocCatsGet.');
+        }
 
         let queryParameters = new HttpParams({encoder: this.encoder});
         if (guids) {
@@ -153,15 +156,15 @@ export class DefinitionenService implements DefinitionenServiceInterface {
 
     /**
      * @param sparten 
-     * @param page 
+     * @param skip 
      * @param limit 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public apiV1DefinitionenDocCatsListGet(sparten?: Array<string>, page?: number, limit?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<DokumentKatDTO>>;
-    public apiV1DefinitionenDocCatsListGet(sparten?: Array<string>, page?: number, limit?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<DokumentKatDTO>>>;
-    public apiV1DefinitionenDocCatsListGet(sparten?: Array<string>, page?: number, limit?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<DokumentKatDTO>>>;
-    public apiV1DefinitionenDocCatsListGet(sparten?: Array<string>, page?: number, limit?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+    public apiV1DefinitionenDocCatsListGet(sparten?: Array<string>, skip?: number, limit?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<DokumentKatDTO>>;
+    public apiV1DefinitionenDocCatsListGet(sparten?: Array<string>, skip?: number, limit?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<DokumentKatDTO>>>;
+    public apiV1DefinitionenDocCatsListGet(sparten?: Array<string>, skip?: number, limit?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<DokumentKatDTO>>>;
+    public apiV1DefinitionenDocCatsListGet(sparten?: Array<string>, skip?: number, limit?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
 
         let queryParameters = new HttpParams({encoder: this.encoder});
         if (sparten) {
@@ -170,9 +173,9 @@ export class DefinitionenService implements DefinitionenServiceInterface {
                   <any>element, 'sparten');
             })
         }
-        if (page !== undefined && page !== null) {
+        if (skip !== undefined && skip !== null) {
           queryParameters = this.addToHttpParams(queryParameters,
-            <any>page, 'page');
+            <any>skip, 'skip');
         }
         if (limit !== undefined && limit !== null) {
           queryParameters = this.addToHttpParams(queryParameters,
@@ -285,13 +288,32 @@ export class DefinitionenService implements DefinitionenServiceInterface {
     }
 
     /**
+     * @param sparten 
+     * @param skip 
+     * @param limit 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public apiV1DefinitionenDocDefsGet(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<DokumentDefDTO>>;
-    public apiV1DefinitionenDocDefsGet(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<DokumentDefDTO>>>;
-    public apiV1DefinitionenDocDefsGet(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<DokumentDefDTO>>>;
-    public apiV1DefinitionenDocDefsGet(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+    public apiV1DefinitionenDocDefsGet(sparten?: Array<string>, skip?: number, limit?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<DokumentDefDTO>>;
+    public apiV1DefinitionenDocDefsGet(sparten?: Array<string>, skip?: number, limit?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<DokumentDefDTO>>>;
+    public apiV1DefinitionenDocDefsGet(sparten?: Array<string>, skip?: number, limit?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<DokumentDefDTO>>>;
+    public apiV1DefinitionenDocDefsGet(sparten?: Array<string>, skip?: number, limit?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+
+        let queryParameters = new HttpParams({encoder: this.encoder});
+        if (sparten) {
+            sparten.forEach((element) => {
+                queryParameters = this.addToHttpParams(queryParameters,
+                  <any>element, 'sparten');
+            })
+        }
+        if (skip !== undefined && skip !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>skip, 'skip');
+        }
+        if (limit !== undefined && limit !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>limit, 'limit');
+        }
 
         let headers = this.defaultHeaders;
 
@@ -324,6 +346,7 @@ export class DefinitionenService implements DefinitionenServiceInterface {
 
         return this.httpClient.get<Array<DokumentDefDTO>>(`${this.configuration.basePath}/api/v1/Definitionen/doc-defs`,
             {
+                params: queryParameters,
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,

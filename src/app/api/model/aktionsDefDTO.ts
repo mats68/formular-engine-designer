@@ -13,14 +13,35 @@ import { AktionsDoksDefDTO } from './aktionsDoksDefDTO';
 import { MultiLangText } from './multiLangText';
 
 
+/**
+ * Diese Klasse repräsentiert ein Datentransferobjekt für Aktionsdefinitionen.
+ */
 export interface AktionsDefDTO { 
-    guid?: string;
+    /**
+     * Die eindeutige GUID dieser Aktionsdefinition.
+     */
+    guid: string;
+    /**
+     * Die optionale Sparte der Aktion welche durch diese Definition definiert wird.
+     */
     sparte?: string | null;
+    /**
+     * Die Sequenz-Nummer für die Sortierreihenfolge.
+     */
     sequenzNr?: number;
+    /**
+     * Ein Indikator der Anzeigt, ob diese Aktionsdefinition aktuell aktiviert ist oder nicht.
+     */
     aktiv?: boolean;
-    leistungsDef?: string;
+    /**
+     * Die GUID der Leistungsdefinition zu welcher diese Aktionsdefinition gehört.
+     */
+    leistungsDef: string;
     bezeichnung?: MultiLangText;
     beschreibung?: MultiLangText;
+    /**
+     * Die in dieser Aktion enthaltenen Dokumente bzw. die entsprechenden Definitionen.
+     */
     aktionsDoksDefs?: Array<AktionsDoksDefDTO> | null;
 }
 

@@ -14,7 +14,7 @@ import { GebaeudeDTO } from './gebaeudeDTO';
 
 
 /**
- * Diese Klasse repräsentiert ein Data-Transfer-Object Projekte.
+ * Diese Klasse repräsentiert ein Datentransferobjekt Projekte.
  */
 export interface EProjektDTO { 
     gebaeude?: GebaeudeDTO;

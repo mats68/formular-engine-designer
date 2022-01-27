@@ -9,32 +9,99 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { TransferKanal } from './transferKanal';
+import { EmpfaengerTransferKanal } from './empfaengerTransferKanal';
+import { EmpfaengerKatDTO } from './empfaengerKatDTO';
 
 
+/**
+ * Diese Klasse repräsentiert ein Datentransferobjekt für Empfänger.
+ */
 export interface EmpfaengerDTO { 
-    transferKanal?: TransferKanal;
+    /**
+     * Die eindeutige <see cref=\"P:BrunnerInformatik.NextGen.App.ViewModel.EmpfaengerDTO.Guid\">GUID</see> dieses Empfängers.
+     */
     guid?: string;
-    kategorien?: Array<string> | null;
+    kategorie?: EmpfaengerKatDTO;
+    /**
+     * Ein Stichwort für den Empfänger.
+     */
     stichwort?: string | null;
+    /**
+     * Der Name des Packetes, welches für den Empfänger verwendet werden soll/muss.
+     */
     packName?: string | null;
+    /**
+     * Ein optionale Anzeigename, wenn der Empfänger ein Werk repräsentiert.
+     */
     werkName?: string | null;
+    /**
+     * Eine optionales URL-Segment oder Parameter, mit welchem das Design des Werkes geladen werden kann.
+     */
     designUrlName?: string | null;
+    /**
+     * Ein Zeitstempel, sein wann dieser Empfänger aktiv ist.
+     */
     aktivVon?: string | null;
+    /**
+     * Ein Indikator der anzeigt, ob dieser Empfänger aktiv ist oder nicht.
+     */
     aktiv?: boolean;
+    /**
+     * Die GUID des M2 Hub Plugin für den entsprechenden Empfänger, falls vorhanden.
+     */
     m2HubGuid?: string;
-    iaNrInst?: boolean | null;
+    transferKanal?: EmpfaengerTransferKanal;
+    /**
+     * Indikator der anzeigt, ob der Installateur die IA-Nummer vergibt oder das Werk.
+     */
+    iaNrInst?: boolean;
+    /**
+     * Der erster Teil des Firmennamen.
+     */
     firma1?: string | null;
+    /**
+     * Der zweite Teil des Firmennamen.
+     */
     firma2?: string | null;
+    /**
+     * Die erste Zeile der Adresse.
+     */
     adresse?: string | null;
+    /**
+     * Die zweite Zeile der Adresse.
+     */
     adrzusatz?: string | null;
+    /**
+     * Die Postleitzahl der Adresse.
+     */
     plz?: string | null;
+    /**
+     * Der Postort der Adresse.
+     */
     ort?: string | null;
+    /**
+     * Die geschäftliche Telefonnummer.
+     */
     telefonG?: string | null;
+    /**
+     * Die E-Mail Adresse des Empfängers.
+     */
     email?: string | null;
+    /**
+     * Das Kürzel des Kantons, in welchem der Empfänger situiert ist.
+     */
     kanton?: string | null;
+    /**
+     * Der Name der Gemeine, in welcher der Empfänger situiert ist.
+     */
     gemeinde?: string | null;
-    kategorieGuid?: string;
+    /**
+     * Der Zeitstempel der anzeigt, wann dieser Empfänger in der Datenbank aufgenommen wurde.
+     */
+    creaDate?: string | null;
+    /**
+     * Der Zeitstempel welcher anzeigt, wann dieser Empfänger zuletzt in der Datenbank modifiziert wurde.
+     */
     modDate?: string | null;
 }
 

@@ -18,7 +18,7 @@ import { DsoDTO } from './dsoDTO';
 
 
 /**
- * Diese Klasse repräsentiert ein Data-Transfer-Object für Elektro-Formular Entitäten.
+ * Diese Klasse repräsentiert ein Datentransferobjekt für Elektro-Formular Entitäten.
  */
 export interface DokumentDTO { 
     /**

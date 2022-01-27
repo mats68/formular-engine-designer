@@ -1,184 +1,67 @@
-import { ProjektPhase, ProjektPhaseAnlage, ProjektPhaseDatei, ProjektPhaseDateiTyp, ProjektPhaseEmpfaenger } from "./ProjektPhase"
-import { EAktionDTO, EAnlageDTO, EAuftragPhaseDTO, EFormularDTO, EFormularStatus, ELeistungDTO, EProjektDTO } from "../api"
+import { ProjektPhaseWrapper, AnlageWrapper, AktionsWrapper, AktionsTyp, EmpfaengerWrapper } from "./ProjektPhase"
+import { EAktionDTO, EAnlageDTO, EAuftragPhaseDTO, DokumentDTO, DokumentStatus, ELeistungDTO, EProjektDTO, LeistungsDefDTO, AktionsDefDTO, EmpfaengerDTO, DokumentChoiceDTO } from "../api"
+import { ProjektService } from "../services";
+import { Guid } from "./Guid";
+import { getSchemaFromDokDef, getSchemaFromDokKat } from "src/app/schemas";
 import * as schemas from 'src/app/schemas';
-import { TranslocoService } from "@ngneat/transloco";
-import { marker } from "@ngneat/transloco-keys-manager/marker";
 import { ISchema } from "../components";
-import { getFormularTypBeilagenDefs } from "../services";
-import { VSE_IA18_DE_form, VSE_TAG_DE_form } from "../schemas/schema-guid-def";
-
-const addProjektPhaseDatei = (
-	item: ProjektPhaseEmpfaenger | ProjektPhaseAnlage,
-	projekt: EProjektDTO,
-	leistung: ELeistungDTO,
-	aktion: EAktionDTO
-): ProjektPhaseDatei => {
-	const datei = new ProjektPhaseDatei()
-	datei.projekt = projekt
-	datei.leistung = leistung
-	datei.aktion = aktion
-	datei.dateititel = aktion.bezeichnung
-	datei.formulartyp_guid = aktion.guiD_AktionDef
-	if (aktion.dokument)
-	{
-		datei.status = EFormularStatus.InBearbeitung
-    	}
-	else
-	{
-		datei.status = EFormularStatus.Undefiniert
-	}
-
-	datei.typ = ProjektPhaseDateiTyp.pdf
-
-	if (aktion.guiD_AktionDef) {
-		datei.typ = ProjektPhaseDateiTyp.Formular
-	}
-
-	if (datei.typ === ProjektPhaseDateiTyp.pdf) {
-        	// todo datei.dateiname =
-		// datei.dateiname = aktion.bezeichnung + '.pdf'
-   	}
-	 else if(aktion.dokument) {
-		// let values = JSON.parse(aktion.dokument?.dokument.werte[0].daten);
-		if(aktion.dokument.status > 0) {
-			datei.status = aktion.dokument.status;
-		}
-	}
-
-	datei.sendeDatum = new Date()
-
-    const schema = Object.values(schemas).find(s => typeof s === 'object' && s['guid'] === aktion.guiD_AktionDef) as ISchema;
-    if (schema && schema.beilagen) {
-		let formular: EFormularDTO
-
-        schema.beilagen.forEach(sb => {
-			if (aktion.guiD_AktionDef === schema.guid) {
-				formular = aktion.dokument
-			}
-     		const b = getFormularTypBeilagenDefs(sb, projekt, formular)
-            datei.beilagen.push(...b);
-        });
-    }
-
-	 // TAG und IA temporär ausblenden
-	if (
-		datei.formulartyp_guid != undefined && (
-		datei.formulartyp_guid == VSE_IA18_DE_form
-		|| datei.formulartyp_guid == VSE_TAG_DE_form
-		)
-	){
-		return null;
-	}
-
-	item.dateien.push(datei)
-
-	return datei
-}
-
-const addProjektPhaseAnlage = (projektPhase: ProjektPhase, titel: string, anlage: EAnlageDTO): ProjektPhaseAnlage => {
-	const Anlage = new ProjektPhaseAnlage()
-	Anlage.anlage = anlage
-	Anlage.titel = titel
-	projektPhase.anlagen.push(Anlage)
-	return Anlage
-}
-
-const addProjektPhaseEmpfaenger = (projektPhase: ProjektPhase, empfaenger: string): ProjektPhaseEmpfaenger => {
-	const item = new ProjektPhaseEmpfaenger()
-	item.empfaenger = empfaenger
-	projektPhase.empfaenger.push(item)
-
-	return item
-}
 
 
-export const addProjektEmpfaengerPhase = (translationService: TranslocoService, projekt: EProjektDTO, phase: EAuftragPhaseDTO): ProjektPhase => {
-	const p = new ProjektPhase();
+export const addProjektEmpfaengerPhase = (projektService: ProjektService, projekt: EProjektDTO, phase: EAuftragPhaseDTO, leistungsDef: LeistungsDefDTO, docChoice: DokumentChoiceDTO): Promise<ProjektPhaseWrapper> => {
+	const p = new ProjektPhaseWrapper();
 	p.phase = phase;
 	p.projekt = projekt;
-	p.titel = translationService.translate(marker('page_project_wizard.title_phase_planning'));
+	p.titel = leistungsDef.bezeichnung[projektService.DefLanguage]
 	p.empfaenger = [];
-	phase.leistungen.forEach((leistung, ind) => {
-		let titel = ''
-		let beilagen = []
+	phase.leistungen.forEach(leistung => {
+		leistung.aktionen.forEach(aktion => {
+			const aktionDef: AktionsDefDTO = leistungsDef.aktionsDefs.find(a => Guid.equals(a.guid, aktion.guiD_AktionDef))
+			if (aktionDef) {
+				const empfaengerKat = aktionDef.aktionsDoksDefs[0]?.dokumentKat.empfaengerKat;
+				let empfWrapper = p.empfaenger.find(e => Guid.equals(e.empfaengerKat.guid, empfaengerKat?.guid));
+				if(!empfWrapper){
+					empfWrapper = new EmpfaengerWrapper()
+					empfWrapper.empfaengerKat = empfaengerKat;
+					p.empfaenger.push(empfWrapper)
+				}
 
-		let empfaengerCategory: string = leistung.empfaengerKategorie.toUpperCase();
-
-		if(empfaengerCategory === 'B053219C-6A38-47D4-9661-2E234B45FBFF') {
-			titel = translationService.translate(
-				marker('page_project_wizard.label_formular_to'), {
-					recipient: translationService.translate(marker('page_project_wizard.label_recipient_community'))
-				});
-			// beilagen = ['Lageplan', 'Baugesuch']
-		}
-		else if(empfaengerCategory === '2BF651F0-F779-4492-BAF3-35B765FEB351') {
-			titel = translationService.translate(
-				marker('page_project_wizard.label_formular_to'), {
-					recipient: translationService.translate(marker('page_project_wizard.label_recipient_vnb'))
-				});
-		}
-		else {
-			titel = translationService.translate(
-				marker('page_project_wizard.label_formular_to'), {
-					recipient: translationService.translate(marker('page_project_wizard.label_recipient_owner'))
-				});
-			// beilagen = ['Lageplan']
-		}
-
-		const empfaenger = addProjektPhaseEmpfaenger(p, titel)
-		leistung.aktionen.forEach((aktion, a_ind) => {
-			addProjektPhaseDatei(empfaenger, projekt, leistung, aktion)
+				addProjektPhaseAktion(projektService, empfWrapper, projekt, leistung, aktion, aktionDef, docChoice)
+			} else {
+				console.error(`AktionsDefDTO not found for: ${aktion.guiD_AktionDef}`)
+			}
 		});
 	});
+	p.empfaenger.sort((a, b) => a.empfaengerKat.bezeichnung.german < b.empfaengerKat.bezeichnung.german ? -1 : a.empfaengerKat.bezeichnung.german > b.empfaengerKat.bezeichnung.german ? 1 : 0);
 
-	return p
+	return new Promise(resolve => resolve(p))
 };
 
-export const addProjektAnlagenPhase = (translationService: TranslocoService, projekt: EProjektDTO, phase: EAuftragPhaseDTO): ProjektPhase => {
-	const p = new ProjektPhase();
+export const addProjektAnlagenPhase = (projektService: ProjektService, projekt: EProjektDTO, phase: EAuftragPhaseDTO, leistungsDef: LeistungsDefDTO, docChoice: DokumentChoiceDTO): ProjektPhaseWrapper => {
+	const p = new ProjektPhaseWrapper();
 	p.phase = phase;
 	p.projekt = projekt;
 	p.anlagen = [];
-	p.titel = translationService.translate(marker('page_project_wizard.title_phase_realization'));
+	p.titel = leistungsDef.bezeichnung[projektService.DefLanguage]
 
 	phase.anlagen.forEach(a => {
-		let anlagedto = projekt.gebaeude.anlagen.find(an => an.guid === a)
+		let anlagedto = projekt.gebaeude.anlagen.find(an => Guid.equals(an.guid, a))
 		if (anlagedto) {
 			let anlage = addProjektPhaseAnlage(p, anlagedto.bezeichnung, anlagedto)
-			const leistungen = phase.leistungen.filter(l => l.anlage === anlagedto.guid)
+			const leistungen = phase.leistungen.filter(l => Guid.equals(l.anlage, anlagedto.guid))
 			if (!leistungen) {
-					console.error('Keinse Leistungen gefunden für ', anlagedto.guid)
-					return
+				console.error('Keinse Leistungen gefunden für ', anlagedto.guid)
+				return
 			}
 
 			leistungen.forEach(leistung => {
-					leistung.aktionen.forEach((aktion, ind) => {
-						// let beilagen = []
-						// if (ind === 0) {
-						// 	beilagen = [
-						// 		translationService.translate(marker('page_project_wizard.label_attachment_lageplan')),
-						// 		translationService.translate(marker('page_project_wizard.label_attachment_schema'))
-						// 	];
-						// }
-						// if (ind === 1) {
-						// 	beilagen = [
-						// 		translationService.translate(marker('page_project_wizard.label_attachment_apparate_bestellung'))
-						// 	];
-						// }
-						// if (ind === 2) {
-						// 	beilagen = [];
-						// }
-						// if (ind === 3) {
-						// 	beilagen = [];
-						// }
-						// if (ind === 4) {
-						// 	beilagen = [
-						// 		translationService.translate(marker('page_project_wizard.label_attachment_form_mpp')),
-						// 		translationService.translate(marker('page_project_wizard.label_attachment_form_mp'))
-						// 	];
-						// }
-						addProjektPhaseDatei(anlage, projekt, leistung, aktion)
-					})
+				leistung.aktionen.forEach(async aktion => {
+					const aktionDef: AktionsDefDTO = leistungsDef.aktionsDefs.find(a => Guid.equals(a.guid, aktion.guiD_AktionDef))
+					if (aktionDef) {
+						await addProjektPhaseAktion(projektService, anlage, projekt, leistung, aktion, aktionDef, docChoice)
+					} else {
+						console.error(`AktionsDefDTO not found for: ${aktion.guiD_AktionDef}`)
+					}
+				})
 			})
 
 		}
@@ -187,44 +70,72 @@ export const addProjektAnlagenPhase = (translationService: TranslocoService, pro
 	return p
 }
 
-export const addProjektPronovoPhase = (translationService: TranslocoService, projekt: EProjektDTO, phase: EAuftragPhaseDTO): ProjektPhase => {
-	const p = new ProjektPhase();
-	p.phase = phase;
-	p.projekt = projekt;
-	p.titel = translationService.translate(marker('page_project_wizard.title_phase_redeem'));
-	p.empfaenger = [];
+const addProjektPhaseAktion = async (
+	projektService: ProjektService,
+	item: EmpfaengerWrapper | AnlageWrapper,
+	projekt: EProjektDTO,
+	leistung: ELeistungDTO,
+	aktion: EAktionDTO,
+	aktionDef: AktionsDefDTO,
+	docChoice: DokumentChoiceDTO,
+): Promise<AktionsWrapper> => {
 
-	phase.leistungen.forEach((leistung, ind) => {
-		let titel = '';
-		let beilagen = [];
+	return new Promise( async (resolve) => {
 
-		let empfaengerCategory: string = leistung.empfaengerKategorie.toUpperCase();
+		const aktionsWrapper = new AktionsWrapper()
+		aktionsWrapper.projekt = projekt
+		aktionsWrapper.leistung = leistung
+		aktionsWrapper.aktion = aktion
+		aktionsWrapper.aktionDef = aktionDef
+		aktionsWrapper.dateititel = aktion.bezeichnung;// aktionDef.bezeichnung[projektService.DefLanguage]
+		aktionsWrapper.aktionsDefGuid = aktion.guiD_AktionDef
 
-		if(empfaengerCategory === '22FC1591-CE09-4ACB-983A-768D3F8B5E3F') {
-			titel = translationService.translate(
-				marker('page_project_wizard.label_formular_to'),
-				{ recipient: 'Pronovo' }
-			);
-
-			beilagen = [
-				translationService.translate(marker('page_project_wizard.label_attachment_vollmacht')),
-				translationService.translate(marker('page_project_wizard.label_attachment_grundbuch_auszug')),
-			];
+		if (aktion.dokument) {
+			aktionsWrapper.status = DokumentStatus.InArbeit
 		}
-		else
-		{
-			titel = translationService.translate(
-				marker('page_project_wizard.label_formular_to'), {
-					recipient: translationService.translate(marker('page_project_wizard.label_recipient_owner'))
-				});
+		else {
+			aktionsWrapper.status = DokumentStatus.Undefiniert
 		}
 
-		const empfaenger = addProjektPhaseEmpfaenger(p, titel);
-		leistung.aktionen.forEach((aktion, a_ind) => {
-			addProjektPhaseDatei(empfaenger, projekt, leistung, aktion)
-		});
+		aktionsWrapper.typ = AktionsTyp.pdf
+
+		if (aktion.guiD_AktionDef) {
+			aktionsWrapper.typ = AktionsTyp.Formular
+		}
+
+		if (aktionsWrapper.typ === AktionsTyp.pdf) {
+			// todo datei.dateiname =
+			// datei.dateiname = aktion.bezeichnung + '.pdf'
+		}
+		else if (aktion.dokument) {
+			// let values = JSON.parse(aktion.dokument?.dokument.werte[0].daten);
+			if (aktion.dokument.status > 0) {
+				aktionsWrapper.status = aktion.dokument.status;
+			}
+		}
+
+		// aktionsWrapper.sendeDatum = new Date()
+
+		// const schema = Object.values(schemas).find(s => typeof s === 'object' && Guid.equals(s['guid'], aktion.dokument?.dokumentDef?.guid)) as ISchema;
+		const schema = aktion.dokument
+			? await getSchemaFromDokDef(aktion.dokument.dokumentDef.guid)
+			: aktion.bemerkung2
+				? await getSchemaFromDokDef(aktion.bemerkung2)
+				: await getSchemaFromDokKat(aktion.dokumentKategorie, projekt)
+			;
+		if (schema) {
+			aktionsWrapper.beilageDefs = projektService.projektBeilagen.getFormularListe(aktion.dokument, schema);
+			item.aktionen.push(aktionsWrapper)
+		}
+		return aktionsWrapper;
 	});
-
-	return p
 }
 
+
+const addProjektPhaseAnlage = (projektPhase: ProjektPhaseWrapper, titel: string, anlage: EAnlageDTO): AnlageWrapper => {
+	const Anlage = new AnlageWrapper()
+	Anlage.anlage = anlage
+	Anlage.titel = titel
+	projektPhase.anlagen.push(Anlage)
+	return Anlage
+}

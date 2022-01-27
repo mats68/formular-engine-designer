@@ -1,3 +1,8 @@
-<mat-icon [style]='style' [color]='color'>
+<mat-icon *ngIf="comp.icon.indexOf('/assets/icons') == -1" [style]='style' [color]='color' [class]="getClass('','icon')">
     {{comp.icon}}
 </mat-icon>
+<div *ngIf="comp.icon.indexOf('/assets/icons') != -1"
+ [style]='style'
+  [class]="getClass('','icon')"
+  [inlineSVG]="comp.icon" >
+</div>

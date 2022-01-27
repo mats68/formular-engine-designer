@@ -120,6 +120,9 @@ export class MtDatatableComponent extends MtBaseComponent implements OnInit, OnC
 
   CopyRow(ind: number): void {
     this.actionsMenuTrigger.closeMenu()
+    if (this.disabled) {
+      return
+    }
     if (!(this.data.length > ind)) {
       return
     }
@@ -136,6 +139,9 @@ export class MtDatatableComponent extends MtBaseComponent implements OnInit, OnC
 
   DeleteRow(ind: number): void {
     this.actionsMenuTrigger.closeMenu()
+    if (this.disabled) {
+      return
+    }
     if (!(this.data.length > ind)) {
       return
     }

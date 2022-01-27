@@ -1,18 +1,25 @@
 <div class="mt-2 mb-2">
-    <div [class]="'flex items-center p-4 ' + getBgClass()">
-        <mat-icon>info_outline</mat-icon>
-        <div class="ml-4" [innerHTML]='getText()'>
-        </div>
-        <span class="flex-auto"></span>
-        <button mat-icon-button (click)='hidePanel()'>
-            <mat-icon>close</mat-icon>
-        </button>
-    </div>
-
-
-    <div *ngIf='hasError()' class="p-4 bg-gray-left">
-        <div *ngFor='let ab of ErrorAbschnitte' (click)='clickError(ab)'>
-            <span class="ml-8 mb-4 text-primary cursor-pointer">- {{getErrorLabel(ab)}}</span>
-        </div>
-    </div>
+	<div [class]="getBgClass()">
+		<div class="flex items-center px-4 pt-4 pb-1">
+			<mat-icon>info_outline</mat-icon>
+			<div class="ml-4" [innerHTML]='getText()'>
+			</div>
+			<span class="flex-auto"></span>
+			<!-- <button mat-icon-button (click)='hidePanel()'>
+				<mat-icon>close</mat-icon>
+			</button> -->
+		</div>
+		<div *ngIf="!hasVisibleChildren(comp)" class="flex items-center px-4 pt-3">
+			<!-- Damit der Abstand nach unten stimmt -->
+		</div>
+		<div *ngIf="hasVisibleChildren(comp)" class="flex items-center px-4 pb-4 pt-1">
+			<mat-icon class="invisible" >info_outline</mat-icon>
+			<mt-container [comp]='comp' [sm]='sm' [class]="'ml-4 ' + comp.class"></mt-container>
+		</div>
+	</div>
+	<div *ngIf='!comp.hideAbschnitte && hasError()' class="p-4 bg-gray-left">
+		<div *ngFor='let ab of ErrorAbschnitte' (click)='clickError(ab)'>
+			<span class="ml-8 mb-4 text-primary cursor-pointer">- {{getErrorLabel(ab)}}</span>
+		</div>
+	</div>
 </div>

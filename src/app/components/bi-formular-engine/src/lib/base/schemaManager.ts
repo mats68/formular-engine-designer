@@ -10,9 +10,10 @@ import { FormulareService } from 'src/app/services/formulare-service/formulare-s
 import { Formular } from 'src/app/services/formulare-service/Formular';
 import { DokumentDTO, DokumentStatus, EProjektDTO } from 'src/app/api';
 import { ProjektService } from 'src/app/services';
-// import { AuthorizationService } from 'src/app/modules/auth/authorization.service';
+// changed-designer import { AuthorizationService } from 'src/app/modules/auth/authorization.service';
 import { FormularState } from 'src/app/services/formulare-service/FormularBase';
 import { marker } from '@ngneat/transloco-keys-manager/marker';
+import { Guid } from 'src/app/tools/Guid';
 const moment = moment_;
 
 
@@ -164,7 +165,7 @@ export interface ISchemaManagerContext {
 @Injectable({ providedIn: 'root' })
 export class SchemaManagerProvider
 	implements ISchemaManagerContext {
-   constructor(@Inject('context') private context: ISchemaManagerContext) {
+   constructor(@Inject('context') private context: ISchemaManagerContext) {  // changed-designer 
 		if (!context) {
 			context = {} as ISchemaManagerContext;
 		}
@@ -223,26 +224,30 @@ export class SchemaManager {
 	private readonly _context: ISchemaManagerContext;
 
 	get dokumentDTO(): DokumentDTO {
-		// return this.service.CurDokument
+		// changed-designer 
 		return {} as DokumentDTO
 	}
 
 	get formularStatus(): DokumentStatus {
-		// return this.dokumentDTO?.status;
+		// changed-designer 
 		return DokumentStatus.InArbeit
 	}
 
 	get formular(): Formular {
-		if (this.formulareService?.formular) {
-			return (this.formulareService.formular as Formular);
-		}
+		// changed-designer 
+		//@ts-ignore
+		return {}
+
+		// if (this.formulareService?.formular) {
+		// 	return (this.formulareService.formular as Formular);
+		// }
 	}
 
 	get formulareService(): FormulareService {
 		return this.getService('formulare-service') as FormulareService;
 	}
 
-	// get autorisierungsService(): AuthorizationService {
+	// changed-designer get autorisierungsService(): AuthorizationService {
 	// 	return this.getService('authorisierung-service') as AuthorizationService;
 	// }
 
@@ -279,7 +284,7 @@ export class SchemaManager {
 	}
 
 	public readonly beilageError = '_beilage-error'
-	
+
 	// DruckValues: any;
 	DiffValues: any;
 	MemValues: any = {};
@@ -289,6 +294,7 @@ export class SchemaManager {
 	disCounter: number = 0
 
 	Errors: IError[];
+	public get hasError() { return this.Errors && this.Errors.length > 0 }
 	SchemaErrors: ISchemaError[];
 	highlightedFields: IHighlight[];
 	AllValidating: boolean;
@@ -297,6 +303,7 @@ export class SchemaManager {
 	OnFocus: Subject<IComponent>;
 	OnChange: Subject<IComponent>;
 	OnNextStep: Subject<IComponent>;
+	OnAutocompleteClose: Subject<IComponent>;
 
 	AllDisabled: boolean;
 
@@ -377,6 +384,7 @@ export class SchemaManager {
 		this.OnFocus = new Subject<IComponent>();
 		this.OnChange = new Subject<IComponent>();
 		this.OnNextStep = new Subject<IComponent>();
+		this.OnAutocompleteClose = new Subject<IComponent>();
 
 		setTimeout(() => this.checkForValueChangesTimeout(), 500);
 	}
@@ -394,13 +402,13 @@ export class SchemaManager {
 		try {
 			// Nur machen wenn wirklich ein Formular angezeigt wird
 			if (this.Schema && this.Schema.guid) {
-				if (this.formular && this.formularStatus <= DokumentStatus.InArbeit) {
-					if (this.formular?.dokumentDef.toString().toLocaleLowerCase() === this.Schema?.guid?.toLocaleLowerCase()) {
+				// if (this.formular && this.formularStatus <= DokumentStatus.InArbeit) {
+					if (Guid.equals(this.formular?.dokumentDef, this.Schema?.guid)) {
 						if (this.formular && this.ValuesChanged) {
 							this.formular.setFieldSetValue(this.Schema.attribut, 0, JSON.stringify(this.Values));
 							this.ValuesChanged = false;
 						}
-					}
+					// }
 				}
 			}
 		} catch (error) {
@@ -558,27 +566,6 @@ export class SchemaManager {
 
 		if (this.Schema.onInitValues) this.Schema.onInitValues(this);
 	}
-
-	// InitDruckValues(values: any) {
-	// 	this.DruckValues = values
-	// 	this.traverseSchema(c => {
-	// 		this.UpdateDruckValue(c)
-	// 	})
-	// }
-
-	// UpdateDruckValue(c: IComponent) {
-	// 	if (c.field) {
-	// 		let value = this.getValue(c)
-	// 		if (typeof value !== 'undefined' && !c.unbound) {
-	// 			if (c.type === 'date' && value) {
-	// 				value = moment(value, 'DD.MM.YYYY').format('YYYYMMDD') + '000000000'
-	// 			} else if (c.type === 'checkbox' || c.type === 'switch' || c.type === 'switchpanel') {
-	// 				value = value ? 'TRUE' : 'FALSE'
-	// 			}
-	// 			set(this.DruckValues, c.field, value);
-	// 		}
-	// 	}
-	// }
 
 	static formatDate(date: Date, format: string = 'DD.MM.YYYY'): string {
 		return moment(date).format(format)
@@ -944,7 +931,7 @@ export class SchemaManager {
 	setValue(field: string, value: any, arrayInd: number = -1): boolean {
 		const comp = this.getCompByField(field)
 		if (!comp) {
-			console.error('component for field not specified ! field: ', field);
+			console.warn('component for field not specified ! field: ', field);
 			return false;
 		}
 		this.updateValue(comp, value, arrayInd)
@@ -1017,7 +1004,7 @@ export class SchemaManager {
 		if (comp.required && comp.type !== 'panel') {
 			if (SchemaManager.hasNoValue(value)) {
 				if (this.AllValidating || this.AllValidated) {
-					this.addErrors(comp, this.translate(marker('page_project_wizard.error_input_required')), arrayInd);
+					this.addErrors(comp, this.translate(marker('page_projekt_wizard.error_input_required')), arrayInd);
 				}
 			}
 		}
@@ -1032,9 +1019,30 @@ export class SchemaManager {
 				this.removeErrors(comp, arrayInd);
 			}
 		}
+		if (comp.dataType === 'int') {
+			if (!SchemaManager.hasNoValue(value)) {
+				if (typeof comp.min !== 'undefined') {
+					if (value < comp.min) {
+						this.addErrors(comp, this.translate(marker('comp_input.min_wert_error')), arrayInd)
+					 }
+				}
+				if (typeof comp.max !== 'undefined') {
+					if (value > comp.max) {
+						this.addErrors(comp, this.translate(marker('comp_input.max_wert_error')), arrayInd)
+					 }
+				}
+				// Maximaler Int-Wert auf DB
+				if (value > 2147483647) {
+
+					this.addErrors(comp, this.translate(marker('comp_input.max_int_wert_error')), arrayInd)
+				}
+			}
+		}
 	}
 
-	validateAll() {
+	validateAll(panel?: IComponent) {
+		const _panel = panel || this.Schema
+		const validate_full_schema: boolean = !panel 
 		this.Errors = []
 		this.AllValidating = true;
 		this.validate(this.Schema, '');
@@ -1060,8 +1068,8 @@ export class SchemaManager {
 					this.validate(c, value);
 				}
 			}
-		});
-		if (this.Schema.validate) {
+		}, undefined, _panel);
+		if (validate_full_schema && this.Schema.validate) {
 			const errs = this.Schema.validate(this, this.Schema, null);
 			if (errs) {
 				this.addErrors(this.Schema, errs);
@@ -1069,14 +1077,14 @@ export class SchemaManager {
 		}
 
 		// Required Beilagen valdieren
-		if (this.Schema.beilagen) {
+		if (validate_full_schema && this.Schema.beilagen) {
 			// console.log('beilagen def: ', this.Schema.beilagen)
 			// console.log('beilagen erstellt: ', this.dokumentDTO.beilagen)
 			let hasBeilageRequiredError = false
 
 			this.Schema.beilagen.forEach(def_b => {
-				if (def_b.reqiered) {
-					const beilage_erstellt = this.dokumentDTO.beilagen.find(dok_b => dok_b.dokumentDef.guid === def_b.guid)
+				if (def_b.required) {
+					const beilage_erstellt = this.dokumentDTO.beilagen.find(dok_b => Guid.equals(dok_b.dokumentDef.guid, def_b.guid))
 					if (!beilage_erstellt) {
 						hasBeilageRequiredError = true
 						// this.addErrors(this.Schema, 'Beilage');
@@ -1304,8 +1312,18 @@ export class SchemaManager {
 
 	DoFocus(comp: IComponent, arrayInd: number = -1) {
 		const ok = this.MakeVisible(comp, arrayInd);
-		if (ok) setTimeout(() => this.OnFocus.next(comp), 100);
+		if (ok) setTimeout(() => {
+			this.OnFocus.next(comp)
+			if (comp.type === 'input' && comp.options) {
+				this.OnAutocompleteClose.next(comp)
+			}
+		}, 100);
 	}
+
+	DoCloseAutocomplete(comp: IComponent) {
+		setTimeout(() => this.OnAutocompleteClose.next(comp), 100);
+	}
+
 
 	DoNextStep(comp: IComponent) {
 		if (comp.type !== 'stepper') return
@@ -1356,6 +1374,14 @@ export class SchemaManager {
 		return this.getPropValue(comp, 'disabled');
 	}
 
+	appendChild(parentComp: IComponent, childComp: IComponent) {
+		parentComp.children.push(childComp);
+
+		const setParent = (c: IComponent, p: IComponent) => {
+			c.parentComp = p;
+		};
+		SchemaManager.TraverseSchema(setParent, { fullTraverse: true }, childComp, parentComp);
+	}
 
 	static TraverseSchema(fn: ITraverseCallback, options: ITraverseOptions, comp: IComponent, parentComp?: IComponent) {
 		if (options && options.done) return;

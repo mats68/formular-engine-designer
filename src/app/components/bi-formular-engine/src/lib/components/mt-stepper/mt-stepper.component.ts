@@ -12,7 +12,7 @@ import { MtBaseComponent } from '../../base/mt-base/mt-base.component';
   styleUrls: ['./mt-stepper.component.scss']
 })
 export class MtStepperComponent extends MtBaseComponent implements OnInit, OnDestroy {
-	@ViewChild('stepper') stepper;
+  @ViewChild('stepper') stepper;
   subscriptionNextStep: Subscription;
 
   ngOnInit(): void {
@@ -34,26 +34,36 @@ export class MtStepperComponent extends MtBaseComponent implements OnInit, OnDes
 
 
   selectionChange(selection: StepperSelectionEvent) {
-    if (this.comp.stepperProps && this.comp.stepperProps.selectionChange) this.comp.stepperProps.selectionChange(this.sm, this.comp, selection.selectedIndex)
+    if (this.comp.stepperProps?.selectionChange) {
+      this.comp.stepperProps.selectionChange(this.sm, this.comp, selection.selectedIndex)
+    }
+
   }
 
   editable(ind: number): boolean {
-    return ind <= this.selectedIndex 
+    return this.sm.Errors.length === 0 && ind <= this.selectedIndex
   }
 
   getCompleted(comp: IComponent): boolean {
-    if (comp.stepperProps && comp.stepperProps.completed) return comp.stepperProps.completed
+    // if (comp.stepperProps && comp.stepperProps.completed) return comp.stepperProps.completed
     return false
   }
 
-  nextStep()  {
-    this.stepper.selected.completed = true;
+  nextStep() {
+    // this.stepper.selected.completed = true;
     const comp: IComponent = this.comp.children[this.selectedIndex]
     if (comp) {
-      set(comp, 'stepperProps.selectedIndex', true)
+      if (this.comp.stepperProps?.validateSteps) {
+        this.sm.validateAll(comp)
+        if (this.sm.Errors.length > 0) {
+          return
+        }
+      }
+      this.stepper.next();
+      set(comp, 'stepperProps.completed', true)
+
     }
 
-    this.stepper.next();
   }
 
   registerNextStep() {
