@@ -350,7 +350,7 @@ export class ProjektBeilagen {
 	 * @returns
 	 */
 	async beilagenPanel(sm: SchemaManager): Promise<IComponent> {
-		// changed-designer 
+		// **changed-designer** 
 		const card = card_panel(sm.translate(marker('page_formular.title_attachments')), 'BEILAGEN', [
 		]);
 		return card;

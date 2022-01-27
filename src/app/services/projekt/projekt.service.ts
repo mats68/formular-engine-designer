@@ -436,7 +436,7 @@ export class ProjektService
 
 	private _curProjekt: EProjektDTO = null;
 	public get CurProjekt(): EProjektDTO {
-		// return this._curProjekt;
+		// **changed-designer** 
 		return fakeProjekt as EProjektDTO
 
 	}
@@ -493,8 +493,10 @@ export class ProjektService
 	Emitter = new EventEmitter.EventEmitter();
 
 	constructor(
+		// **changed-designer** 
 		// private readonly _logger: NGXLogger,
 		private mitarbeiterService: MitarbeiterService,
+		// **changed-designer** 
 		// private _authenticationService: AuthenticationService,
 		// private authorizationService: AuthorizationService,
 		private projekteService: EProjekteService,
@@ -615,6 +617,7 @@ export class ProjektService
 
 	public get Router() { return this.router; }
 
+	// **changed-designer** 
 	// public Load_Identity_Berechtigungen(): Promise<string> {
 	// 	return new Promise((resolve, reject) => {
 	// 		var navItems: INavbarItem[] = [StartseiteItem, ProjekteItem]
@@ -844,6 +847,7 @@ export class ProjektService
 
 		let startItems: BreadCrumbItem[] = []
 
+		// **changed-designer** 
 		// das zweite BreadCrumb Item mit such-item ersetzen / erg�nzen falls in einer Suche war
 		// if (this.BreadCrumbInSearch && this.SearchData.searchText) {
 		// 	const searchText = this.SearchData.searchText.split(' ').filter(s => s !== ' ' && s !== '').map(s => '"' + s + '"').join(' und ')
@@ -863,6 +867,7 @@ export class ProjektService
 	}
 
 
+	// **changed-designer** 
 	// CurIdentityBenutzerName(): string {
 	// 	if (this.CurIdentity) {
 	// 		return `${this.CurIdentity.mitarbeiterVorname} ${this.CurIdentity.mitarbeiterNachname}`
@@ -1018,6 +1023,7 @@ export class ProjektService
 		}
 	}
 
+	// **changed-designer** 
 	// public async LoadProjektDTO(auftragGuid: string): Promise<EProjektDTO> {
 		// return await this.projekteService.apiV1EProjekteGuidGet(auftragGuid).pipe(
 		// 	catchError((error) => {
@@ -1028,7 +1034,7 @@ export class ProjektService
 	// }
 
 	public async LoadProjekt(guidauftrag: string) {
-		// changed-designer 
+		// **changed-designer** 
 		if (!this.projektBeilagen) {
 			this.projektBeilagen = new ProjektBeilagen()
 		}
@@ -1533,6 +1539,8 @@ export class ProjektService
 		// 		console.error('Fehler beim Abfragen des Mitarbeiters', e);
 		// 		return throwError(e);
 		// 	})).toPromise() as Promise<MitarbeiterDTO>
+
+		// **changed-designer** 
 		return new Promise(r => r(mitarbeiter as MitarbeiterDTO))
 	}
 
@@ -1557,6 +1565,8 @@ export class ProjektService
 		// 		console.error('Fehler beim Abfragen des Mitarbeiters', e);
 		// 		return throwError(e);
 		// 	})).toPromise() as Promise<GeschStelleDTO>
+
+		// **changed-designer** 
 		return new Promise(r => r(geschStelle as GeschStelleDTO))
 	}
 
@@ -1570,6 +1580,7 @@ export class ProjektService
 		// 		return throwError(e);
 		// 	})).toPromise() as Promise<AdresseDTO>
 
+		// **changed-designer** 
     	return new Promise(r => r(adressen[guid] as AdresseDTO))			
 	}
 
@@ -2033,6 +2044,7 @@ export class ProjektService
 	}
 
 
+	// **changed-designer** 
 	// public Show_Anbieter_Dialog(): Promise<string | void> {
 	// 	return new Promise<string>(
 	// 		async (resolve) => {
@@ -2392,7 +2404,7 @@ export class ProjektService
 
 
 	public Show_DialogBox(data: IDialogBoxData, cb?: any) {
-		// changed-designer const dialogRef = this.dialog.open(DialogAllgemeinComponent, {
+		// **changed-designer** const dialogRef = this.dialog.open(DialogAllgemeinComponent, {
 		// 	maxHeight: '90vh',
 		// 	data: data
 		// });

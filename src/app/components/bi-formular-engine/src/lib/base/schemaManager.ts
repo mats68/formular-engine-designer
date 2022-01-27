@@ -10,7 +10,7 @@ import { FormulareService } from 'src/app/services/formulare-service/formulare-s
 import { Formular } from 'src/app/services/formulare-service/Formular';
 import { DokumentDTO, DokumentStatus, EProjektDTO } from 'src/app/api';
 import { ProjektService } from 'src/app/services';
-// changed-designer import { AuthorizationService } from 'src/app/modules/auth/authorization.service';
+// **changed-designer** import { AuthorizationService } from 'src/app/modules/auth/authorization.service';
 import { FormularState } from 'src/app/services/formulare-service/FormularBase';
 import { marker } from '@ngneat/transloco-keys-manager/marker';
 import { Guid } from 'src/app/tools/Guid';
@@ -165,7 +165,7 @@ export interface ISchemaManagerContext {
 @Injectable({ providedIn: 'root' })
 export class SchemaManagerProvider
 	implements ISchemaManagerContext {
-   constructor(@Inject('context') private context: ISchemaManagerContext) {  // changed-designer 
+   constructor(@Inject('context') private context: ISchemaManagerContext) {  // **changed-designer** 
 		if (!context) {
 			context = {} as ISchemaManagerContext;
 		}
@@ -224,17 +224,17 @@ export class SchemaManager {
 	private readonly _context: ISchemaManagerContext;
 
 	get dokumentDTO(): DokumentDTO {
-		// changed-designer 
+		// **changed-designer** 
 		return {} as DokumentDTO
 	}
 
 	get formularStatus(): DokumentStatus {
-		// changed-designer 
+		// **changed-designer** 
 		return DokumentStatus.InArbeit
 	}
 
 	get formular(): Formular {
-		// changed-designer 
+		// **changed-designer** 
 		//@ts-ignore
 		return {}
 
@@ -246,8 +246,9 @@ export class SchemaManager {
 	get formulareService(): FormulareService {
 		return this.getService('formulare-service') as FormulareService;
 	}
-
-	// changed-designer get autorisierungsService(): AuthorizationService {
+    
+	// **changed-designer** 
+	// get autorisierungsService(): AuthorizationService {
 	// 	return this.getService('authorisierung-service') as AuthorizationService;
 	// }
 

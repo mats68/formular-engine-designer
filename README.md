@@ -21,9 +21,16 @@ Dieses Angular Projekt dient dazu Typescript Schemas der Formular-Engine zu test
 ![alt text](src/assets/schema1.png) 
 
 
+### Developing
+- Dateien ersetzen aus dem Haupt-Projekt
+- Stellen anpassen, die mit **changed-designer** markiert sind, mit dem git-diff Tool.
+
     
 ### CSS Styles verwenden
-Es können CSS Styles zur Verwendung im Schema im `class`-property eingefügt werden. Z.B.:
+Es können CSS Styles zur Verwendung im Schema im `class`-property eingefügt werden.
+- Es können eigene styles in `styles.css` eingetragen werden.
+- Inline-Styles können im `style:`-property angegeben werden
+
 ```
 	{
 		type: 'label',
@@ -33,9 +40,4 @@ Es können CSS Styles zur Verwendung im Schema im `class`-property eingefügt we
   }
 ```
 
-
-- Es können alle Styles, die unter https://tailwindcss.com/docs dokumentiert sind, verwendet werden.
-- Es können auch eigene styles in `tailwind.css` eingetragen werden.
-- **Danach muss in beiden Fällen `npm run twp` ausgefürt werden.**
-- Inline-Styles können im `style:`-property angegeben werden
 
