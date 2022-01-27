@@ -50,7 +50,7 @@ export class AppComponent {
       label('Schema: '),
       {
         type: 'select',
-        width: '300px',
+        width: '500px',
         options() {
           const res: string[] = []
           Object.values(schemas).forEach(s => {
